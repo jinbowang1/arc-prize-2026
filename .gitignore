@@ -1,0 +1,23 @@
+# 凭据 —— 绝不提交
+.env
+*.key
+
+# Python
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+.venv
+
+# 官方游戏源码: 由 SDK 用自己的 API key 下载, 不随仓库分发
+environment_files/
+
+# 第三方参考仓(Tycho / duck-harness / just-explore / 官方 agent 模板), 各有各的许可
+reference/
+
+# 运行日志与中间产物
+*.log
+*.npy
+.DS_Store
