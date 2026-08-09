@@ -1,13 +1,15 @@
 # ARC Prize 2026 / ARC-AGI-3 攻关记录
 
-> **TL;DR (English)** — A complete, reproducible 100.00 (perfect) score on the public
-> ARC-AGI-3 environment `ls20`: all 7 levels cleared in 335 actions vs. a human baseline
-> of 776, every level hitting the 115% per-level cap. What made it work, what it cost,
-> and — more usefully — **where the approach stops working**, measured against all 25
-> public environments. The honest headline: the planning engine generalizes, the
-> perception layer does not, and one whole class of games defeats search entirely.
+> **TL;DR (English)** — Complete, reproducible 100.00 (perfect) scores on **two** public
+> ARC-AGI-3 environments: `ls20` (7 levels, 335 actions vs. human 776) and `tr87`
+> (6 levels, 127 actions vs. human 414), every level hitting the 115% per-level cap.
+> What made it work, what it cost, and — more usefully — **where the approach stops
+> working**, measured against all 25 public environments. The honest headline: the
+> planning/search engine generalizes further than expected (`tr87` was first written
+> off as search-proof, then cracked), but the perception layer does not, and every
+> rule was still induced by a human.
 
-在 ARC-AGI-3 的公开环境 `ls20` 上跑通七关,拿到满分,并把方法和它的边界都记下来。
+在 ARC-AGI-3 的公开环境 `ls20`(七关)和 `tr87`(六关)上分别拿到满分,并把方法和它的边界都记下来。
 
 这个仓库的价值不在那个满分——**它更有用的部分是后半段:方法在什么地方失效,以及为什么。**
 
@@ -26,13 +28,25 @@
 | L7 | 59 | 186 | 115% |
 | **合计** | **335** | **776** | **游戏得分 100.00** |
 
-计分规则 `level_score = (人类基准步数 / AI步数)²`,单关封顶 115%。七关全部触顶。
+`tr87`(2026-08-09,方法论见 [`notes/tr87-playbook.md`](notes/tr87-playbook.md)):
 
-**这个成绩是全新环境从头重放 335 个动作复核出来的**,不是搜索进程里的自报——两者不是一回事,见第四节第 6 条。
+| 关卡 | 本方案步数 | 人类基准 | 单关得分 |
+| --- | --- | --- | --- |
+| L1 | 14 | 54 | 115% |
+| L2 | 25 | 58 | 115% |
+| L3 | 21 | 40 | 115% |
+| L4 | 21 | 45 | 115% |
+| L5 | 14 | 71 | 115% |
+| L6 | 32 | 146 | 115% |
+| **合计** | **127** | **414** | **游戏得分 100.00** |
+
+计分规则 `level_score = (人类基准步数 / AI步数)²`,单关封顶 115%。十三关全部触顶。
+
+**两份成绩都是全新环境从头重放复核出来的**,不是搜索进程里的自报——两者不是一回事,见第四节第 6 条。
 
 ```bash
-OPERATION_MODE=OFFLINE uv run python score.py
-# 终验: 通关 7/7, 状态 WIN, 共 335 步
+OPERATION_MODE=OFFLINE uv run python score.py       # ls20: 通关 7/7, WIN, 335 步
+OPERATION_MODE=OFFLINE uv run python score_tr87.py  # tr87: 通关 6/6, WIN, 127 步
 ```
 
 ---
@@ -100,26 +114,30 @@ click 类游戏每步 4096 个分支,穷举式搜索在那里直接不成立。
 
 `tr87` 是另一个纯方向键游戏,但它**根本不是移动游戏**:没有玩家、没有地图。ACTION3/4 移动光标,ACTION1/2 切换当前位的符号,要把一串符号调成正确答案。
 
-`ls20` 那套感知层(玩家块检测、能量条读数、锁解码)**一行都用不上**。
+`ls20` 那套感知层(玩家块检测、能量条读数、锁解码)**一行都用不上**——tr87 的感知层
+(框检测、5×5 符号提取、光标定位)是从零重写的。
 
-深层结构倒是一样的——都是"调节一个可编辑状态直到匹配目标"——但这个共性太抽象,落不到代码上。
+深层结构倒是一样的——都是"调节一个可编辑状态直到匹配目标"——但这个共性落不到共享代码上。
 
-### 3. 真正的分水岭是反馈密度,不是结构
+### 3. "反馈密度是分水岭"是个被自己推翻的判断
 
-| 游戏类型 | 本方案 | 缺什么 |
-| --- | --- | --- |
-| **反馈稠密型**(如 `ls20`) | 有效,能打满分 | 只缺感知层自动化 |
-| **全或无归纳型**(如 `tr87`) | **完全无效** | 缺的是"理解规则"本身 |
+最初的结论是:`tr87` 实测没有任何中间反馈(枚举一位的 7 种符号,画面除该位自身零像素
+变化),全对才过关,盲搜 7⁵ 而人类基准 54 步——"搜索在这里不是慢,是没有方向"。
 
-`ls20` 每一步都能看到自己在哪、锁开没开、能量剩多少,搜索有大量抓手。
+**这个判断错了,后来 `tr87` 被打到满分**(全程见 [`notes/tr87-playbook.md`](notes/tr87-playbook.md))。错在漏算了两件事:
 
-`tr87` 实测**没有任何中间反馈**:枚举第 1 位的全部 7 种符号,画面上除该位自身**零像素变化**。5 位全对才过关,错了不给一点提示。盲搜要试 7⁵ = 16807 种组合,而人类基准是 **54 步**。
+- **"无反馈"只对真实环境成立**。`clone` 里试错免费、不计入动作分母,而"全对即过关"
+  这个判定在克隆世界里就是密集反馈。7⁵~7⁷ 的克隆树穷举只要几分钟,真机只走最短
+  按键序列——这直接吃掉前四关。
+- **穷举撑不住的规模(L5 的 7⁸、L6 的 7¹²),靠前四关穷举攒下的 ground truth 逆向
+  出规则再攻**:变换等价类匹配 + 结构化谓词把 L6 的 138 亿组合剪到 2352 个候选。
 
-**搜索在这里不是慢,是没有方向。**
+修正后的边界:真正卡死搜索的不是反馈密度,是**克隆试错的组合规模**与**规则归纳的
+自动化**——前者有明确的位数红线(每加一位 ×7),后者见下一条。
 
 ### 4. 最关键的一条:所有规则都是人推出来的
 
-颜色是第二个匹配维度、锁的 3×3 编码规则、旋转器是会移动的巡逻体、补给一次性、L7 视口会滚动——**这些全部来自人工推理,不是程序发现的**。
+颜色是第二个匹配维度、锁的 3×3 编码规则、旋转器是会移动的巡逻体、补给一次性、L7 视口会滚动——**这些全部来自人工推理,不是程序发现的**。`tr87` 同样:切分结构、变换等价类、答案的回文布局,每一条都是人看着 ground truth 归纳的。
 
 而比赛要求这些必须由程序在断网的开源小模型上自动完成,且每一步试探都计入分母。
 
@@ -162,8 +180,9 @@ echo "ARC_API_KEY=你的key" > .env
 # 下载环境(SDK 会拉到 environment_files/,该目录不随仓库分发)
 uv run python fetch_games.py ls20
 
-# 终验 ls20 满分解
-OPERATION_MODE=OFFLINE uv run python score.py
+# 终验两个满分解
+OPERATION_MODE=OFFLINE uv run python score.py       # ls20
+OPERATION_MODE=OFFLINE uv run python score_tr87.py  # tr87 (需先 fetch_games.py tr87)
 ```
 
 `OPERATION_MODE=OFFLINE` 让 toolkit 完全不联网。在有网络限制的环境下,这一条能把每次 `make` 从等 SSL 超时变成秒回。
@@ -200,12 +219,27 @@ OPERATION_MODE=OFFLINE uv run python score.py
 | `show_official_prompt.py` | 按官方 baseline 格式生成真实 prompt 并统计体积 |
 | `score.py` | 全新环境重放 + 官方 scorecard 对账 |
 
+**tr87 求解链**(2026-08-09)
+
+| 文件 | 作用 |
+| --- | --- |
+| `parse_tr87.py` | tr87 感知层:框检测、5×5 符号提取、字典/题面/答案区解析 |
+| `brute_tr87.py` | 克隆树 DFS 穷举(L1-L4 的破关主力,任意位数) |
+| `solve_tr87_l5b.py` | L5 结构化求解:例句映射候选生成 + clone 验证 |
+| `solve_tr87_l6.py` | L6 两级复合谓词求解:等价类匹配 + 需求指派 |
+| `score_tr87.py` | 全新环境重放 127 步 + 官方 scorecard 对账 |
+| `tr87_solutions.json` | 六关全部解(逐关按键序列) |
+
+其余 `solve_tr87*.py` / `diag_tr87*.py` / `diag_l6_cover.py` 是失败的中间假设与
+诊断脚本(候选段拼接、汉明递增、同变换绑定),对应 `notes/tr87-playbook.md` 第二、三节的教训。
+
 **笔记**
 
 | 文件 | 内容 |
 | --- | --- |
-| `notes/pipeline-playbook.md` | 完整方法论,九节 |
+| `notes/pipeline-playbook.md` | ls20 完整方法论,九节 |
 | `notes/literature-review-20260806.md` | 18 篇相关论文,全部核过原文 |
+| `notes/tr87-playbook.md` | tr87 完整方法论:穷举喂 ground truth → 逆向规则 → 攻大实例 |
 | `notes/recon-20260806.md` | Milestone 1 获奖方案与竞赛规则侦察 |
 
 其余 `probe_*.py` / `win_l6*.py` / `solver*.py` 是过程中的探针和被取代的中间版本,保留下来是因为**踩坑记录本身有价值**——第四节那六条坑,证据都在这些脚本和它们的日志里。
