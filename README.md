@@ -1,15 +1,15 @@
 # ARC Prize 2026 / ARC-AGI-3 攻关记录
 
-> **TL;DR (English)** — Complete, reproducible 100.00 (perfect) scores on **two** public
-> ARC-AGI-3 environments: `ls20` (7 levels, 335 actions vs. human 776) and `tr87`
-> (6 levels, 127 actions vs. human 414), every level hitting the 115% per-level cap.
-> What made it work, what it cost, and — more usefully — **where the approach stops
-> working**, measured against all 25 public environments. The honest headline: the
-> planning/search engine generalizes further than expected (`tr87` was first written
-> off as search-proof, then cracked), but the perception layer does not, and every
-> rule was still induced by a human.
+> **TL;DR (English)** — Complete, reproducible 100.00 (perfect) scores on **three** public
+> ARC-AGI-3 environments: `ls20` (7 levels, 335 actions vs. human 776), `tr87`
+> (6 levels, 127 vs. 414) and `ft09` (6 levels, 86 vs. 208 — a pure-click game),
+> every level hitting the 115% per-level cap. What made it work, what it cost, and —
+> more usefully — **where the approach stops working**. Two of this repo's own boundary
+> claims ("search-proof" `tr87`, "click games defeat search") were later overturned by
+> its own experiments; the perception layer still does not generalize, and every rule
+> was still induced by a human.
 
-在 ARC-AGI-3 的公开环境 `ls20`(七关)和 `tr87`(六关)上分别拿到满分,并把方法和它的边界都记下来。
+在 ARC-AGI-3 的公开环境 `ls20`(七关)、`tr87`(六关)和 `ft09`(六关,纯点击)上分别拿到满分,并把方法和它的边界都记下来。
 
 这个仓库的价值不在那个满分——**它更有用的部分是后半段:方法在什么地方失效,以及为什么。**
 
@@ -40,7 +40,19 @@
 | L6 | 32 | 146 | 115% |
 | **合计** | **127** | **414** | **游戏得分 100.00** |
 
-计分规则 `level_score = (人类基准步数 / AI步数)²`,单关封顶 115%。十三关全部触顶。
+`ft09`(2026-08-09,纯点击游戏,方法论见 [`notes/ft09-playbook.md`](notes/ft09-playbook.md)):
+
+| 关卡 | 本方案点击 | 人类基准 | 单关得分 |
+| --- | --- | --- | --- |
+| L1 | 4 | 43 | 115% |
+| L2 | 7 | 12 | 115% |
+| L3 | 14 | 23 | 115% |
+| L4 | 21 | 28 | 115% |
+| L5 | 21 | 65 | 115% |
+| L6 | 19 | 37 | 115% |
+| **合计** | **86** | **208** | **游戏得分 100.00** |
+
+计分规则 `level_score = (人类基准步数 / AI步数)²`,单关封顶 115%。十九关全部触顶。
 
 **两份成绩都是全新环境从头重放复核出来的**,不是搜索进程里的自报——两者不是一回事,见第四节第 6 条。
 
@@ -106,9 +118,12 @@ L7 单段 BFS 要摸到深度 60+ 才可能通关。拆开之后**第一个候�
 | --- | --- | --- |
 | 纯 `[1,2,3,4]` | **2**(`ls20`, `tr87`) | 本方案的 BFS 分支因子为 4 |
 | 其他 keyboard | 3 | 含 ACTION5/7 |
-| 含 click(ACTION6) | 19 | 每步要从 **64×64 = 4096 个坐标**里选一个 |
+| 含 click(ACTION6) | 19 | 名义上每步 **64×64 = 4096 个坐标** |
 
-click 类游戏每步 4096 个分支,穷举式搜索在那里直接不成立。
+最初的判断是"click 类每步 4096 个分支,穷举直接不成立"。**这个判断被 `ft09`
+的满分推翻了**:有效点击目标是**连通块**而非像素(4096 塌缩到 ~20),块内点哪
+都一样。修正后的表述:click 不是搜索的死刑,**对象化感知**是它的入场费——
+而对象化感知恰恰是每个游戏都要重写的那一层。
 
 ### 2. 表面结构可以毫无共通
 
