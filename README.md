@@ -252,9 +252,11 @@ OPERATION_MODE=OFFLINE uv run python score_tr87.py  # tr87 (需先 fetch_games.p
 
 | 文件 | 内容 |
 | --- | --- |
+| `notes/synthesis-three-games.md` | **三游戏横向综合**:通用攻关循环、被推翻的边界、判定分类学、自动化 harness 蓝图 |
 | `notes/pipeline-playbook.md` | ls20 完整方法论,九节 |
 | `notes/literature-review-20260806.md` | 18 篇相关论文,全部核过原文 |
-| `notes/tr87-playbook.md` | tr87 完整方法论:穷举喂 ground truth → 逆向规则 → 攻大实例 |
+| `notes/tr87-playbook.md` | tr87 完整方法论 + 等价类定案(人类对照实验推翻 U=T) |
+| `notes/ft09-playbook.md` | ft09 完整方法论:蓝图语义、128 击预算、路径依赖判定、格雷码全态遍历 |
 | `notes/recon-20260806.md` | Milestone 1 获奖方案与竞赛规则侦察 |
 
 其余 `probe_*.py` / `win_l6*.py` / `solver*.py` 是过程中的探针和被取代的中间版本,保留下来是因为**踩坑记录本身有价值**——第四节那六条坑,证据都在这些脚本和它们的日志里。
