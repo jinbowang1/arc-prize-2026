@@ -253,6 +253,7 @@ OPERATION_MODE=OFFLINE uv run python score_tr87.py  # tr87 (需先 fetch_games.p
 | 文件 | 内容 |
 | --- | --- |
 | `notes/synthesis-three-games.md` | **三游戏横向综合**:通用攻关循环、被推翻的边界、判定分类学、自动化 harness 蓝图 |
+| `notes/human-ai-comparison-ls20.md` | **人机对照**:ls20 通关后的四点对比,拆出世界模型的四个分量(表征/动力学/资源约束/判定) |
 | `notes/pipeline-playbook.md` | ls20 完整方法论,九节 |
 | `notes/literature-review-20260806.md` | 18 篇相关论文,全部核过原文 |
 | `notes/tr87-playbook.md` | tr87 完整方法论 + 等价类定案(人类对照实验推翻 U=T) |
