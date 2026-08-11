@@ -339,25 +339,32 @@ def validate_heuristic(distance, solved_runs: list[list[np.ndarray]]) -> tuple[b
     **有梯度 ≠ 梯度指向目标。** 一个启发式在用于搜索之前, 必须先证明它在
     已知正确的解上是下降的。这是免费的 —— 每通一关就多一条可回放的解。
 
-    判据(宽松, 只筛掉明显无关的):
-      - 解的最后一步之前, h 必须比起点低;
-      - 全程恒定不变 = 与目标无关, 直接否决。
+    🚨判据必须是"**至少有一关上出现过下降**", 不能是"每关都下降"。
+    第一版写成"全程恒定即否决", 结果把正确假设误杀了: cd82 的 L1 只需要
+    最后一步盖印一次, 而那一步同时通关、画面已切到下一关, 所以在 L1 上
+    观察到的 h 全程恒为 50 —— 恒定是**这类游戏的正常现象**, 不是无关的
+    证据。同一个假设在 L2 上就有 100→55 的下降。
+    一关恒定只说明这关的目标量在最后一步才结算。
+
     `solved_runs` 每项是一关的逐帧网格序列(含起始帧, 不含通关后的新关卡帧)。
     """
     if not solved_runs:
         return True, "无已通关样本可供检验, 未经验证"
-    verdicts = []
+    notes, saw_drop = [], False
     for i, frames in enumerate(solved_runs):
         if len(frames) < 2:
             continue
         hs = [distance(f) for f in frames]
-        if len(set(hs)) == 1:
-            verdicts.append(f"L{i+1}: 全程恒为 {hs[0]:.0f} —— 与目标无关")
-        elif hs[-1] >= hs[0]:
-            verdicts.append(f"L{i+1}: 末值 {hs[-1]:.0f} 不低于起点 {hs[0]:.0f} —— 方向可疑")
-    if verdicts:
-        return False, "; ".join(verdicts)
-    return True, "在已通关样本上单调向好"
+        if min(hs) < hs[0]:
+            saw_drop = True
+            notes.append(f"L{i+1}: {hs[0]:.0f}->{min(hs):.0f} 有下降")
+        elif len(set(hs)) == 1:
+            notes.append(f"L{i+1}: 全程恒为 {hs[0]:.0f}(可能最后一步才结算)")
+        else:
+            notes.append(f"L{i+1}: 只升不降 {hs[0]:.0f}->{max(hs):.0f}")
+    if saw_drop:
+        return True, "; ".join(notes)
+    return False, "所有已通关样本上都没出现过下降 —— 与目标无关; " + "; ".join(notes)
 
 
 def ask_human_report(probe_text: str, percept_text: str, search_text: str,

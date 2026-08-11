@@ -79,7 +79,8 @@ def reachable(game: Game, base: Obs, keys: list[int], click_id: int | None,
 def beam(game: Game, base: Obs, keys: list[int], click_id: int | None,
          submit: Action, distance, mask: np.ndarray | None = None,
          width: int = 4, max_rounds: int = 20, budget: int = 100,
-         max_seconds: float = 300.0, verbose: bool = True) -> MacroResult:
+         max_seconds: float = 300.0, verbose: bool = True,
+         reach_states: int = 8000, reach_seconds: float = 150.0) -> MacroResult:
     """宏动作 beam search。`distance(grid) -> float` 必须有梯度。
 
     为什么不是纯贪心: cd82 L3 上纯贪心把 h 从 100 推到 16 就卡死, 1201 个
@@ -101,7 +102,12 @@ def beam(game: Game, base: Obs, keys: list[int], click_id: int | None,
 
         nxt: list[tuple[float, list[Action], Game, Obs]] = []
         for h_now, seq, node, obs in lanes:
-            for adj, child, o in reachable(node, obs, keys, click_id, submit, mask):
+            # ⚠️reachable 的预算必须给足。cd82 L3 上用默认 30 秒截断过:完整
+            # 状态空间 5168 个要 112 秒才扫完,截断掉的正是那些"只让面板一角
+            # 探进答案区"的精细位置 —— 而最后两次盖印恰恰需要它们。
+            for adj, child, o in reachable(node, obs, keys, click_id, submit, mask,
+                                           max_states=reach_states,
+                                           max_seconds=reach_seconds):
                 if len(seq) + len(adj) + 1 > budget:
                     continue
                 after = child.fork()
