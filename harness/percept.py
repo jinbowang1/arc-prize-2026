@@ -212,6 +212,73 @@ class Scene:
         return "\n".join(out)
 
 
+@dataclass
+class Entity:
+    """画面上一个"会动的东西"。
+
+    ⚠️**登记实体与理解功能是两件事。** 人类对照实验(2026-08-11, 用户亲玩
+    cd82)的原话:"一上来就看到了(小面板), 但不知道有什么用, 第二三关发现
+    有颜色变化的时候才意识到可以换油漆桶的颜色。"
+
+    所以功能未知的实体**也必须留在状态表征里**。我在 cd82 L4 上正是因为
+    "探测不到用途就当它不存在", 把第二个面板整个丢了 —— 状态表征少一个
+    自由度, 后面搜多久都没用。
+    """
+
+    bbox: tuple[int, int, int, int]
+    movers: list[str]                 # 哪些动作会改动它
+    cells: int                        # 典型变化格数
+    role: str = "unknown"             # 功能待定;未定也要留着
+
+    def line(self) -> str:
+        return (f"实体 bbox={self.bbox} {self.cells}格 "
+                f"受 {len(self.movers)} 个动作影响 {self.movers[:5]} 角色={self.role}")
+
+
+def discover_entities(peek, base_grid: np.ndarray, actions: list,
+                      min_cells: int = 2) -> list[Entity]:
+    """对每个动作做帧 diff, 把**互不重叠的变化区**各自登记成独立实体。
+
+    这是 cd82 L4 那道坎的根治办法。当时画面上有两个面板(大 12×7、小 4×3),
+    我只跟踪了最显眼的大的;小面板归 A3/A4 管, 它一移动, 点它盖出的位置就
+    跟着变。而我把动作候选在起始态算了一次就当全局事实, 于是那支能补上
+    缺口的笔在整个搜索里根本不存在 —— 抽象层和真机 beam 双双卡死, 加宽
+    beam 加到 800 也没用, 因为答案不在候选里。
+
+    发现它靠的是人工全屏渲染。这个函数就是把那一眼自动化:
+    不问"这个动作有什么用", 只问"画面上有几处互不相干的地方在动"。
+
+    `peek(action) -> grid` 由调用方提供(通常是 game.peek 的包装)。
+    """
+    regions: list[tuple[set[tuple[int, int]], list[str]]] = []
+    for a in actions:
+        g1 = np.asarray(peek(a))
+        if g1.shape != base_grid.shape:
+            continue
+        changed = np.argwhere(g1 != base_grid)
+        if len(changed) < min_cells:
+            continue
+        cells = {(int(r), int(c)) for r, c in changed}
+        merged = False
+        for i, (known, movers) in enumerate(regions):
+            # 有重叠 = 同一个东西在动;完全不相干 = 另一个实体
+            if known & cells:
+                regions[i] = (known | cells, movers + [repr(a)])
+                merged = True
+                break
+        if not merged:
+            regions.append((cells, [repr(a)]))
+
+    out = []
+    for cells, movers in regions:
+        rs = [r for r, _ in cells]
+        cs = [c for _, c in cells]
+        out.append(Entity(bbox=(min(rs), max(rs), min(cs), max(cs)),
+                          movers=movers, cells=len(cells)))
+    out.sort(key=lambda e: -e.cells)
+    return out
+
+
 def analyze(grid: list[list[int]] | np.ndarray) -> Scene:
     g = np.asarray(grid)
     bg = background(g)
