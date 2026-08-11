@@ -110,12 +110,17 @@ def bfs_level_up(game: Game, base: Obs, keys: list[int], click_id: int | None,
 def best_first(game: Game, base: Obs, keys: list[int], click_id: int | None,
                heuristic, mask: np.ndarray | None = None,
                max_depth: int = 100, max_nodes: int = 20000,
-               max_seconds: float = 120.0) -> SearchResult:
+               max_seconds: float = 120.0,
+               exclude: list[Action] | None = None) -> SearchResult:
     """用假设给出的距离做最佳优先搜索。
 
-    `heuristic(grid) -> float` 必须**有梯度**。常数罚项会让这个函数退化成
-    广度优先(ls20 L6 实测: h 在 11~24 之间横跳, 2 万次扩展未解; 换成真实
-    剩余步数后 6 秒解出)。
+    `heuristic(node, obs) -> float` 必须**有梯度**。常数罚项会让这个函数
+    退化成广度优先(ls20 L6 实测: h 在 11~24 之间横跳, 2 万次扩展未解;
+    换成真实剩余步数后 6 秒解出)。传 node 而不只是网格, 是为了让启发式能
+    隔着"提交动作"算距离(见 hypo.SubmitMatch)。
+
+    `exclude` 把提交类动作移出分支。提交即判定的游戏里, 提交动作只该在
+    每个节点试一次(启发式内部已经 peek 过), 放进分支只会让分支因子白涨。
 
     过关判定仍然只认引擎的 levels_completed —— 假设只用来决定搜索顺序,
     不用来判定是否通关。假设错了会慢, 但不会给出错解。
@@ -126,8 +131,10 @@ def best_first(game: Game, base: Obs, keys: list[int], click_id: int | None,
     g0 = np.array(base.grid)
     seen = {fingerprint(g0, mask)}
     counter = 0
+    root = game.fork()
+    skip = {repr(a) for a in (exclude or [])}
     heap: list[tuple[float, int, list[Action], Game, Obs]] = [
-        (heuristic(g0), 0, [], game.fork(), base)
+        (heuristic(root, base), 0, [], root, base)
     ]
     expanded = 0
     deepest = 0
@@ -151,7 +158,18 @@ def best_first(game: Game, base: Obs, keys: list[int], click_id: int | None,
         expanded += 1
         deepest = max(deepest, len(seq))
 
+        # 提交动作单独试一次: 启发式已经 peek 过它, 这里只是把命中兑现成解
+        for sub in (exclude or []):
+            probe_child = node.fork()
+            po = probe_child.act(sub)
+            if po.level > base.level:
+                return SearchResult(True, seq=seq + [sub], nodes=len(seen), expanded=expanded,
+                                    deepest=len(seq) + 1, frontier=len(heap),
+                                    seconds=time.time() - t0)
+
         for a in candidates(obs, keys, click_id):
+            if repr(a) in skip:
+                continue
             child = node.fork()
             o = child.act(a)
             if o.dead:
@@ -167,7 +185,7 @@ def best_first(game: Game, base: Obs, keys: list[int], click_id: int | None,
             seen.add(fp)
             counter += 1
             # f = g + h, g 用步数 —— 保证解的步数不会太离谱(步数就是分数)
-            heapq.heappush(heap, (len(seq) + 1 + heuristic(cg), counter,
+            heapq.heappush(heap, (len(seq) + 1 + heuristic(child, o), counter,
                                   seq + [a], child, o))
 
     return done("堆穷尽")

@@ -237,7 +237,16 @@ def fit(samples: list[Transition]) -> list[GoalHypothesis]:
             cands.append(ObjectReach(kb, a.center))
             break
 
-    # 3) ColorCount: 某色格数在 after 达到某个值且 before 不等
+    # 3) RegionMatch: 同尺寸的块两两配对 —— "把这块弄成那块的样子"
+    #    (此前定义了这一族却从没在这里枚举过, 属实现漏项)
+    boxes = [b.bbox for b in after_blobs]
+    for i, x in enumerate(boxes):
+        for y in boxes[i + 1:]:
+            if (x[1] - x[0], x[3] - x[2]) == (y[1] - y[0], y[3] - y[2]):
+                cands.append(RegionMatch(x, y))
+                cands.append(RegionMatch(y, x))
+
+    # 4) ColorCount: 某色格数在 after 达到某个值且 before 不等
     for c in np.unique(s.after):
         na, nb = int((s.after == c).sum()), int((s.before == c).sum())
         if na != nb:
@@ -257,13 +266,98 @@ def fit(samples: list[Transition]) -> list[GoalHypothesis]:
     return kept
 
 
+@dataclass
+class SubmitMatch(GoalHypothesis):
+    """假设: 存在一个"提交"动作, 提交后某个结果区要匹配某个题面区。
+
+    🚨这一族是 cd82 L3 的逃生舱产出(人工介入 #2), 但形式通用: 凡是"先调整
+    再提交、提交即判定"的游戏都落在这里 —— tr87 的答案区、ft09 的填色、
+    cd82 的印章盖印, 都是同一个形状。
+
+    它的价值在于**距离可以隔着提交动作算**: 在任意中间状态上 peek 一次提交
+    动作(克隆体, 不花真实步数), 拿盖印结果与题面比对, 差异格数就是距离。
+    这比"猜中间状态该长什么样"直接得多, 而且天然有梯度。
+
+    ⚠️它需要 game 句柄而不只是网格, 所以走 distance_on_node 而不是
+    distance —— 这是这一族与其它族的接口差别。
+    """
+
+    submit: object                       # Action, 提交动作
+    result: tuple[int, int, int, int]    # 提交后看哪块
+    target: tuple[int, int, int, int]    # 要匹配的题面块
+    name: str = "submit_match"
+
+    def _cmp(self, grid: np.ndarray, after: np.ndarray) -> float:
+        r0, r1, c0, c1 = self.result
+        t0, t1, u0, u1 = self.target
+        got = after[r0:r1 + 1, c0:c1 + 1]
+        want = grid[t0:t1 + 1, u0:u1 + 1]
+        if got.shape != want.shape:
+            return 999.0
+        # ⚠️别用 "!= 背景色" 判占位: cd82 的题面里"暗格"是色 0 而不是背景色 5,
+        # 那样两边会全判成"有内容", 差异恒为 0, 启发式在起点就归零。
+        # 逐格比色号, 差异格数天然有梯度。
+        return float((got != want).sum())
+
+    def distance_on_node(self, node, obs, base_level: int) -> float:
+        child = node.fork()
+        o = child.act(self.submit)
+        if o.level > base_level:
+            return 0.0
+        if o.dead:
+            return 999.0
+        return self._cmp(np.array(obs.grid), np.array(o.grid))
+
+    def is_goal(self, grid: np.ndarray) -> bool:
+        return False          # 判定只认引擎的 levels_completed
+
+    def distance(self, grid: np.ndarray) -> float:
+        return 999.0          # 本族必须用 distance_on_node
+
+    def describe(self) -> str:
+        return f"submit_match(按 {self.submit} 后 {self.result} 要匹配 {self.target})"
+
+
 FAMILIES = {
+    "submit_match": SubmitMatch,
     "object_to_object": ObjectToObject,
     "object_reach": ObjectReach,
     "region_match": RegionMatch,
     "color_count": ColorCount,
     "color_appear": ColorAppear,
 }
+
+
+def validate_heuristic(distance, solved_runs: list[list[np.ndarray]]) -> tuple[bool, str]:
+    """拿**已通关关卡的完整解**回放, 检验这个启发式到底指不指向目标。
+
+    🚨这道检查是 cd82 L3 用四百多秒算力换来的。当时我给 RegionMatch(下区,
+    题面) 当启发式, 它确实有梯度, beam 把它从 100 推到 22 —— 可回头拿 L1/L2
+    的解一放才发现: **h 在整个解过程中恒定不变(50/50/50/50), 通关那一步
+    反而上升到 90**。那个量跟通关毫无关系, 推它等于白烧算力。
+
+    **有梯度 ≠ 梯度指向目标。** 一个启发式在用于搜索之前, 必须先证明它在
+    已知正确的解上是下降的。这是免费的 —— 每通一关就多一条可回放的解。
+
+    判据(宽松, 只筛掉明显无关的):
+      - 解的最后一步之前, h 必须比起点低;
+      - 全程恒定不变 = 与目标无关, 直接否决。
+    `solved_runs` 每项是一关的逐帧网格序列(含起始帧, 不含通关后的新关卡帧)。
+    """
+    if not solved_runs:
+        return True, "无已通关样本可供检验, 未经验证"
+    verdicts = []
+    for i, frames in enumerate(solved_runs):
+        if len(frames) < 2:
+            continue
+        hs = [distance(f) for f in frames]
+        if len(set(hs)) == 1:
+            verdicts.append(f"L{i+1}: 全程恒为 {hs[0]:.0f} —— 与目标无关")
+        elif hs[-1] >= hs[0]:
+            verdicts.append(f"L{i+1}: 末值 {hs[-1]:.0f} 不低于起点 {hs[0]:.0f} —— 方向可疑")
+    if verdicts:
+        return False, "; ".join(verdicts)
+    return True, "在已通关样本上单调向好"
 
 
 def ask_human_report(probe_text: str, percept_text: str, search_text: str,

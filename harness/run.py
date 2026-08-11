@@ -20,7 +20,7 @@ import numpy as np
 from .env import Action, Game, Obs, action_space
 from .percept import analyze
 from .probe import ProbeReport, run_probe
-from .search import SearchResult, bfs_level_up
+from .search import SearchResult, best_first, bfs_level_up
 
 
 @dataclass
@@ -71,6 +71,7 @@ class RunLog:
 
 def solve_game(game_id: str, baselines: list[int] | None = None,
                max_nodes: int = 20000, max_seconds: float = 180.0,
+               bfs_seconds: float = 60.0, goal=None,
                ask_human=None, log_dir: str = "harness_runs") -> RunLog:
     """跑完一整个游戏。真机只走已验证的最短序列, 搜索全在克隆体上。"""
     game, obs = Game.make(game_id)
@@ -87,10 +88,21 @@ def solve_game(game_id: str, baselines: list[int] | None = None,
         rep = run_probe(game, obs, sp["kind"], sp["keys"], clicks)
 
         budget = rep.budget or 100
-        res = bfs_level_up(game, obs, sp["keys"],
-                           6 if sp["clicks"] else None, rep.mask,
+        click_id = 6 if sp["clicks"] else None
+
+        # 两段式:先让 BFS 限时跑 —— 它解出来的就是**最短**序列, 而步数就是
+        # 分数(RHAE 平方惩罚)。cd82 实测: 同一关 BFS 5 步 vs 启发式 12 步,
+        # RHAE 115% vs 21%, 差 94 个百分点。所以能最优就别用近似。
+        res = bfs_level_up(game, obs, sp["keys"], click_id, rep.mask,
                            max_depth=budget, max_nodes=max_nodes,
-                           max_seconds=max_seconds)
+                           max_seconds=min(max_seconds, bfs_seconds))
+
+        # BFS 交白卷才上启发式:它能到更深, 但给出的是近似解, 步数会差。
+        if not res.solved and goal is not None:
+            res = best_first(game, obs, sp["keys"], click_id,
+                             lambda n, ob: goal.distance(np.array(ob.grid)),
+                             rep.mask, max_depth=budget, max_nodes=max_nodes * 10,
+                             max_seconds=max_seconds)
 
         intervened = False
         if not res.solved and ask_human is not None:
