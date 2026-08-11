@@ -21,3 +21,6 @@ reference/
 *.log
 *.npy
 .DS_Store
+
+# harness 跑测产物
+harness_runs/
