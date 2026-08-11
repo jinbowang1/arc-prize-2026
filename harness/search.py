@@ -105,3 +105,69 @@ def bfs_level_up(game: Game, base: Obs, keys: list[int], click_id: int | None,
                     "(掩码掩掉了游戏区域, 所有子状态指纹相同被全部去重), "
                     "不要当成'这关无解'")
     return done("队列穷尽(状态空间已封闭)")
+
+
+def best_first(game: Game, base: Obs, keys: list[int], click_id: int | None,
+               heuristic, mask: np.ndarray | None = None,
+               max_depth: int = 100, max_nodes: int = 20000,
+               max_seconds: float = 120.0) -> SearchResult:
+    """用假设给出的距离做最佳优先搜索。
+
+    `heuristic(grid) -> float` 必须**有梯度**。常数罚项会让这个函数退化成
+    广度优先(ls20 L6 实测: h 在 11~24 之间横跳, 2 万次扩展未解; 换成真实
+    剩余步数后 6 秒解出)。
+
+    过关判定仍然只认引擎的 levels_completed —— 假设只用来决定搜索顺序,
+    不用来判定是否通关。假设错了会慢, 但不会给出错解。
+    """
+    import heapq
+
+    t0 = time.time()
+    g0 = np.array(base.grid)
+    seen = {fingerprint(g0, mask)}
+    counter = 0
+    heap: list[tuple[float, int, list[Action], Game, Obs]] = [
+        (heuristic(g0), 0, [], game.fork(), base)
+    ]
+    expanded = 0
+    deepest = 0
+    best_h = float("inf")
+
+    def done(reason: str) -> SearchResult:
+        return SearchResult(False, nodes=len(seen), expanded=expanded, deepest=deepest,
+                            frontier=len(heap), seconds=time.time() - t0,
+                            reason=f"{reason}, 最好的 h={best_h:.0f}")
+
+    while heap:
+        if time.time() - t0 > max_seconds:
+            return done(f"超时 {max_seconds}s")
+        if expanded >= max_nodes:
+            return done(f"超节点上限 {max_nodes}")
+
+        h, _, seq, node, obs = heapq.heappop(heap)
+        best_h = min(best_h, h)
+        if len(seq) >= max_depth:
+            continue
+        expanded += 1
+        deepest = max(deepest, len(seq))
+
+        for a in candidates(obs, keys, click_id):
+            child = node.fork()
+            o = child.act(a)
+            if o.dead:
+                continue
+            if o.level > base.level:
+                return SearchResult(True, seq=seq + [a], nodes=len(seen), expanded=expanded,
+                                    deepest=len(seq) + 1, frontier=len(heap),
+                                    seconds=time.time() - t0)
+            cg = np.array(o.grid)
+            fp = fingerprint(cg, mask)
+            if fp in seen:
+                continue
+            seen.add(fp)
+            counter += 1
+            # f = g + h, g 用步数 —— 保证解的步数不会太离谱(步数就是分数)
+            heapq.heappush(heap, (len(seq) + 1 + heuristic(cg), counter,
+                                  seq + [a], child, o))
+
+    return done("堆穷尽")
