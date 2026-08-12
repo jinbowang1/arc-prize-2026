@@ -181,6 +181,38 @@ class ColorCount(GoalHypothesis):
 
 
 @dataclass
+class ColorCountMatch(GoalHypothesis):
+    """假设: 色 A 的格数要等于色 B 的格数(填满/配对/消除类)。
+
+    🚨这一族是 r11l 盲测暴露的清单缺口。原先的 ColorCount 把目标值记成一个
+    **从上一关抄来的常数**("色 0 的格数要达到 74"), 换一关立刻变成噪声,
+    却还能通过梯度检验 —— 因为它在上一关上确实从 2 掉到了 0。三条这样的
+    常数型假设在 r11l L2 上白烧了九分钟。
+
+    **能跨关的假设, 参数必须由当前帧决定。** 把"达到 74"换成"等于另一个色
+    的格数", 同一条假设在每一关自动重新取值。这和 ObjectToObject 把绝对
+    坐标换成关系锚点是同一个道理, 也是 hypo 模块开头那句"目标假设必须是
+    关系型的"的第二次应验。
+    """
+
+    a: int
+    b: int
+    name: str = "color_count_match"
+
+    def _n(self, grid: np.ndarray, c: int) -> int:
+        return int((grid == c).sum())
+
+    def is_goal(self, grid: np.ndarray) -> bool:
+        return self._n(grid, self.a) == self._n(grid, self.b)
+
+    def distance(self, grid: np.ndarray) -> float:
+        return float(abs(self._n(grid, self.a) - self._n(grid, self.b)))
+
+    def describe(self) -> str:
+        return f"color_count_match(色 {self.a} 的格数要等于色 {self.b} 的格数)"
+
+
+@dataclass
 class ColorAppear(GoalHypothesis):
     """假设: 某个颜色出现(完成标记/亮灯)。
 
@@ -247,10 +279,18 @@ def fit(samples: list[Transition]) -> list[GoalHypothesis]:
                 cands.append(RegionMatch(y, x))
 
     # 4) ColorCount: 某色格数在 after 达到某个值且 before 不等
+    #    ⚠️目标值是常数, 跨关即失效, 只是兜底。真正能跨关的是下面的配对版。
     for c in np.unique(s.after):
         na, nb = int((s.after == c).sum()), int((s.before == c).sum())
         if na != nb:
             cands.append(ColorCount(int(c), na))
+
+    # 5) ColorCountMatch: 两个色的格数在 after 相等而在 before 不等 —— 关系型,
+    #    参数由当前帧自己取值, 换关不用改。
+    colors = [int(c) for c in np.unique(np.concatenate([s.before.ravel(), s.after.ravel()]))]
+    for i, ca in enumerate(colors):
+        for cb in colors[i + 1:]:
+            cands.append(ColorCountMatch(ca, cb))
 
     # 用全部样本过滤: 必须条条样本 after 成立 before 不成立
     kept = []
@@ -258,12 +298,32 @@ def fit(samples: list[Transition]) -> list[GoalHypothesis]:
         if all(h.is_goal(t.after) and not h.is_goal(t.before) for t in samples):
             kept.append(h)
 
+    # 去重: 同族同参数的假设会被重复生成(实测 r11l 上一口气冒出 21 条
+    # 一模一样的 object_reach)。重复项会挤占"只试前 N 条"的预算,
+    # 看起来像试了很多条, 其实反复在试同一条。
+    uniq, seen = [], set()
+    for h in kept:
+        k = h.describe()
+        if k not in seen:
+            seen.add(k)
+            uniq.append(h)
+
     # 排序: 关系型优先(唯一能跨关泛化的), 其次有梯度的, 无梯度的垫底
     def rank(h: GoalHypothesis) -> tuple:
-        return (not isinstance(h, ObjectToObject), isinstance(h, ColorAppear), h.name)
+        return (not is_relational(h), isinstance(h, ColorAppear), h.name)
 
-    kept.sort(key=rank)
-    return kept
+    uniq.sort(key=rank)
+    return uniq
+
+
+def is_relational(h: GoalHypothesis) -> bool:
+    """这条假设的参数是不是由当前帧决定的?
+
+    只有关系型假设能跨关用。绝对型(ObjectReach 的坐标、ColorCount 的目标值、
+    RegionMatch 的 bbox)带的是上一关的常数, 到了新关卡是噪声 —— 而且是能
+    通过梯度检验的噪声, 因为它在上一关上确实下降过。报告里必须标出来。
+    """
+    return isinstance(h, (ObjectToObject, ColorCountMatch))
 
 
 @dataclass
@@ -321,6 +381,7 @@ class SubmitMatch(GoalHypothesis):
 FAMILIES = {
     "submit_match": SubmitMatch,
     "object_to_object": ObjectToObject,
+    "color_count_match": ColorCountMatch,
     "object_reach": ObjectReach,
     "region_match": RegionMatch,
     "color_count": ColorCount,

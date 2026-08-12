@@ -74,6 +74,59 @@ def probe_volatile(game: Game, base: Obs, keys: list[int],
     return ~counter
 
 
+def probe_counters(game: Game, base: Obs, acts: list[Action],
+                   depth: int = 8, walks: int = 3) -> np.ndarray:
+    """跨步计数器检测: 找"只由走了几步决定、与走了什么无关"的格子。
+
+    🚨这一条是 r11l 盲测抓出来的缺口。probe_volatile 的判据是**单步**的
+    ("每个动作都改它、且都改成同一个值"), 抓得住每步跳动的步数显示,
+    抓不住**每走几步才掉一格的资源条**: r11l 列 0 是一根竖条, 顶端 (0,0)
+    每步都变所以被抓到, 而 (1,0)(2,0)(3,0) 逃掉了 —— 于是抽象模型层里
+    每个动作都带着 3 个"冲突格", 220 格一致的覆盖表被这 3 格一票否决。
+
+    判据是同一条原则往时间轴上的延伸: **变成什么与按了什么无关**。
+    走若干条**互不相同的等长路径**, 在每一步比对: 一个格子如果在所有路径的
+    同一步上都取相同的值, 却又随步数变化, 那它承载的信息只有"第几步"。
+
+    ⚠️误伤风险实测过一次(cd82 L2: 所有动作恰好都改同一片游戏区, 纯交集法
+    把整片区域当计数器掩掉, BFS 在深度 0 就报"状态空间已封闭")。所以这里
+    用**三条**尽量不同的路径, 并且要求该格确实随步数变过 —— 恒定不变的格子
+    不是计数器, 只是背景。掩掉了什么必须报出来给人看。
+
+    返回布尔掩码, True = 该格可信(非计数器)。
+    """
+    if not acts:
+        return np.ones(np.array(base.grid).shape, dtype=bool)
+
+    seqs: list[list[np.ndarray]] = []
+    for w in range(walks):
+        c = game.fork()
+        frames = []
+        for t in range(depth):
+            # 三条路径分别是: 正序轮换 / 逆序轮换 / 隔项跳 —— 尽量让同一步上
+            # 按的是不同的动作
+            idx = (t if w == 0 else -1 - t if w == 1 else t * 2 + 1) % len(acts)
+            o = c.act(acts[idx])
+            if o.dead or o.level > base.level:
+                break
+            frames.append(np.array(o.grid))
+        seqs.append(frames)
+
+    n = min(len(f) for f in seqs)
+    g0 = np.array(base.grid)
+    if n < 2:
+        return np.ones(g0.shape, dtype=bool)
+
+    agree = np.ones(g0.shape, dtype=bool)     # 每一步上三条路径都一致
+    varies = np.zeros(g0.shape, dtype=bool)   # 相对开局变过
+    for t in range(n):
+        ref = seqs[0][t]
+        for other in seqs[1:]:
+            agree &= (ref == other[t])
+        varies |= (ref != g0)
+    return ~(agree & varies)
+
+
 def diff_cells(a: np.ndarray, b: np.ndarray, mask: np.ndarray | None = None) -> int:
     d = a != b
     if mask is not None:
@@ -243,20 +296,35 @@ def probe_cycle(game: Game, act: Action, mask: np.ndarray | None = None,
     return None
 
 
-def probe_inverses(game: Game, base: Obs, keys: list[int],
-                   mask: np.ndarray | None = None) -> list[tuple[str, str]]:
-    """找互逆动作对: 走 a 再走 b 回到原状态。"""
+def probe_inverses(game: Game, base: Obs, acts: list[Action],
+                   mask: np.ndarray | None = None, max_pairs: int = 400) -> list[tuple[str, str]]:
+    """找互逆动作对: 走 a 再走 b 回到原状态。
+
+    ⚠️参数是 **Action 而不是动作 id**。早先按 id 传, 到了纯 click 游戏上
+    (available_actions=[6], 有效动作全是带坐标的点击)就会退化成
+    `Action.key(6)` —— 一个没有坐标载荷的"点击", 探的根本不是同一件事。
+    动作空间不能靠 id 反推, 只能拿动作对象本身走。
+
+    点击游戏两两组合是 O(n²), 用 max_pairs 兜底; 超了就只测前若干个,
+    并且这个截断必须被上层看见(截断的清单不报出来就是在骗自己)。
+    """
     g0 = _fp(grid(base), mask)
-    pairs = []
-    for i in keys:
-        for j in keys:
-            if i == j:
+    pairs: list[tuple[str, str]] = []
+    tried = 0
+    for a in acts:
+        for b in acts:
+            if a == b:
                 continue
+            if tried >= max_pairs:
+                return pairs
+            tried += 1
             c = game.fork()
-            c.act(Action.key(i))
-            o = c.act(Action.key(j))
+            c.act(a)
+            o = c.act(b)
+            if o.dead:
+                continue
             if _fp(grid(o), mask) == g0:
-                pair = tuple(sorted((f"A{i}", f"A{j}")))
+                pair = tuple(sorted((repr(a), repr(b))))
                 if pair not in pairs:
                     pairs.append(pair)
     return pairs
@@ -304,7 +372,12 @@ def run_probe(game: Game, base: Obs, kind: str, keys: list[int],
     """
     rep = ProbeReport(game_id=game.game_id, level=base.level, kind=kind)
 
-    mask = probe_volatile(game, base, keys, clicks)
+    # 两道计数器检测: 单步的抓每步跳动的显示, 跨步的抓每几步掉一格的资源条。
+    # 少任何一道都会有计数器漏进状态指纹和抽象模型。
+    single = probe_volatile(game, base, keys, clicks)
+    pool = [Action.key(i) for i in keys] + list(clicks or [])
+    stepwise = probe_counters(game, base, pool)
+    mask = single & stepwise
     rep.mask = mask
     rep.volatile_cells = [(int(r), int(c)) for r, c in np.argwhere(~mask)]
 
@@ -321,7 +394,7 @@ def run_probe(game: Game, base: Obs, kind: str, keys: list[int],
         n = probe_cycle(game, a, mask)
         if n:
             rep.cycles[repr(a)] = n
-    rep.inverse_pairs = probe_inverses(game, base, [a.id for a in live], mask)
+    rep.inverse_pairs = probe_inverses(game, base, live, mask)
     for a in live:
         m = probe_animation(game, a)
         if m:

@@ -249,8 +249,17 @@ def discover_entities(peek, base_grid: np.ndarray, actions: list,
     不问"这个动作有什么用", 只问"画面上有几处互不相干的地方在动"。
 
     `peek(action) -> grid` 由调用方提供(通常是 game.peek 的包装)。
+
+    🚨**判据是"总是一起变的格子属于同一个实体", 不是"变化区有重叠就合并"。**
+    第一版按重叠合并, 在 r11l(纯 click, 每次点击重绘一大片)上实测直接崩:
+    所有动作的变化区两两重叠, 一路并到底, 报出**一个 396 格、bbox 覆盖
+    整屏的"实体"** —— 等于什么都没发现, 而且没发现得很像发现了。
+
+    正解是给每个格子算一个**签名 = 会改动它的动作集合**, 签名相同的格子
+    归为一个实体。大面板归 A5、小面板归 A3/A4, 签名不同就分得开, 哪怕
+    它们的变化区在别处有交叠。
     """
-    regions: list[tuple[set[tuple[int, int]], list[str]]] = []
+    sig: dict[tuple[int, int], set[str]] = {}
     for a in actions:
         g1 = np.asarray(peek(a))
         if g1.shape != base_grid.shape:
@@ -258,23 +267,21 @@ def discover_entities(peek, base_grid: np.ndarray, actions: list,
         changed = np.argwhere(g1 != base_grid)
         if len(changed) < min_cells:
             continue
-        cells = {(int(r), int(c)) for r, c in changed}
-        merged = False
-        for i, (known, movers) in enumerate(regions):
-            # 有重叠 = 同一个东西在动;完全不相干 = 另一个实体
-            if known & cells:
-                regions[i] = (known | cells, movers + [repr(a)])
-                merged = True
-                break
-        if not merged:
-            regions.append((cells, [repr(a)]))
+        for r, c in changed:
+            sig.setdefault((int(r), int(c)), set()).add(repr(a))
+
+    groups: dict[frozenset, list[tuple[int, int]]] = {}
+    for cell, movers in sig.items():
+        groups.setdefault(frozenset(movers), []).append(cell)
 
     out = []
-    for cells, movers in regions:
+    for movers, cells in groups.items():
+        if len(cells) < min_cells:
+            continue
         rs = [r for r, _ in cells]
         cs = [c for _, c in cells]
         out.append(Entity(bbox=(min(rs), max(rs), min(cs), max(cs)),
-                          movers=movers, cells=len(cells)))
+                          movers=sorted(movers), cells=len(cells)))
     out.sort(key=lambda e: -e.cells)
     return out
 

@@ -63,6 +63,7 @@ class Obs:
     win_levels: int
     state: str
     layers: int = 1
+    actions: tuple[int, ...] = ()   # 引擎自报的可用动作 id, 别在上层写死
 
     @property
     def done(self) -> bool:
@@ -80,7 +81,18 @@ def _obs(frame) -> Obs:
         win_levels=frame.win_levels,
         state=frame.state.name,
         layers=len(frame.frame),
+        actions=tuple(sorted(_action_id(a) for a in (frame.available_actions or []))),
     )
+
+
+def _action_id(a) -> int:
+    """available_actions 里可能是 GameAction 枚举也可能已是 int。"""
+    if isinstance(a, int):
+        return a
+    v = getattr(a, "value", None)
+    if isinstance(v, int):
+        return v
+    return int(str(getattr(a, "name", a)).replace("ACTION", ""))
 
 
 class Game:
