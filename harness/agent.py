@@ -41,7 +41,7 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-from . import carryover, closedloop, factored, hypo, model
+from . import carryover, closedloop, factored, hypo, layers, model
 from .carryover import Knowledge, LevelBrief
 from .env import Action, Game, Obs, action_space
 from .percept import analyze, click_targets, discover_entities
@@ -134,6 +134,7 @@ def solve_level(game: Game, obs: Obs, know: Knowledge, prev_scene,
     """跑完一关。返回 (结果, 过程记录, 这一关学到的东西)。"""
     lv = obs.level
     tr = LevelTrace(level=lv)
+    killed: set[str] = set()
     scene = analyze(obs.grid)
     clicks = [Action.click(c, r) for (r, c) in scene.targets]
     acts = [Action.key(i) for i in sp["keys"]] + clicks
@@ -170,7 +171,7 @@ def solve_level(game: Game, obs: Obs, know: Knowledge, prev_scene,
     tr.plans.append("BFS(最短) " + res.text())
     if res.solved:
         tr.solved_by = "BFS 最短路"
-        return res, tr, {"scene": scene, "slots": know.slots}
+        return res, tr, {"scene": scene, "slots": know.slots, "killed": killed}
 
     # 3b) 槽结构: 继承的先过体检, 没有或不合格就重新分
     live = [p.action for p in rep.profiles if not p.is_noop and not p.kills]
@@ -180,13 +181,37 @@ def solve_level(game: Game, obs: Obs, know: Knowledge, prev_scene,
         why = "本关重新分槽"
     if sm is not None:
         tr.plans.append(f"{why} -> {sm.text()}")
+
+        # 3b-1) 分层渲染模型: 抽象层排序 + 真机判定。
+        # 模型不准也能用 —— 它只决定先试哪个候选, 过关只认引擎。
+        lm = layers.learn_layers(game, obs, sm, rep.mask)
+        tr.plans.append(lm.text())
+        if lm.usable_for_ranking:
+            for h, note, d0 in list(keep[:cfg["max_goals"]]):
+                lp = layers.plan_and_verify(game, obs, lm, sm, h.distance,
+                                            mask=rep.mask, top_k=cfg["top_k"],
+                                            max_seconds=cfg["layer_seconds"])
+                tr.plans.append(f"分层排序+真机验({h.describe()}) " + lp.text())
+                if lp.found:
+                    tr.solved_by = f"分层排序+真机验({h.describe()})"
+                    return SearchResult(True, seq=lp.seq, seconds=lp.seconds), tr, \
+                        {"scene": scene, "slots": sm, "killed": killed}
+                if lp.disproved:
+                    # 反例回流: 拉黑这条假设, 本关不再试, 也不带去下一关。
+                    # 硬否证比统计证据强 —— 别让一条已经被真机打死的假设
+                    # 继续排在候选第一位。
+                    killed.add(h.describe())
+                    keep = [k for k in keep if k[0].describe() != h.describe()]
+                    tr.brief.dropped.append(f"{h.describe()} — 🚨真机把 h 推到 0 仍未过关, 已证伪")
+
+        # 3b-2) 槽搜索: 允许多于"每槽一次"的组合(新动作不受约束)
         sr = factored.slot_search(game, obs, sm, mask=rep.mask, candidates=cands,
                                   max_seconds=cfg["slot_seconds"])
         tr.plans.append(sr.text())
         if sr.solved:
             tr.solved_by = "槽搜索"
             return SearchResult(True, seq=sr.seq, seconds=sr.seconds), tr, \
-                {"scene": scene, "slots": sm}
+                {"scene": scene, "slots": sm, "killed": killed}
 
     # 3c) 抽象模型 + ④闭环执行, 分歧就回流重采再规划
     models = model.learn(game, obs, acts, mask=rep.mask)
@@ -202,7 +227,7 @@ def solve_level(game: Game, obs: Obs, know: Knowledge, prev_scene,
             tr.divergences.append(loop.text())
             if loop.solved:
                 tr.solved_by = f"抽象规划+闭环({h.describe()})"
-                return SearchResult(True, seq=loop.seq), tr, {"scene": scene, "slots": sm}
+                return SearchResult(True, seq=loop.seq), tr, {"scene": scene, "slots": sm, "killed": killed}
             if loop.divergence is None:
                 break        # 计划走完没通关, 是目标假设不对, 换一条假设
             # ④→②: 在分歧现场重采, 然后重规划。**不是加大搜索。**
@@ -223,7 +248,7 @@ def solve_level(game: Game, obs: Obs, know: Knowledge, prev_scene,
             tr.solved_by = "真机最佳优先"
             break
 
-    return res, tr, {"scene": scene, "slots": sm}
+    return res, tr, {"scene": scene, "slots": sm, "killed": killed}
 
 
 DEFAULT_CFG = {
@@ -234,6 +259,8 @@ DEFAULT_CFG = {
     "best_first_seconds": 120.0,
     "max_goals": 2,
     "loop_rounds": 3,
+    "top_k": 60,
+    "layer_seconds": 60.0,
 }
 
 
@@ -269,7 +296,11 @@ def solve_game(game_id: str, baselines: list[int] | None = None,
         solved_runs.append(frames)
         if len(frames) >= 2:
             samples.append(hypo.Transition(before=frames[0], after=frames[-1], level=lv))
-        know.goals = learn_goals(samples, solved_runs) or know.goals
+        fresh = learn_goals(samples, solved_runs) or know.goals
+        dead = learned.get("killed") or set()
+        know.goals = [(h, n) for h, n in fresh if h.describe() not in dead]
+        if dead:
+            print(f"  已证伪并拉黑 {len(dead)} 条假设: {sorted(dead)}", flush=True)
         know.slots = learned.get("slots")
         know.colors |= set(int(x) for x in np.unique(np.array(obs.grid)))
         know.shapes |= carryover.shape_keys(np.array(obs.grid))
