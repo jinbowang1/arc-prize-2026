@@ -179,6 +179,7 @@ class ProbeReport:
     profiles: list[ActionProfile] = field(default_factory=list)
     budget: int | None = None
     budget_note: str = ""
+    budget_hard: bool = False   # 两种走法在同一步数上死 = 真·硬预算
     cycles: dict[str, int] = field(default_factory=dict)
     inverse_pairs: list[tuple[str, str]] = field(default_factory=list)
     animation_frames: dict[str, int] = field(default_factory=dict)
@@ -188,6 +189,20 @@ class ProbeReport:
     @property
     def effective_keys(self) -> list[Action]:
         return [p.action for p in self.profiles if not p.is_noop and not p.kills]
+
+    def depth_cap(self, default: int = 100) -> int:
+        """能拿来当搜索深度上限的数。
+
+        🚨**只有"硬预算"才配当上限。** 两种走法死在不同步数, 说明那是某条
+        特定走法的死法, 不是全局计步 —— 拿它当 max_depth 就是自己把手绑住。
+        r11l L2 实测: probe 报"轮换 20 步 GAME_OVER", 于是 BFS 被限到深度 20;
+        而实际走 25 步都没死, 那个 20 只是那条特定轮换路径的死法。
+        (同族的老账: cd82 曾把"探测途中过关"当预算耗尽, budget=1 -> BFS 只许
+        搜一层 -> 报"状态空间已封闭", 看着像无解, 其实是自缚。)
+        """
+        if self.budget_hard and self.budget:
+            return self.budget
+        return default
 
     def text(self) -> str:
         out = [f"[probe] {self.game_id} L{self.level} 动作空间={self.kind}"]
@@ -389,6 +404,7 @@ def run_probe(game: Game, base: Obs, kind: str, keys: list[int],
     live = [p.action for p in rep.profiles if not p.is_noop and not p.kills]
     rep.budget, rep.budget_note = probe_budget(
         game, live or [Action.key(keys[0])], start_level=base.level)
+    rep.budget_hard = bool(rep.budget) and "两种走法一致" in rep.budget_note
 
     for a in live:
         n = probe_cycle(game, a, mask)

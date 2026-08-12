@@ -172,7 +172,7 @@ def solve_game(game_id: str, baselines: list[int] | None = None,
         print(f"L{lv+1} 实体 {len(ents)} 个: " +
               " | ".join(e.line() for e in ents[:4]), flush=True)
 
-        budget = rep.budget or 100
+        budget = rep.depth_cap(100)
         click_id = 6 if sp["clicks"] else None
 
         # 两段式:先让 BFS 限时跑 —— 它解出来的就是**最短**序列, 而步数就是
