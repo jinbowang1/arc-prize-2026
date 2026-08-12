@@ -378,6 +378,84 @@ class SubmitMatch(GoalHypothesis):
         return f"submit_match(按 {self.submit} 后 {self.result} 要匹配 {self.target})"
 
 
+def propose_prompt_answer(grid: np.ndarray, mutable: np.ndarray,
+                          bg: int | None = None, max_pairs: int = 12
+                          ) -> list[RegionMatch]:
+    """从**因果结构**生成目标假设: 让"我能改的那块"变得和"我改不了的那块"一样。
+
+    🚨这一族是 2026-08-12 攻目标识别时补的, 而它其实是四局共同的形状:
+
+        cd82  答案区(10×10) 要等于 题面(10×10)
+        ft09  填色区 要等于 蓝图
+        tr87  答案区 要等于 字典给出的译文
+        ls20  钥匙的形状+颜色 要等于 锁上显示的
+
+    以前 RegionMatch 的实例是从**同尺寸 blob 两两配对**凑出来的 —— 那是
+    像素巧合, 一关能凑出几十条, 且参数是绝对坐标, 换关即废。
+
+    这里换成因果判据: **动作能改的区域是答案区, 动作改不了却有内容的区域
+    是题面。** 这个划分每关重算, 所以它天然跨关 —— 复用的是"目标 = 答案区
+    匹配题面"这条**族**, 参数由当前帧自己决定。
+
+    因果信息是免费的: `mutable` 就是感知层做实体发现时顺手得到的
+    "至少被某个动作改过的格子", 不额外花 fork。
+
+    ⚠️只提尺寸完全相同的配对。尺寸不同要做缩放/平移匹配, 那是另一回事,
+    没证据之前不做 —— 宁可漏, 不可错。
+    """
+    if bg is None:
+        bg = background(grid)
+    h, w = grid.shape
+
+    # 答案区候选: 可变格的连通块(按 4 邻域), 取其 bbox
+    ans: list[tuple[int, int, int, int]] = []
+    seen = np.zeros_like(mutable, dtype=bool)
+    for r0 in range(h):
+        for c0 in range(w):
+            if not mutable[r0, c0] or seen[r0, c0]:
+                continue
+            stack = [(r0, c0)]
+            seen[r0, c0] = True
+            cells = []
+            while stack:
+                r, c = stack.pop()
+                cells.append((r, c))
+                for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    rr, cc = r + dr, c + dc
+                    if 0 <= rr < h and 0 <= cc < w and mutable[rr, cc] and not seen[rr, cc]:
+                        seen[rr, cc] = True
+                        stack.append((rr, cc))
+            if len(cells) < 4:
+                continue
+            rs = [x for x, _ in cells]
+            cs = [y for _, y in cells]
+            ans.append((min(rs), max(rs), min(cs), max(cs)))
+    ans.sort(key=lambda b: -((b[1] - b[0] + 1) * (b[3] - b[2] + 1)))
+
+    out: list[RegionMatch] = []
+    for a in ans[:4]:
+        ah, aw = a[1] - a[0] + 1, a[3] - a[2] + 1
+        if ah < 2 or aw < 2 or ah * aw > grid.size // 2:
+            continue
+        # 题面候选: 同尺寸、有非背景内容、且**整块都改不动**的窗口
+        best: list[tuple[int, tuple[int, int, int, int]]] = []
+        for r in range(0, h - ah + 1):
+            for c in range(0, w - aw + 1):
+                if mutable[r:r + ah, c:c + aw].any():
+                    continue
+                win = grid[r:r + ah, c:c + aw]
+                content = int((win != bg).sum())
+                if content < 4:
+                    continue
+                best.append((content, (r, r + ah - 1, c, c + aw - 1)))
+        best.sort(key=lambda x: -x[0])
+        for _, t in best[:3]:
+            out.append(RegionMatch(a, t))
+            if len(out) >= max_pairs:
+                return out
+    return out
+
+
 FAMILIES = {
     "submit_match": SubmitMatch,
     "object_to_object": ObjectToObject,

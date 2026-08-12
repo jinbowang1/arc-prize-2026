@@ -229,10 +229,51 @@ class Entity:
     movers: list[str]                 # 哪些动作会改动它
     cells: int                        # 典型变化格数
     role: str = "unknown"             # 功能待定;未定也要留着
+    cells_set: tuple = ()             # 具体是哪些格(可变掩码要用)
 
     def line(self) -> str:
         return (f"实体 bbox={self.bbox} {self.cells}格 "
                 f"受 {len(self.movers)} 个动作影响 {self.movers[:5]} 角色={self.role}")
+
+
+def discover(peek, base_grid: np.ndarray, actions: list,
+             min_cells: int = 2) -> tuple[list[Entity], np.ndarray]:
+    """同时交出实体表和**可变格掩码**(至少被某个动作改过的格子)。
+
+    可变格掩码本来就是实体发现的中间产物, 以前算完就扔了。它是免费的因果
+    信息, 而且是目标识别的关键: **动作能改的是答案区, 改不了却有内容的是
+    题面**(见 hypo.propose_prompt_answer)。
+    """
+    ents = discover_entities(peek, base_grid, actions, min_cells)
+    m = np.zeros(base_grid.shape, dtype=bool)
+    for e in ents:
+        for (r, c) in e.cells_set:
+            m[r, c] = True
+    return ents, m
+
+
+def mutable_over_states(peeks: list, grids: list[np.ndarray],
+                        actions: list) -> np.ndarray:
+    """在**多个状态**上求可变格的并集。
+
+    🚨只在开局那一个状态上采会低估可变区, 而且低估得很难看: cd82 的答案区
+    是 10×10, 只从开局采出来是 **5×10** —— 因为 A5 那支笔在开局的面板位置
+    只盖得到上半区, 下半区要等面板移动过才够得着。答案区少一半, 题面配对
+    就再也对不上尺寸, 目标识别整条链就断在这里。
+
+    这是"采样只在一个状态上做"这个错的第三次变形(前两次: 动作候选在起始态
+    算一次、抽象模型只在开局采)。**凡是"这个游戏里 X 能不能被改变"这类
+    问题, 都必须在多个状态上问。**
+
+    `peeks[i](action) -> grid` 与 `grids[i]` 一一对应。
+    """
+    m = np.zeros(grids[0].shape, dtype=bool)
+    for peek, g in zip(peeks, grids):
+        for a in actions:
+            g1 = np.asarray(peek(a))
+            if g1.shape == g.shape:
+                m |= (g1 != g)
+    return m
 
 
 def discover_entities(peek, base_grid: np.ndarray, actions: list,
@@ -281,7 +322,8 @@ def discover_entities(peek, base_grid: np.ndarray, actions: list,
         rs = [r for r, _ in cells]
         cs = [c for _, c in cells]
         out.append(Entity(bbox=(min(rs), max(rs), min(cs), max(cs)),
-                          movers=sorted(movers), cells=len(cells)))
+                          movers=sorted(movers), cells=len(cells),
+                          cells_set=tuple(cells)))
     out.sort(key=lambda e: -e.cells)
     return out
 

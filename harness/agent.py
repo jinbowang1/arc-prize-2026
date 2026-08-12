@@ -44,7 +44,8 @@ import numpy as np
 from . import carryover, closedloop, factored, hypo, layers, model
 from .carryover import Knowledge, LevelBrief
 from .env import Action, Game, Obs, action_space
-from .percept import analyze, click_targets, discover_entities
+from .model import collect_states
+from .percept import analyze, click_targets, discover, mutable_over_states
 from .probe import run_probe
 from .run import LevelRecord, RunLog, _as_node_heuristic, learn_goals, replay_frames
 from .search import SearchResult, bfs_level_up, best_first
@@ -145,9 +146,17 @@ def solve_level(game: Game, obs: Obs, know: Knowledge, prev_scene,
                                prev_scene)
 
     rep = run_probe(game, obs, sp["kind"], sp["keys"], clicks)
-    ents = discover_entities(lambda a: np.array(game.peek(a).grid),
-                             np.array(obs.grid), acts)
+    ents, _ = discover(lambda a: np.array(game.peek(a).grid), np.array(obs.grid), acts)
     budget = rep.depth_cap(100)
+
+    # 可变格必须在**多个状态**上求并集。只在开局采会低估: cd82 的答案区
+    # 是 10×10, 只从开局采出来是 5×10(那支笔在开局的面板位置只够得着
+    # 上半区), 答案区少一半, 题面配对就再也对不上尺寸。
+    states = collect_states(game, obs, acts, cfg["mutable_states"])
+    mutable = mutable_over_states(
+        [lambda a, c=c: np.array(c.peek(a).grid) for c, _ in states],
+        [np.array(o.grid) for _, o in states], acts) & (
+        rep.mask if rep.mask is not None else True)
 
     # ② ReAct: 只探新东西
     tr.react = react_probe(obs, tr.brief, ents)
@@ -158,6 +167,21 @@ def solve_level(game: Game, obs: Obs, know: Knowledge, prev_scene,
                                      game.fork)
     tr.brief.inherited += [f"目标假设 {h.describe()}(h={d:.0f})" for h, _, d in keep[:3]]
     tr.brief.dropped += drop[:3]
+
+    # 因果目标假设: **动作能改的是答案区, 改不了却有内容的是题面**。
+    # 这一族排在继承的前面, 因为它的参数是从**这一关**的画面算出来的,
+    # 而继承来的参数是上一关的。cd82 实测: L1/L3 的第一条提议就是地面
+    # 真值 region_match((34,43,27,36) 要等于 (3,12,3,12)) —— 当年这个
+    # 结构是我手工看出来的。
+    causal = hypo.propose_prompt_answer(np.array(obs.grid), mutable, scene.bg)
+    fresh = [(h, "因果提议(答案区 vs 题面)", h.distance(np.array(obs.grid)))
+             for h in causal]
+    fresh = [x for x in fresh if 0 < x[2] < 999]
+    if fresh:
+        tr.react.append(f"因果目标假设 {len(fresh)} 条, 首选 {fresh[0][0].describe()}"
+                        f" 开局 h={fresh[0][2]:.0f}")
+    seen_desc = {h.describe() for h, _, _ in fresh}
+    keep = fresh + [k for k in keep if k[0].describe() not in seen_desc]
 
     # ③ Plan —— 由便宜到贵, 由最短到近似
     def cands(o: Obs) -> list[Action]:
@@ -261,6 +285,7 @@ DEFAULT_CFG = {
     "loop_rounds": 3,
     "top_k": 60,
     "layer_seconds": 60.0,
+    "mutable_states": 5,
 }
 
 
