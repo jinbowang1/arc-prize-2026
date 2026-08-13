@@ -1,0 +1,12 @@
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 16:02:09 | INFO | Created new scorecard: 0d3eb0ef-1a16-45ec-92b7-6362bad8f4f7
+2026-08-07 16:02:09 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+2026-08-07 16:02:09 | INFO | Successfully loaded game class Ls20 from environment_files/ls20/9607627b/ls20.py
+阶段1: 从 ((15, 19), 466, 12) 搜 (413,8)
+  阶段1 扩展5000 队列181 状态643 深度~22 50s
+  阶段1 扩展10000 队列225 状态1336 深度~29 105s
+  阶段1 扩展15000 队列330 状态2064 深度~34 161s
+  阶段1 扩展20000 队列536 状态2799 深度~37 216s
+  阶段1 扩展25000 队列612 状态3403 深度~40 273s
+候选1: 深度42 格(20, 54) 能量20 307s -> 进阶段2
+*** L7 通关! 共 59 步 (阶段2 扩展342次)

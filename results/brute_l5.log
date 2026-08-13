@@ -1,0 +1,5 @@
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-09 09:55:22 | INFO | Created new scorecard: b5fb902a-9b1a-4755-a7db-6883727f617f
+2026-08-09 09:55:22 | INFO | Found latest version of tr87: tr87-cd924810 (downloaded: 2026-08-07 09:21:35.807251+00:00)
+2026-08-09 09:55:22 | INFO | Successfully loaded game class Tr87 from environment_files/tr87/cd924810/tr87.py
+各框环长: [7, 7, 7, 7, 7, 7, 7, 7]

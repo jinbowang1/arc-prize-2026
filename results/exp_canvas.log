@@ -1,0 +1,11 @@
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-12 20:24:53 | INFO | Created new scorecard: ecff21b3-acb1-4a49-850b-be58593ee343
+2026-08-12 20:24:53 | INFO | Found latest version of cd82: cd82-fb555c5d (downloaded: 2026-08-07 09:21:09.678017+00:00)
+2026-08-12 20:24:53 | INFO | Successfully loaded game class Cd82 from environment_files/cd82/fb555c5d/cd82.py
+到 L3, level=2, 已知解 18 步, 人类 41 步
+目标: region_match((34, 43, 27, 36) 要等于 (3, 12, 3, 12))  开局差 100 格
+[canvas] 答案区 (34, 43, 27, 36) | 提交动作 5 个 ['A5', 'A6(34,19)', 'A6(31,19)', 'A6(31,21)'] | 调整动作 32 个
+[canvas] 画笔 63 支, 最大覆盖 [55, 55, 55, 55, 55], 本次采集能判 65/100 格, 构型 56 个完整 | 4s
+[canvas] 抽象画布解出 4 笔, 0.08s 
+[canvas] 第 4 笔: 没有任何一笔能缩小差异(当前差 12, 构型 889 个, 笔 61 支, 采集能判 0/100 格); 第1笔: 构型56 笔63 判65/100 -> 抽象层 4 笔到底, 先落第一笔; 第2笔: 构型1107 笔62 判30/100 -> 抽象层 3 笔到底, 先落第一笔; 第3笔: 构型343 笔61 判0/100 -> 抽象层 2 笔到底, 先落第一笔
+真机 13 步 -> level 2 | 总耗时 147s

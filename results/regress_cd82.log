@@ -1,0 +1,14 @@
+人类基准逐关 = [55, 8, 41, 21, 23, 23] (合计 171)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-12 17:30:08 | INFO | Created new scorecard: 36da45a4-5aed-49cb-8e5a-bda066d6dbf7
+2026-08-12 17:30:08 | INFO | Found latest version of cd82: cd82-fb555c5d (downloaded: 2026-08-07 09:21:09.678017+00:00)
+2026-08-12 17:30:08 | INFO | Successfully loaded game class Cd82 from environment_files/cd82/fb555c5d/cd82.py
+[run] cd82 动作空间=keyboard_click keys=[1, 2, 3, 4, 5] clicks=[6]
+L1 实体 8 个: 实体 bbox=(21, 37, 14, 37) 102格 受 1 个动作影响 ['A3'] 角色=unknown | 实体 bbox=(21, 37, 26, 49) 102格 受 1 个动作影响 ['A4'] 角色=unknown | 实体 bbox=(25, 31, 26, 37) 60格 受 4 个动作影响 ['A3', 'A4', 'A6(37,4)', 'A6(39,4)'] 角色=unknown | 实体 bbox=(34, 38, 27, 36) 50格 受 1 个动作影响 ['A5'] 角色=unknown
+L1: [search] 解出, 5 步 | 扩展 33 节点, 见过 67 状态, 最深 5 层, 队列剩 34, 用时 0.4s
+L1 回流: 样本 1 个 -> 通过梯度检验的假设 3 条; color_count(色 4 的格数达到 161)
+L2 实体 10 个: 实体 bbox=(21, 37, 14, 37) 102格 受 1 个动作影响 ['A3'] 角色=unknown | 实体 bbox=(21, 37, 26, 49) 102格 受 1 个动作影响 ['A4'] 角色=unknown | 实体 bbox=(25, 31, 26, 37) 60格 受 6 个动作影响 ['A3', 'A4', 'A6(34,4)', 'A6(36,4)', 'A6(46,4)'] 角色=unknown | 实体 bbox=(34, 38, 27, 36) 50格 受 1 个动作影响 ['A5'] 角色=unknown
+L2: [search] 解出, 6 步 | 扩展 229 节点, 见过 505 状态, 最深 6 层, 队列剩 276, 用时 3.5s
+L2 回流: 样本 2 个 -> 通过梯度检验的假设 3 条; color_count(色 4 的格数达到 161)
+L3 实体 15 个: 实体 bbox=(21, 37, 14, 37) 102格 受 1 个动作影响 ['A3'] 角色=unknown | 实体 bbox=(21, 37, 26, 49) 102格 受 1 个动作影响 ['A4'] 角色=unknown | 实体 bbox=(20, 31, 26, 37) 72格 受 14 个动作影响 ['A3', 'A4', 'A6(23,4)', 'A6(25,4)', 'A6(35,4)'] 角色=unknown | 实体 bbox=(18, 32, 25, 38) 42格 受 2 个动作影响 ['A3', 'A4'] 角色=unknown
+L3 试假设 color_count(色 4 的格数达到 161) [起始 h=83] [证据 100%; L1: 3->0 有下降 ⚠️绝对型, 参数是上一关的常数]

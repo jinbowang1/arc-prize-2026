@@ -1,0 +1,27 @@
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:40:56 | INFO | Created new scorecard: 583dae1e-861d-4e56-a3ae-f99fd789e640
+2026-08-07 15:40:56 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+2026-08-07 15:40:56 | INFO | Successfully loaded game class Ls20 from environment_files/ls20/9607627b/ls20.py
+L1: 开局锁显示 [359] vs 通关时形状 359 = XXX/..X/X.X  ✓ 一致
+L2: 开局锁显示 [335] vs 通关时形状 335 = XXX/X../X.X  ✓ 一致
+L3: 开局锁显示 [461] vs 通关时形状 461 = X.X/X../XXX  ✓ 一致
+L4: 开局锁显示 [359] vs 通关时形状 359 = XXX/..X/X.X  ✓ 一致
+L5: 开局锁显示 [413] vs 通关时形状 413 = X.X/XX./.XX  ✓ 一致
+L6: 开局锁显示 [413, 485] vs 通关时形状 485 = X.X/..X/XXX  ✓ 一致
+
+当前 L7 的锁显示(即待求目标):
+当前形状 466 = .X./.X./XXX
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:40:56 | INFO | Created new scorecard: a1842c2a-6c82-4daf-a582-3019ea2e85c1
+2026-08-07 15:40:56 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  机关 (40, 9): (466, 12) -> (466, 9)
+  机关 (40, 19): (466, 9) -> (493, 9)
+  锁 @(49,28) 色8 形状413=X.X/XX./.XX  [站在(40, 19)]
+  锁 @(50,28) 色8 形状19=XX./.X./...  [站在(35, 19)]
+  机关 (40, 19): (493, 9) -> (174, 9)
+
+扫到 22 格, 锁 2 个, 机关格 2 个
+  锁@(49, 28) 色8 形状413=X.X/XX./.XX
+  锁@(50, 28) 色8 形状19=XX./.X./...
+  机关@(40, 9) (466, 12) -> (466, 9)
+  机关@(40, 19) (493, 9) -> (174, 9)

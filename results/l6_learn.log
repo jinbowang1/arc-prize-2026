@@ -1,0 +1,466 @@
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:27 | INFO | Created new scorecard: 81aa1ac9-da09-4e55-8617-9fa79588c566
+2026-08-07 12:00:27 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+2026-08-07 12:00:27 | INFO | Successfully loaded game class Ls20 from environment_files/ls20/9607627b/ls20.py
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:28 | INFO | Created new scorecard: 9f832daa-0c45-437d-b0a9-15ac4efca998
+2026-08-07 12:00:28 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:29 | INFO | Created new scorecard: 4894d9e4-d0ca-4f6d-8ca9-7178d88037b3
+2026-08-07 12:00:29 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:30 | INFO | Created new scorecard: b81804dd-34a4-4074-b860-8d6817ca1398
+2026-08-07 12:00:30 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:31 | INFO | Created new scorecard: 28f4ace6-95e1-4033-914b-b2093e2a9292
+2026-08-07 12:00:31 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+used 1000: 589 transitions, 49 cells, 6 deaths, 16 counterexamples
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:31 | INFO | Created new scorecard: e4822f26-6b91-4f18-824a-56bc2b97b49b
+2026-08-07 12:00:31 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:32 | INFO | Created new scorecard: d62c1e11-e068-4f32-a895-0dba7cfbc5dd
+2026-08-07 12:00:32 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:33 | INFO | Created new scorecard: 36cd0602-8ba3-4328-a5b1-2fe4ed100a1e
+2026-08-07 12:00:33 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+used 1500: 830 transitions, 56 cells, 13 deaths, 40 counterexamples
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:34 | INFO | Created new scorecard: afe5c616-8a51-4131-a71c-a29e333df6c1
+2026-08-07 12:00:34 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:35 | INFO | Created new scorecard: 47320be3-78fe-4a36-b70d-3799320a8717
+2026-08-07 12:00:35 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:36 | INFO | Created new scorecard: b13118ac-7761-43be-a685-78de6fd8cc0e
+2026-08-07 12:00:36 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+used 2000: 1082 transitions, 59 cells, 18 deaths, 53 counterexamples
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:36 | INFO | Created new scorecard: 643a9721-ae03-4474-b1a7-c8207def269d
+2026-08-07 12:00:36 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:37 | INFO | Created new scorecard: 841a1110-9d2f-4625-841b-6fd02de23c88
+2026-08-07 12:00:37 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:38 | INFO | Created new scorecard: 1a02ba88-93f2-48c7-8f85-11ea1bf0a7f6
+2026-08-07 12:00:38 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:38 | INFO | Created new scorecard: 12376479-11db-447d-9933-30f15837a604
+2026-08-07 12:00:38 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:39 | INFO | Created new scorecard: 00b58763-ac57-4c99-9146-a8ba93fe0cf6
+2026-08-07 12:00:39 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:40 | INFO | Created new scorecard: b85c4c4d-7569-4201-b28e-564625d3036f
+2026-08-07 12:00:40 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:41 | INFO | Created new scorecard: c3dbe394-3a6c-40fa-8142-93e616797157
+2026-08-07 12:00:41 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:42 | INFO | Created new scorecard: 68366263-891e-42e2-b578-48281f16bb37
+2026-08-07 12:00:42 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:43 | INFO | Created new scorecard: 184365ef-b568-4c97-87f1-22183c80fd22
+2026-08-07 12:00:43 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+used 3500: 1756 transitions, 61 cells, 35 deaths, 107 counterexamples
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:44 | INFO | Created new scorecard: 29e569f2-6112-4a10-8859-955982befd84
+2026-08-07 12:00:44 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:45 | INFO | Created new scorecard: d40f940d-50f0-47c7-81cd-08fbbb69a3b6
+2026-08-07 12:00:45 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:46 | INFO | Created new scorecard: 26685d72-a330-4d77-bc4c-46a0673ce180
+2026-08-07 12:00:46 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+used 4000: 1988 transitions, 61 cells, 42 deaths, 135 counterexamples
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:46 | INFO | Created new scorecard: 2d3b4fb5-951a-4106-acb4-742060fea141
+2026-08-07 12:00:46 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:47 | INFO | Created new scorecard: 1b07d350-c18d-4528-a90b-c15dd172ee69
+2026-08-07 12:00:47 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+used 4500: 2194 transitions, 61 cells, 48 deaths, 171 counterexamples
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:48 | INFO | Created new scorecard: 2b4e2203-1f7f-4f4b-a0af-3cc731596b02
+2026-08-07 12:00:48 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:49 | INFO | Created new scorecard: d37a083b-9b5c-4906-b538-d4a832432f2a
+2026-08-07 12:00:49 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:50 | INFO | Created new scorecard: 1047386a-876b-4074-b09f-a01e37c79376
+2026-08-07 12:00:50 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:51 | INFO | Created new scorecard: dec370f7-7589-4578-9d3d-a69f90e4347e
+2026-08-07 12:00:51 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:52 | INFO | Created new scorecard: a075de3e-97d6-472e-b385-6cd66b129f08
+2026-08-07 12:00:52 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+used 5500: 2628 transitions, 61 cells, 58 deaths, 232 counterexamples
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:53 | INFO | Created new scorecard: 3ca990ba-f593-4393-9014-0d6d6de5f97e
+2026-08-07 12:00:53 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:54 | INFO | Created new scorecard: 15d7dc1a-3c56-45ae-a676-86f69aaf1d6c
+2026-08-07 12:00:54 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:55 | INFO | Created new scorecard: 1241b85e-5393-4015-9a8a-397eb0582283
+2026-08-07 12:00:55 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:55 | INFO | Created new scorecard: 58c85dbe-bcc5-4a9a-8835-7ff43b5e5e25
+2026-08-07 12:00:55 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:56 | INFO | Created new scorecard: 25a054ec-6bb1-472c-b495-7adcd3cdad7b
+2026-08-07 12:00:56 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:57 | INFO | Created new scorecard: 3aa9ea74-f6d5-402b-8caa-f2ae1291b5e8
+2026-08-07 12:00:57 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+used 6500: 2966 transitions, 63 cells, 69 deaths, 308 counterexamples
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:58 | INFO | Created new scorecard: cfcc8b0b-60e6-45c7-a639-684ec8454d4c
+2026-08-07 12:00:58 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:00:59 | INFO | Created new scorecard: c7116fc8-08d0-4dfd-b064-0bb55e61ca81
+2026-08-07 12:00:59 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:00 | INFO | Created new scorecard: 616ed4db-94df-4070-b868-3663f118a970
+2026-08-07 12:01:00 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:00 | INFO | Created new scorecard: 3e1f321b-e09c-45a8-841f-941ac284420d
+2026-08-07 12:01:00 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:02 | INFO | Created new scorecard: 615d6a80-7abe-41d9-8e14-87a21a734214
+2026-08-07 12:01:02 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:02 | INFO | Created new scorecard: 7a5151c6-1876-4431-9a9b-ccc694b35266
+2026-08-07 12:01:02 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+used 7500: 3367 transitions, 63 cells, 81 deaths, 347 counterexamples
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:03 | INFO | Created new scorecard: 76ab5a5d-1dfc-4b54-a46f-742fecf98892
+2026-08-07 12:01:03 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:04 | INFO | Created new scorecard: d3899715-ec53-4bf8-b2b6-13f1f603a571
+2026-08-07 12:01:04 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:05 | INFO | Created new scorecard: 86dbff1a-4547-439d-b8a3-9bba7a19cdc4
+2026-08-07 12:01:05 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:06 | INFO | Created new scorecard: 55eecc77-4493-4fd9-b4ec-cb94a5f9d35d
+2026-08-07 12:01:06 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:06 | INFO | Created new scorecard: 7a0addfd-735a-4c6c-9a95-0f94915d5c31
+2026-08-07 12:01:06 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+used 8500: 3741 transitions, 63 cells, 91 deaths, 391 counterexamples
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:08 | INFO | Created new scorecard: c6fc50af-9ad1-44bd-88c2-8a4e3d51be33
+2026-08-07 12:01:08 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:09 | INFO | Created new scorecard: ba2e12ed-6b51-40ae-8bf4-1b5c5a11457e
+2026-08-07 12:01:09 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:09 | INFO | Created new scorecard: c8f2abb0-e44c-4b7f-8ca2-186e897c5204
+2026-08-07 12:01:09 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:10 | INFO | Created new scorecard: b6d7b5f4-541e-4b68-b7c2-8babea502eaf
+2026-08-07 12:01:10 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:11 | INFO | Created new scorecard: f11f9540-9529-4b72-ae0f-0d256533886d
+2026-08-07 12:01:11 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:12 | INFO | Created new scorecard: 7b490db3-d416-424b-9892-400aabd42cd4
+2026-08-07 12:01:12 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:13 | INFO | Created new scorecard: 12684e0f-b818-4f0f-8a2b-a4ae8727cc59
+2026-08-07 12:01:13 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:13 | INFO | Created new scorecard: 3afb7279-f947-4e72-b9c1-1b2c6f5a3297
+2026-08-07 12:01:13 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:14 | INFO | Created new scorecard: 957a2f19-e889-4a37-a6a6-b0cd2f7a65d3
+2026-08-07 12:01:14 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:15 | INFO | Created new scorecard: 3507cfe5-4d58-418f-86a6-a34298973197
+2026-08-07 12:01:15 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:15 | INFO | Created new scorecard: e83b4ff7-c3a0-4a3f-bc47-48424ef8d888
+2026-08-07 12:01:15 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:16 | INFO | Created new scorecard: 91770a11-db7c-4f02-a545-db31aea5daf6
+2026-08-07 12:01:16 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:17 | INFO | Created new scorecard: 1db742a2-20a4-4407-b3d9-c15a58a69c3f
+2026-08-07 12:01:17 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:17 | INFO | Created new scorecard: 91d86e36-d443-479a-8254-fe8504b27e29
+2026-08-07 12:01:17 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+used 10500: 4409 transitions, 63 cells, 112 deaths, 486 counterexamples
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:19 | INFO | Created new scorecard: 2857a357-0d5f-4754-bd9f-bd973763d4d4
+2026-08-07 12:01:19 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:19 | INFO | Created new scorecard: 5eec3969-e4be-403e-a93e-04aa1621be4f
+2026-08-07 12:01:19 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:20 | INFO | Created new scorecard: 7875fffc-144e-4775-b36c-3ee7f64e86f4
+2026-08-07 12:01:20 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:21 | INFO | Created new scorecard: 5145887a-4a9f-41f1-9358-5b6fee562c79
+2026-08-07 12:01:21 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:22 | INFO | Created new scorecard: cac45b23-fc2f-458a-a903-27a461e7b78b
+2026-08-07 12:01:22 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:23 | INFO | Created new scorecard: eec61bc6-aa52-4863-b97c-4d96ec47d9bb
+2026-08-07 12:01:23 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:24 | INFO | Created new scorecard: 4c57dc5a-b791-4901-af9f-50e7f69bba56
+2026-08-07 12:01:24 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:24 | INFO | Created new scorecard: 7d2d07b6-1b8f-471c-9352-75c6f20103da
+2026-08-07 12:01:24 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+used 12000: 4946 transitions, 63 cells, 125 deaths, 547 counterexamples
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:25 | INFO | Created new scorecard: 2ce0cfe2-c6a8-4eb6-888e-c3925c3ef0c4
+2026-08-07 12:01:25 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:26 | INFO | Created new scorecard: db155d69-b50b-4ac6-a421-78c2ab19b9ce
+2026-08-07 12:01:26 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:27 | INFO | Created new scorecard: 6c114789-d275-49f2-acfc-a7c51b220841
+2026-08-07 12:01:27 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:28 | INFO | Created new scorecard: a7f582e2-2b98-4c82-88a1-dda77faad3be
+2026-08-07 12:01:28 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:28 | INFO | Created new scorecard: 10192a14-d42d-455a-aa28-fa99c1e26dac
+2026-08-07 12:01:28 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:29 | INFO | Created new scorecard: af182e17-55bb-49a8-9e15-b73332f56c7b
+2026-08-07 12:01:29 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:30 | INFO | Created new scorecard: b4834855-b596-4eba-8e44-4fa49f8814bc
+2026-08-07 12:01:30 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:30 | INFO | Created new scorecard: a3f3eeca-3f53-42fe-8dc4-7c0eee69eef1
+2026-08-07 12:01:30 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:31 | INFO | Created new scorecard: c454a703-d058-4f3d-b6fb-b9c91a205dba
+2026-08-07 12:01:31 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:32 | INFO | Created new scorecard: 57a6fd54-d0d2-4a07-8a46-95df61072ef2
+2026-08-07 12:01:32 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:33 | INFO | Created new scorecard: 6dc1b092-a125-4d8a-98e1-2879fa9a894d
+2026-08-07 12:01:33 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:34 | INFO | Created new scorecard: 3e001aa9-0e55-45b6-979d-9123b1aa6eea
+2026-08-07 12:01:34 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:35 | INFO | Created new scorecard: 0489f5b8-4286-419d-9eca-485ce23b6f7f
+2026-08-07 12:01:35 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:36 | INFO | Created new scorecard: 76b8674e-1f6f-4ddf-9fd1-9f0c6afe85c6
+2026-08-07 12:01:36 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:37 | INFO | Created new scorecard: 9a8b1e4a-2cf1-46ff-ae10-86ecda2d7635
+2026-08-07 12:01:37 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:38 | INFO | Created new scorecard: 5bdd017b-b74e-40a0-84d6-8e23f7a50a09
+2026-08-07 12:01:38 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+used 14500: 5769 transitions, 64 cells, 150 deaths, 659 counterexamples
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:38 | INFO | Created new scorecard: 7f717256-3f70-41e0-9955-66e68f23da98
+2026-08-07 12:01:38 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:39 | INFO | Created new scorecard: cad3512a-4250-41e4-b4d0-9d15cab547f4
+2026-08-07 12:01:39 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:40 | INFO | Created new scorecard: e1a318e8-11d8-476c-873d-faf8dffdd17a
+2026-08-07 12:01:40 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:42 | INFO | Created new scorecard: 75963b90-a110-4dcd-8393-0b46a54cdb8c
+2026-08-07 12:01:42 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:42 | INFO | Created new scorecard: 3326aa4a-0189-4e07-b181-b4ad272ca029
+2026-08-07 12:01:42 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:43 | INFO | Created new scorecard: 1511b79b-472b-4632-90ce-4dd763f6618e
+2026-08-07 12:01:43 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:44 | INFO | Created new scorecard: 1cf4813f-7ce1-4445-8ea4-8bbf6561d78e
+2026-08-07 12:01:44 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:45 | INFO | Created new scorecard: 723c212d-7fc0-431d-9793-fbc3e5895374
+2026-08-07 12:01:45 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:46 | INFO | Created new scorecard: 23e99f05-81ef-487b-9e51-60b27cd0bcc9
+2026-08-07 12:01:46 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:47 | INFO | Created new scorecard: 7f9e3d46-6195-4f0e-8ac2-64ee21c27bc3
+2026-08-07 12:01:47 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:47 | INFO | Created new scorecard: dcf98847-18b6-46fd-93a5-01319e066dda
+2026-08-07 12:01:47 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+used 16500: 6463 transitions, 64 cells, 170 deaths, 725 counterexamples
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:48 | INFO | Created new scorecard: 569fb3ee-ccfc-407e-ba28-adc3914ae0c0
+2026-08-07 12:01:48 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:49 | INFO | Created new scorecard: 1812f8ad-0340-4c84-a6b1-23050989b402
+2026-08-07 12:01:49 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:50 | INFO | Created new scorecard: 7ae231cd-821f-4545-99f5-99584a11ba90
+2026-08-07 12:01:50 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+used 17000: 6622 transitions, 64 cells, 175 deaths, 743 counterexamples
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:51 | INFO | Created new scorecard: 362750ca-a1d4-4389-8adb-0e3424f106fe
+2026-08-07 12:01:51 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:51 | INFO | Created new scorecard: c80fee22-8456-47eb-83bf-3427c7f46552
+2026-08-07 12:01:51 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:52 | INFO | Created new scorecard: 5ee5e21d-7ccf-49e2-9b43-a4332e9e6049
+2026-08-07 12:01:52 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:53 | INFO | Created new scorecard: fb3b7910-8344-4095-8624-7024939f6a79
+2026-08-07 12:01:53 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:54 | INFO | Created new scorecard: 98005b2e-c101-47dc-a8c7-96f3466ddfd8
+2026-08-07 12:01:54 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:55 | INFO | Created new scorecard: a270df53-22c7-4a67-9877-c7a84e113a59
+2026-08-07 12:01:55 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:55 | INFO | Created new scorecard: 57265f2f-0d52-4703-8361-4c53aa251582
+2026-08-07 12:01:55 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:56 | INFO | Created new scorecard: 2bb177c7-5139-40a5-a719-ded5a7c47054
+2026-08-07 12:01:56 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:57 | INFO | Created new scorecard: c41b1112-64d6-4e4a-9c9d-a95cd7d8aa63
+2026-08-07 12:01:57 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:58 | INFO | Created new scorecard: 21b4a1ac-87cd-4657-97a7-8ff99c0605f8
+2026-08-07 12:01:58 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+used 18500: 7097 transitions, 66 cells, 189 deaths, 797 counterexamples
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:01:59 | INFO | Created new scorecard: b9c4f836-cea7-4f23-993a-24931fb90ae2
+2026-08-07 12:01:59 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:00 | INFO | Created new scorecard: a3fcdae2-f480-4f17-823c-dc0a7a36c57a
+2026-08-07 12:02:00 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:01 | INFO | Created new scorecard: ea9b5275-d87d-438a-9f52-2be81a922e03
+2026-08-07 12:02:01 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:02 | INFO | Created new scorecard: e141b656-f5ab-4169-b0ad-082a0281955a
+2026-08-07 12:02:02 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:02 | INFO | Created new scorecard: c0daa48a-4d26-4a3d-ac8c-2084967bb7ef
+2026-08-07 12:02:02 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:04 | INFO | Created new scorecard: bc5302d0-7c5e-4678-aa84-c7c6830bda62
+2026-08-07 12:02:04 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:04 | INFO | Created new scorecard: c0a9c964-d29d-41b9-81b9-346fe123e525
+2026-08-07 12:02:04 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:05 | INFO | Created new scorecard: 72b868b0-d28c-4666-9350-6c386d3f9480
+2026-08-07 12:02:05 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:07 | INFO | Created new scorecard: 579c03f2-a8fb-4d18-b018-e1b1ffb483fa
+2026-08-07 12:02:07 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:07 | INFO | Created new scorecard: 3492a402-1124-4be7-be2a-9a1059449569
+2026-08-07 12:02:07 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:08 | INFO | Created new scorecard: a820b316-ca82-4fb4-98a3-cff9a7017cd1
+2026-08-07 12:02:08 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:09 | INFO | Created new scorecard: c12f7d70-d0ef-49fe-afdb-75784839067a
+2026-08-07 12:02:09 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:10 | INFO | Created new scorecard: ea0fdb4a-f28b-4cbf-90f0-88886dcefff3
+2026-08-07 12:02:10 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:10 | INFO | Created new scorecard: 62d7fb89-3264-4c54-99c4-ad2121cc7d07
+2026-08-07 12:02:10 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:11 | INFO | Created new scorecard: 7f6d05d3-6615-4580-99b3-6b68bf71fb00
+2026-08-07 12:02:11 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:12 | INFO | Created new scorecard: 5406d7bb-b939-4d4d-b974-1d304641e147
+2026-08-07 12:02:12 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:13 | INFO | Created new scorecard: e99e6845-062d-4c4b-8026-1b3eb29dfe7e
+2026-08-07 12:02:13 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:14 | INFO | Created new scorecard: ad3bc0a8-7bbe-44a6-a063-2c763665c116
+2026-08-07 12:02:14 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:14 | INFO | Created new scorecard: 545ca737-7f6a-4f3f-b4f7-d6a96873dca1
+2026-08-07 12:02:14 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+used 21500: 7958 transitions, 66 cells, 223 deaths, 912 counterexamples
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:15 | INFO | Created new scorecard: 315a1337-c7e1-4d10-83a6-54faeb14de42
+2026-08-07 12:02:15 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:16 | INFO | Created new scorecard: 0e336918-b5f9-404f-bbe2-ec715e6ce437
+2026-08-07 12:02:16 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:17 | INFO | Created new scorecard: ce4b914e-8427-44ce-b1f8-d673eb2cc6f7
+2026-08-07 12:02:17 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:17 | INFO | Created new scorecard: 1dd2cc39-0b59-4adf-8eff-95483d53aa62
+2026-08-07 12:02:17 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:18 | INFO | Created new scorecard: d2d63f9c-5695-4a87-88ef-f0b57c89a18f
+2026-08-07 12:02:18 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:19 | INFO | Created new scorecard: 1cffdbe2-7045-4fcc-82a1-43c5f821d916
+2026-08-07 12:02:19 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:20 | INFO | Created new scorecard: eec12b57-404e-4738-9659-020e23019511
+2026-08-07 12:02:20 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+used 22500: 8200 transitions, 66 cells, 233 deaths, 961 counterexamples
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:21 | INFO | Created new scorecard: 3bdae561-307a-49cb-a7d0-4e65a7871785
+2026-08-07 12:02:21 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:22 | INFO | Created new scorecard: 0ec59d75-e5ad-4278-8c68-4e2d88c2d413
+2026-08-07 12:02:22 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+used 23000: 8362 transitions, 66 cells, 237 deaths, 975 counterexamples
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:23 | INFO | Created new scorecard: 2225ba10-4149-4a73-ac14-73475b5176c3
+2026-08-07 12:02:23 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:24 | INFO | Created new scorecard: 868653fd-9a66-4f7c-adca-57689f942542
+2026-08-07 12:02:24 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:25 | INFO | Created new scorecard: 9d80fc40-840b-4d5e-9209-7941f275557c
+2026-08-07 12:02:25 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:26 | INFO | Created new scorecard: e093263a-1758-498c-a1a8-fcc46c43593e
+2026-08-07 12:02:26 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:27 | INFO | Created new scorecard: 48bc8fe8-917b-4aa0-baf6-a31efb5cfcb5
+2026-08-07 12:02:27 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:28 | INFO | Created new scorecard: 4eee8843-bcdf-4460-ab48-ce12fb87cfdf
+2026-08-07 12:02:28 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:28 | INFO | Created new scorecard: cf038f52-8159-475e-882e-3334b5404082
+2026-08-07 12:02:28 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:29 | INFO | Created new scorecard: d555c3f8-f774-4446-bb84-eb7c2744d05b
+2026-08-07 12:02:29 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:30 | INFO | Created new scorecard: af68bd7f-1fe5-4e7c-aee8-01dab9c34e71
+2026-08-07 12:02:30 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:31 | INFO | Created new scorecard: 719ee907-d739-4d7a-b26f-823265223a14
+2026-08-07 12:02:31 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 12:02:32 | INFO | Created new scorecard: 41b15344-19ad-49c9-888f-29a9ef52fd6a
+2026-08-07 12:02:32 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+DONE used=25001 deaths=253 transitions=8953 cells=66 counterexamples=1058 win=False
+cells: [(5, 9), (5, 14), (5, 19), (5, 24), (5, 29), (5, 34), (5, 39), (5, 54), (10, 9), (10, 14), (10, 19), (10, 24), (10, 29), (10, 34), (10, 39), (10, 49), (10, 54), (15, 9), (15, 39), (15, 44), (15, 49), (20, 9), (20, 19), (20, 24), (20, 29), (20, 39), (20, 44), (25, 9), (25, 14), (25, 19), (25, 24), (25, 29), (25, 34), (25, 39), (25, 49), (25, 54), (30, 9), (30, 19), (30, 24), (30, 29), (30, 39), (30, 54), (35, 9), (35, 39), (35, 54), (40, 9), (40, 14), (40, 19), (40, 24), (40, 29), (40, 34), (40, 39), (40, 54), (45, 9), (45, 14), (45, 19), (45, 24), (45, 29), (45, 34), (45, 39), (45, 54), (50, 14), (50, 19), (50, 24), (50, 29), (50, 34)]

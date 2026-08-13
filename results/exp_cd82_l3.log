@@ -1,0 +1,7 @@
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-12 19:20:00 | INFO | Created new scorecard: 1bdb5df0-fef5-43b5-bc09-d4822f73c61d
+2026-08-12 19:20:00 | INFO | Found latest version of cd82: cd82-fb555c5d (downloaded: 2026-08-07 09:21:09.678017+00:00)
+2026-08-12 19:20:00 | INFO | Successfully loaded game class Cd82 from environment_files/cd82/fb555c5d/cd82.py
+到 L3, level = 2
+目标: region_match((34, 43, 27, 36) 要等于 (3, 12, 3, 12)) 开局 h = 100.0
+[search] 未解出(超时 900s, 最好的 h=28) | 扩展 34259 节点, 见过 59184 状态, 最深 44 层, 队列剩 24925, 用时 900.0s

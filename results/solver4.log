@@ -1,0 +1,49 @@
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 11:17:37 | INFO | Created new scorecard: a8716a96-8e01-4615-813e-9d0508ace32f
+2026-08-07 11:17:37 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+2026-08-07 11:17:37 | INFO | Successfully loaded game class Ls20 from environment_files/ls20/9607627b/ls20.py
+L5 起始语义状态 ((40, 49), 410, 42, (30, 15))
+depth 1: frontier 3, seen 4, 0s
+depth 2: frontier 7, seen 11, 0s
+depth 3: frontier 10, seen 21, 0s
+depth 4: frontier 15, seen 36, 1s
+depth 5: frontier 19, seen 55, 1s
+depth 6: frontier 29, seen 84, 2s
+depth 7: frontier 34, seen 118, 3s
+depth 8: frontier 47, seen 165, 4s
+depth 9: frontier 56, seen 221, 6s
+depth 10: frontier 72, seen 293, 8s
+depth 11: frontier 84, seen 377, 11s
+depth 12: frontier 115, seen 492, 14s
+depth 13: frontier 144, seen 636, 18s
+depth 14: frontier 212, seen 848, 24s
+depth 15: frontier 251, seen 1099, 32s
+depth 16: frontier 352, seen 1451, 42s
+depth 17: frontier 405, seen 1856, 55s
+depth 18: frontier 503, seen 2359, 71s
+depth 19: frontier 546, seen 2905, 90s
+depth 20: frontier 652, seen 3557, 111s
+depth 21: frontier 728, seen 4285, 137s
+depth 22: frontier 415, seen 4700, 167s
+depth 23: frontier 483, seen 5183, 183s
+depth 24: frontier 634, seen 5817, 202s
+depth 25: frontier 739, seen 6556, 227s
+depth 26: frontier 967, seen 7523, 256s
+depth 27: frontier 1078, seen 8601, 294s
+depth 28: frontier 1053, seen 9654, 338s
+depth 29: frontier 1141, seen 10795, 379s
+depth 30: frontier 1353, seen 12148, 425s
+depth 31: frontier 1465, seen 13613, 479s
+depth 32: frontier 1614, seen 15227, 536s
+depth 33: frontier 1707, seen 16934, 601s
+depth 34: frontier 1880, seen 18814, 668s
+depth 35: frontier 1935, seen 20749, 743s
+depth 36: frontier 1405, seen 22154, 823s
+depth 37: frontier 1491, seen 23645, 879s
+depth 38: frontier 1544, seen 25189, 940s
+depth 39: frontier 1567, seen 26756, 1002s
+depth 40: frontier 1563, seen 28319, 1066s
+depth 41: frontier 1513, seen 29832, 1128s
+depth 42: frontier 1249, seen 31081, 1192s
+depth 43: frontier 1158, seen 32239, 1243s
+depth 44: frontier 902, seen 33141, 1291s

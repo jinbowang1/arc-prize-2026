@@ -1,0 +1,40 @@
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 14:21:52 | INFO | Created new scorecard: b0e831b8-8484-4c09-a7ce-ea3cea4c34cf
+2026-08-07 14:21:52 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+2026-08-07 14:21:52 | INFO | Successfully loaded game class Ls20 from environment_files/ls20/9607627b/ls20.py
+锁A前 ((30, 54), 413, 8, 34) (28步)
+穿锁A ((35, 54), 413, 8, 33)
+depth 1: frontier 3, seen 4, 0s
+depth 2: frontier 5, seen 9, 0s
+depth 3: frontier 6, seen 15, 0s
+depth 4: frontier 7, seen 22, 1s
+depth 5: frontier 10, seen 32, 1s
+depth 6: frontier 14, seen 46, 1s
+depth 7: frontier 19, seen 65, 2s
+depth 8: frontier 28, seen 93, 2s
+depth 9: frontier 45, seen 138, 3s
+depth 10: frontier 73, seen 211, 5s
+depth 11: frontier 106, seen 317, 8s
+depth 12: frontier 152, seen 469, 12s
+depth 13: frontier 205, seen 674, 18s
+depth 14: frontier 268, seen 942, 26s
+depth 15: frontier 341, seen 1283, 37s
+depth 16: frontier 426, seen 1709, 50s
+depth 17: frontier 541, seen 2250, 67s
+depth 18: frontier 713, seen 2963, 87s
+depth 19: frontier 922, seen 3885, 115s
+depth 20: frontier 1215, seen 5100, 151s
+depth 21: frontier 1560, seen 6660, 198s
+depth 22: frontier 2008, seen 8668, 259s
+depth 23: frontier 2496, seen 11164, 339s
+depth 24: frontier 3117, seen 14281, 439s
+depth 25: frontier 3797, seen 18078, 563s
+depth 26: frontier 4562, seen 22640, 715s
+depth 27: frontier 5379, seen 28019, 903s
+depth 28: frontier 6350, seen 34369, 1124s
+depth 29: frontier 7413, seen 41782, 1388s
+depth 30: frontier 8569, seen 50351, 1720s
+depth 31: frontier 9795, seen 60146, 2125s
+depth 32: frontier 11423, seen 71569, 2580s
+depth 33: frontier 7981, seen 79550, 3063s
+depth 34: frontier 9081, seen 88631, 3420s

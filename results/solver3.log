@@ -1,0 +1,66 @@
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 10:59:32 | INFO | Created new scorecard: 7615cd10-4f16-4ba1-9556-75a0b144b746
+2026-08-07 10:59:32 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+2026-08-07 10:59:32 | INFO | Successfully loaded game class Ls20 from environment_files/ls20/9607627b/ls20.py
+L5 起始语义状态 ((40, 49), 410, 42)
+depth 1: frontier 3, seen 4, 0s
+depth 2: frontier 6, seen 10, 0s
+depth 3: frontier 9, seen 19, 0s
+depth 4: frontier 12, seen 31, 1s
+depth 5: frontier 16, seen 47, 1s
+depth 6: frontier 23, seen 70, 2s
+depth 7: frontier 28, seen 98, 2s
+depth 8: frontier 34, seen 132, 3s
+depth 9: frontier 43, seen 175, 5s
+depth 10: frontier 56, seen 231, 6s
+depth 11: frontier 68, seen 299, 8s
+depth 12: frontier 89, seen 388, 11s
+depth 13: frontier 118, seen 506, 14s
+depth 14: frontier 164, seen 670, 19s
+depth 15: frontier 203, seen 873, 25s
+depth 16: frontier 260, seen 1133, 33s
+depth 17: frontier 312, seen 1445, 43s
+depth 18: frontier 374, seen 1819, 55s
+depth 19: frontier 416, seen 2235, 69s
+depth 20: frontier 477, seen 2712, 85s
+depth 21: frontier 553, seen 3265, 104s
+depth 22: frontier 319, seen 3584, 127s
+depth 23: frontier 387, seen 3971, 139s
+depth 24: frontier 507, seen 4478, 155s
+depth 25: frontier 612, seen 5090, 175s
+depth 26: frontier 741, seen 5831, 199s
+depth 27: frontier 853, seen 6684, 229s
+depth 28: frontier 772, seen 7456, 263s
+depth 29: frontier 861, seen 8317, 293s
+depth 30: frontier 969, seen 9286, 328s
+depth 31: frontier 1082, seen 10368, 366s
+depth 32: frontier 1147, seen 11515, 409s
+depth 33: frontier 1240, seen 12755, 455s
+depth 34: frontier 1341, seen 14096, 504s
+depth 35: frontier 1396, seen 15492, 558s
+depth 36: frontier 1015, seen 16507, 617s
+depth 37: frontier 1101, seen 17608, 660s
+depth 38: frontier 1122, seen 18730, 704s
+depth 39: frontier 1145, seen 19875, 749s
+depth 40: frontier 1125, seen 21000, 797s
+depth 41: frontier 1075, seen 22075, 843s
+depth 42: frontier 836, seen 22911, 887s
+depth 43: frontier 745, seen 23656, 922s
+depth 44: frontier 561, seen 24217, 952s
+depth 45: frontier 468, seen 24685, 976s
+depth 46: frontier 366, seen 25051, 995s
+depth 47: frontier 275, seen 25326, 1010s
+depth 48: frontier 163, seen 25489, 1021s
+depth 49: frontier 107, seen 25596, 1028s
+depth 50: frontier 50, seen 25646, 1032s
+depth 51: frontier 38, seen 25684, 1034s
+depth 52: frontier 15, seen 25699, 1035s
+depth 53: frontier 15, seen 25714, 1036s
+depth 54: frontier 6, seen 25720, 1036s
+depth 55: frontier 6, seen 25726, 1037s
+depth 56: frontier 3, seen 25729, 1037s
+depth 57: frontier 3, seen 25732, 1037s
+depth 58: frontier 1, seen 25733, 1037s
+depth 59: frontier 1, seen 25734, 1037s
+depth 60: frontier 0, seen 25734, 1037s
+搜索穷尽, 无解(在此去重粒度下)

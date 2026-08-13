@@ -1,0 +1,50 @@
+{
+  "game": "cd82",
+  "levels": [
+    {
+      "level": 0,
+      "solved": true,
+      "steps": 5,
+      "baseline": 55,
+      "seconds": 0.5762178897857666,
+      "search": "[search] 解出, 5 步 | 扩展 33 节点, 见过 67 状态, 最深 5 层, 队列剩 34, 用时 0.5s",
+      "intervened": false
+    },
+    {
+      "level": 1,
+      "solved": true,
+      "steps": 6,
+      "baseline": 8,
+      "seconds": 3.9802229404449463,
+      "search": "[search] 解出, 6 步 | 扩展 229 节点, 见过 505 状态, 最深 6 层, 队列剩 276, 用时 3.8s",
+      "intervened": false
+    },
+    {
+      "level": 2,
+      "solved": false,
+      "steps": 0,
+      "baseline": 41,
+      "seconds": 601.2896149158478,
+      "search": "[search] 未解出(超时 180.0s, 最好的 h=21) | 扩展 5703 节点, 见过 14724 状态, 最深 12 层, 队列剩 9021, 用时 180.0s",
+      "intervened": false
+    }
+  ],
+  "interventions": [],
+  "solution": [
+    [
+      "A3",
+      "A2",
+      "A2",
+      "A4",
+      "A5"
+    ],
+    [
+      "A5",
+      "A4",
+      "A2",
+      "A2",
+      "A6(48,4)",
+      "A5"
+    ]
+  ]
+}

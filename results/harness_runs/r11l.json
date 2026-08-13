@@ -1,0 +1,31 @@
+{
+  "game": "r11l",
+  "levels": [
+    {
+      "level": 0,
+      "solved": true,
+      "steps": 3,
+      "baseline": 22,
+      "seconds": 4.218131065368652,
+      "search": "[search] 解出, 3 步 | 扩展 65 节点, 见过 309 状态, 最深 3 层, 队列剩 244, 用时 3.1s",
+      "intervened": false
+    },
+    {
+      "level": 1,
+      "solved": false,
+      "steps": 0,
+      "baseline": 33,
+      "seconds": 608.9550919532776,
+      "search": "[search] 未解出(超时 180.0s, 最好的 h=3) | 扩展 1477 节点, 见过 25982 状态, 最深 6 层, 队列剩 24505, 用时 180.0s",
+      "intervened": false
+    }
+  ],
+  "interventions": [],
+  "solution": [
+    [
+      "A6(38,18)",
+      "A6(28,59)",
+      "A6(41,19)"
+    ]
+  ]
+}

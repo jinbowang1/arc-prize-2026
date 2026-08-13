@@ -1,0 +1,479 @@
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:37:47 | INFO | Created new scorecard: c6576f18-a693-401c-9f6d-e1d354f58127
+2026-08-07 15:37:47 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+2026-08-07 15:37:47 | INFO | Successfully loaded game class Ls20 from environment_files/ls20/9607627b/ls20.py
+  step12: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +26
+  step34: ENERGY PICKUP at ((15, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step52: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +34
+  step74: ENERGY PICKUP at ((5, 24), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:37:47 | INFO | Created new scorecard: 1dd1c123-3160-4fa4-9922-0d4c27405f3c
+2026-08-07 15:37:47 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step102: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +12
+  step124: ENERGY PICKUP at ((10, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step140: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +30
+  step162: ENERGY PICKUP at ((30, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step184: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:37:48 | INFO | Created new scorecard: 525fa4d7-d875-4ec0-a2f1-5266920fe456
+2026-08-07 15:37:48 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step212: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +12
+  step234: ENERGY PICKUP at ((15, 14), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step252: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +34
+  step274: ENERGY PICKUP at ((5, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:37:48 | INFO | Created new scorecard: 77e9e1d3-eab5-4d2e-86e7-5f4bfc06abff
+2026-08-07 15:37:48 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step317: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +42
+  step339: ENERGY PICKUP at ((10, 29), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step356: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +32
+  step378: ENERGY PICKUP at ((15, 9), (466, 9), 6) -> ((15, 19), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:37:49 | INFO | Created new scorecard: cc51994c-381c-4000-8e7b-7d70e6ad7771
+2026-08-07 15:37:49 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step417: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +34
+  step439: ENERGY PICKUP at ((10, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step450: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +20
+  step472: ENERGY PICKUP at ((25, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:37:50 | INFO | Created new scorecard: d271fc96-27a9-44b6-99c4-08e56380091b
+2026-08-07 15:37:50 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+step 500: 75 transitions, 8 states, 6 conflicts, 5 deaths
+  step515: ENERGY PICKUP at ((5, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step531: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +30
+  step553: ENERGY PICKUP at ((5, 29), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:37:50 | INFO | Created new scorecard: 9f8eb0e5-6140-4822-87f6-2e9b6ee7e712
+2026-08-07 15:37:50 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step578: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +6
+  step600: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step622: ENERGY PICKUP at ((5, 24), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step627: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +8
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:37:51 | INFO | Created new scorecard: 587f0f6e-a5d6-4246-bfe1-d8159edcf90f
+2026-08-07 15:37:51 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step662: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +26
+  step684: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step706: ENERGY PICKUP at ((5, 24), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step715: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +16
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:37:51 | INFO | Created new scorecard: ea0098bd-6326-4442-9924-5f8a0c8ef8ce
+2026-08-07 15:37:51 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step758: ENERGY PICKUP at ((15, 14), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step774: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +30
+  step796: ENERGY PICKUP at ((15, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:37:52 | INFO | Created new scorecard: 473531f3-8e63-4213-99d6-63d5a117e586
+2026-08-07 15:37:52 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step839: ENERGY PICKUP at ((10, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step861: ENERGY PICKUP at ((20, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step866: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +8
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:37:52 | INFO | Created new scorecard: 21d4ed5a-94aa-4f34-8621-a181096d5bf9
+2026-08-07 15:37:52 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step903: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +30
+  step916: ENERGY PICKUP at ((10, 39), (466, 12), 6) -> ((5, 39), (466, 12), 6), +24
+  step938: ENERGY PICKUP at ((15, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step956: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +34
+  step973: ENERGY PICKUP at ((10, 39), (466, 12), 6) -> ((5, 39), (466, 12), 6), +32
+  step985: ENERGY PICKUP at ((20, 34), (466, 12), 6) -> ((20, 29), (466, 12), 6), +22
+step 1000: 110 transitions, 8 states, 18 conflicts, 10 deaths
+  step1007: ENERGY PICKUP at ((5, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:37:53 | INFO | Created new scorecard: 6e780bd3-f0d2-499e-8691-bda3d9a741a0
+2026-08-07 15:37:53 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step1033: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +8
+  step1055: ENERGY PICKUP at ((10, 29), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step1077: ENERGY PICKUP at ((40, 14), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step1099: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:37:54 | INFO | Created new scorecard: e90e9475-60cb-4663-8236-7e3206d0d9a9
+2026-08-07 15:37:54 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step1142: ENERGY PICKUP at ((15, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step1147: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +8
+  step1169: ENERGY PICKUP at ((10, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step1175: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +10
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:37:54 | INFO | Created new scorecard: d37a17e1-c329-4f74-b675-2985e85a1e8b
+2026-08-07 15:37:54 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step1200: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +6
+  step1212: ENERGY PICKUP at ((10, 39), (466, 12), 6) -> ((5, 39), (466, 12), 6), +22
+  step1234: ENERGY PICKUP at ((5, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step1256: ENERGY PICKUP at ((5, 29), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step1277: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +40
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:37:55 | INFO | Created new scorecard: a60cde5e-938a-4429-8ea0-f211a914eef2
+2026-08-07 15:37:55 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step1314: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +30
+  step1336: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step1358: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +42
+  step1380: ENERGY PICKUP at ((15, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step1390: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +18
+  step1407: ENERGY PICKUP at ((10, 39), (466, 12), 6) -> ((5, 39), (466, 12), 6), +32
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:37:56 | INFO | Created new scorecard: 5541ee52-ac93-4cde-a9c8-9f5971406f53
+2026-08-07 15:37:56 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step1450: ENERGY PICKUP at ((10, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step1461: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +20
+  step1483: ENERGY PICKUP at ((15, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+step 1500: 120 transitions, 8 states, 32 conflicts, 15 deaths
+  step1501: ENERGY PICKUP at ((10, 39), (466, 12), 6) -> ((5, 39), (466, 12), 6), +34
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:37:56 | INFO | Created new scorecard: a01020d6-992d-471e-b72b-8cfacf4c3452
+2026-08-07 15:37:56 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step1529: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +12
+  step1546: ENERGY PICKUP at ((10, 39), (466, 12), 6) -> ((5, 39), (466, 12), 6), +32
+  step1568: ENERGY PICKUP at ((15, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step1588: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +38
+  step1610: ENERGY PICKUP at ((5, 29), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:37:57 | INFO | Created new scorecard: c1296f57-5330-4de8-937b-23ba4bea9d58
+2026-08-07 15:37:57 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step1638: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +12
+  step1660: ENERGY PICKUP at ((15, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step1682: ENERGY PICKUP at ((15, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step1697: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +28
+  step1715: ENERGY PICKUP at ((40, 14), (466, 9), 6) -> ((45, 14), (466, 9), 6), +34
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:37:58 | INFO | Created new scorecard: 7a199e66-461b-486e-b16a-70870a6f6dbf
+2026-08-07 15:37:58 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step1758: ENERGY PICKUP at ((10, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step1769: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +20
+  step1783: ENERGY PICKUP at ((10, 39), (466, 12), 6) -> ((5, 39), (466, 12), 6), +26
+  step1793: ENERGY PICKUP at ((20, 34), (466, 12), 6) -> ((20, 29), (466, 12), 6), +18
+  step1815: ENERGY PICKUP at ((40, 44), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step1832: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +32
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:37:59 | INFO | Created new scorecard: bc6aeeae-90b2-42fd-8ee0-821e2076f375
+2026-08-07 15:37:59 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step1863: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +18
+  step1885: ENERGY PICKUP at ((15, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step1907: ENERGY PICKUP at ((25, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step1912: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +8
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:37:59 | INFO | Created new scorecard: 9ac72159-41da-4b26-9b4b-f34836b34ca2
+2026-08-07 15:37:59 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step1949: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +30
+  step1971: ENERGY PICKUP at ((10, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step1987: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +30
+step 2000: 161 transitions, 9 states, 40 conflicts, 20 deaths
+  step2009: ENERGY PICKUP at ((5, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:00 | INFO | Created new scorecard: 681aa646-b03c-4a4a-8f15-0064068ef78d
+2026-08-07 15:38:00 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step2037: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +12
+  step2059: ENERGY PICKUP at ((25, 14), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step2081: ENERGY PICKUP at ((10, 14), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:00 | INFO | Created new scorecard: c959150c-cb7a-4065-817a-881946fbfc70
+2026-08-07 15:38:00 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step2117: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +28
+  step2139: ENERGY PICKUP at ((5, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step2157: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +34
+  step2179: ENERGY PICKUP at ((10, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:01 | INFO | Created new scorecard: c5cbd031-9302-4ef7-966a-67eaf86a226e
+2026-08-07 15:38:01 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step2222: ENERGY PICKUP at ((25, 14), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step2237: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +28
+  step2259: ENERGY PICKUP at ((5, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step2276: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +32
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:01 | INFO | Created new scorecard: 2cec1238-5652-425f-9c5b-7e746b2f2054
+2026-08-07 15:38:01 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step2312: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +28
+  step2332: ENERGY PICKUP at ((10, 39), (466, 12), 6) -> ((5, 39), (466, 12), 6), +38
+  step2354: ENERGY PICKUP at ((15, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step2372: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +34
+  step2394: ENERGY PICKUP at ((5, 29), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step2412: ENERGY PICKUP at ((40, 14), (466, 14), 6) -> ((45, 14), (466, 14), 6), +34
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:02 | INFO | Created new scorecard: e34ffd3e-6be2-4eac-b000-3b071703f0c5
+2026-08-07 15:38:02 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step2440: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +12
+  step2462: ENERGY PICKUP at ((5, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step2479: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +32
+step 2500: 189 transitions, 9 states, 52 conflicts, 25 deaths
+  step2501: ENERGY PICKUP at ((5, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:03 | INFO | Created new scorecard: ec5a5fe0-765c-4ebf-93ce-b679c328004e
+2026-08-07 15:38:03 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step2527: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +8
+  step2549: ENERGY PICKUP at ((5, 24), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step2562: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +24
+  step2584: ENERGY PICKUP at ((15, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step2592: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +14
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:03 | INFO | Created new scorecard: 441342d8-ef09-4b34-8472-00781d56581a
+2026-08-07 15:38:03 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step2621: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +14
+  step2643: ENERGY PICKUP at ((10, 29), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step2665: ENERGY PICKUP at ((35, 44), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step2682: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +32
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:04 | INFO | Created new scorecard: a8e5f431-80b0-4cbd-ac67-f5b5ac1fbd52
+2026-08-07 15:38:04 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step2715: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +22
+  step2737: ENERGY PICKUP at ((15, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step2741: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +6
+  step2763: ENERGY PICKUP at ((5, 24), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step2784: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +40
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:05 | INFO | Created new scorecard: 60d5cdbf-b4bf-4737-9327-1dce757b160f
+2026-08-07 15:38:05 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step2809: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +6
+  step2831: ENERGY PICKUP at ((15, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step2853: ENERGY PICKUP at ((10, 14), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:05 | INFO | Created new scorecard: 1a407b1a-a9bf-4efa-ad4c-c0200ec81ce3
+2026-08-07 15:38:05 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step2883: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +16
+  step2905: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step2927: ENERGY PICKUP at ((15, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step2932: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +8
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:06 | INFO | Created new scorecard: 21a74bd4-5152-4c97-9419-1dda3c61835e
+2026-08-07 15:38:06 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step2975: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +42
+  step2997: ENERGY PICKUP at ((40, 19), (410, 9), 6) -> ((15, 19), (466, 12), 6), +42
+step 3000: 202 transitions, 9 states, 63 conflicts, 31 deaths
+  step3019: ENERGY PICKUP at ((5, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:06 | INFO | Created new scorecard: 7151f9d1-746c-46f5-b5e2-9dc610c61f90
+2026-08-07 15:38:06 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step3048: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +14
+  step3070: ENERGY PICKUP at ((10, 14), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step3092: ENERGY PICKUP at ((10, 14), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step3113: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +40
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:07 | INFO | Created new scorecard: f21ae025-eb7d-4041-9286-b2252653b19c
+2026-08-07 15:38:07 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step3156: ENERGY PICKUP at ((15, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step3178: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +42
+  step3200: ENERGY PICKUP at ((5, 24), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step3206: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +10
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:08 | INFO | Created new scorecard: 9f776342-fc44-4f45-b359-a915a9334d81
+2026-08-07 15:38:08 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step3249: ENERGY PICKUP at ((10, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step3254: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +8
+  step3276: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:08 | INFO | Created new scorecard: 39b7b483-2f4a-43f2-b571-dd3aa1d74a50
+2026-08-07 15:38:08 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step3304: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +12
+  step3317: ENERGY PICKUP at ((10, 39), (466, 12), 6) -> ((5, 39), (466, 12), 6), +24
+  step3329: ENERGY PICKUP at ((20, 34), (466, 12), 6) -> ((20, 29), (466, 12), 6), +22
+  step3346: ENERGY PICKUP at ((10, 49), (466, 12), 6) -> ((5, 49), (466, 12), 6), +32
+  step3368: ENERGY PICKUP at ((35, 29), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step3383: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +28
+  step3405: ENERGY PICKUP at ((15, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step3409: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +6
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:09 | INFO | Created new scorecard: aa0b0aa7-b8c3-4230-a470-e2d8946f4458
+2026-08-07 15:38:09 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step3447: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +32
+  step3469: ENERGY PICKUP at ((5, 24), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step3484: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +28
+step 3500: 223 transitions, 9 states, 74 conflicts, 36 deaths
+  step3506: ENERGY PICKUP at ((10, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step3522: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +30
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:10 | INFO | Created new scorecard: 613ed0e8-f70a-45b9-b377-da4fea5f6385
+2026-08-07 15:38:10 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step3565: ENERGY PICKUP at ((10, 29), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step3587: ENERGY PICKUP at ((10, 14), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step3602: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +28
+  step3618: ENERGY PICKUP at ((10, 39), (466, 12), 6) -> ((5, 39), (466, 12), 6), +30
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:10 | INFO | Created new scorecard: a6d79fab-5667-4c43-8869-1ddeddcdc81e
+2026-08-07 15:38:10 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step3654: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +28
+  step3671: ENERGY PICKUP at ((10, 39), (466, 12), 6) -> ((5, 39), (466, 12), 6), +32
+  step3693: ENERGY PICKUP at ((10, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step3715: ENERGY PICKUP at ((5, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:11 | INFO | Created new scorecard: 691d5bea-94b9-4e1b-bc0d-9284eda1a78d
+2026-08-07 15:38:11 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step3740: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +6
+  step3760: ENERGY PICKUP at ((10, 39), (466, 12), 6) -> ((5, 39), (466, 12), 6), +38
+  step3782: ENERGY PICKUP at ((15, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step3790: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +14
+  step3804: ENERGY PICKUP at ((10, 39), (466, 12), 6) -> ((5, 39), (466, 12), 6), +26
+  step3826: ENERGY PICKUP at ((15, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step3842: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +30
+  step3859: ENERGY PICKUP at ((10, 39), (466, 12), 6) -> ((5, 39), (466, 12), 6), +32
+  step3869: ENERGY PICKUP at ((20, 34), (466, 12), 6) -> ((20, 29), (466, 12), 6), +18
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:12 | INFO | Created new scorecard: 9895dc9b-74d0-434c-b0fe-b6ee6ea936da
+2026-08-07 15:38:12 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step3912: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step3923: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +20
+  step3934: ENERGY PICKUP at ((40, 14), (466, 12), 6) -> ((45, 14), (466, 12), 6), +20
+  step3956: ENERGY PICKUP at ((25, 14), (466, 14), 6) -> ((15, 19), (466, 12), 6), +42
+  step3976: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +38
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:12 | INFO | Created new scorecard: 860425a2-9349-4b74-8417-42baeb0b7ea4
+2026-08-07 15:38:12 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+step 4000: 240 transitions, 9 states, 87 conflicts, 41 deaths
+  step4013: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +30
+  step4035: ENERGY PICKUP at ((20, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step4055: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +38
+  step4077: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:13 | INFO | Created new scorecard: 43a0a8fb-7a1e-4854-b3b1-74f64fadb983
+2026-08-07 15:38:13 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step4120: ENERGY PICKUP at ((15, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step4139: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +36
+  step4161: ENERGY PICKUP at ((10, 29), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:13 | INFO | Created new scorecard: 856ce57c-9507-45f9-af6b-0cbd9d4a3648
+2026-08-07 15:38:13 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step4191: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +16
+  step4213: ENERGY PICKUP at ((25, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step4218: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +8
+  step4240: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step4262: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:14 | INFO | Created new scorecard: 18f2b123-7c56-4c53-b54f-1df0a2beb0ca
+2026-08-07 15:38:14 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step4292: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +16
+  step4314: ENERGY PICKUP at ((10, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step4326: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +22
+  step4348: ENERGY PICKUP at ((5, 29), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:15 | INFO | Created new scorecard: e3332b54-a0b4-47d9-aecc-cba1282e9ff9
+2026-08-07 15:38:15 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step4390: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +40
+  step4412: ENERGY PICKUP at ((5, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step4434: ENERGY PICKUP at ((25, 14), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step4444: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +18
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:15 | INFO | Created new scorecard: 6033956b-1824-40f6-84ee-467c436f2054
+2026-08-07 15:38:15 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step4476: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +20
+  step4493: ENERGY PICKUP at ((10, 39), (466, 12), 6) -> ((5, 39), (466, 12), 6), +32
+step 4500: 240 transitions, 9 states, 98 conflicts, 46 deaths
+  step4515: ENERGY PICKUP at ((5, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step4537: ENERGY PICKUP at ((10, 14), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step4558: ENERGY PICKUP at ((10, 39), (466, 12), 6) -> ((5, 39), (466, 12), 6), +40
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:16 | INFO | Created new scorecard: 4961ac7f-1705-46e5-8e08-33a102bbb5d6
+2026-08-07 15:38:16 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step4594: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +28
+  step4616: ENERGY PICKUP at ((10, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step4621: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +8
+  step4643: ENERGY PICKUP at ((30, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:17 | INFO | Created new scorecard: 7da322ba-4b6b-4f61-907c-4f7a36c4bcf6
+2026-08-07 15:38:17 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step4669: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +8
+  step4691: ENERGY PICKUP at ((15, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step4702: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +20
+  step4724: ENERGY PICKUP at ((15, 14), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:17 | INFO | Created new scorecard: d0950553-fb0e-46dd-9850-07b69d85103c
+2026-08-07 15:38:17 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step4750: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +8
+  step4772: ENERGY PICKUP at ((5, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step4794: ENERGY PICKUP at ((25, 24), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step4810: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +30
+  step4827: ENERGY PICKUP at ((10, 39), (466, 12), 6) -> ((5, 39), (466, 12), 6), +32
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:18 | INFO | Created new scorecard: 4a8c5d2c-2be3-4fb9-b89d-db9f796889d4
+2026-08-07 15:38:18 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step4855: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +12
+  step4877: ENERGY PICKUP at ((5, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step4899: ENERGY PICKUP at ((10, 39), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step4909: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +18
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:18 | INFO | Created new scorecard: 7f1a8cea-5d1b-4832-9bab-62e156a051a6
+2026-08-07 15:38:18 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step4942: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +22
+  step4964: ENERGY PICKUP at ((30, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step4975: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +20
+  step4997: ENERGY PICKUP at ((10, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+step 5000: 243 transitions, 9 states, 115 conflicts, 51 deaths
+  step5008: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +20
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:19 | INFO | Created new scorecard: 1cbff605-7951-44b5-b13d-c2ac0396e572
+2026-08-07 15:38:19 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step5033: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +6
+  step5055: ENERGY PICKUP at ((15, 14), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step5066: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +20
+  step5088: ENERGY PICKUP at ((10, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step5093: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +8
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:19 | INFO | Created new scorecard: ec7d8c16-834e-433f-81fd-ee8af21dd5f7
+2026-08-07 15:38:19 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step5130: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +30
+  step5152: ENERGY PICKUP at ((15, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step5169: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +32
+  step5191: ENERGY PICKUP at ((20, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step5208: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +32
+  step5221: ENERGY PICKUP at ((10, 39), (466, 12), 6) -> ((5, 39), (466, 12), 6), +24
+  step5233: ENERGY PICKUP at ((25, 29), (466, 12), 6) -> ((20, 29), (466, 12), 6), +22
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:20 | INFO | Created new scorecard: e5b93baf-6542-4364-8a0b-6101a3912f27
+2026-08-07 15:38:20 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step5276: ENERGY PICKUP at ((10, 14), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step5287: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +20
+  step5309: ENERGY PICKUP at ((5, 24), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step5328: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +36
+  step5349: ENERGY PICKUP at ((40, 14), (493, 9), 6) -> ((45, 14), (493, 9), 6), +40
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:21 | INFO | Created new scorecard: 99c00fa1-20c8-446a-882f-28275ccfcb6c
+2026-08-07 15:38:21 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step5390: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +38
+  step5412: ENERGY PICKUP at ((15, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step5417: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +8
+  step5439: ENERGY PICKUP at ((20, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step5460: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +40
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:22 | INFO | Created new scorecard: e8b023dc-3010-4488-a220-e27e27278b50
+2026-08-07 15:38:22 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+step 5500: 278 transitions, 9 states, 126 conflicts, 56 deaths
+  step5500: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +36
+  step5522: ENERGY PICKUP at ((10, 14), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step5532: ENERGY PICKUP at ((10, 9), (466, 12), 6) -> ((5, 9), (466, 12), 6), +18
+  step5554: ENERGY PICKUP at ((15, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:22 | INFO | Created new scorecard: eecab7da-857e-428b-8cd6-1ec06890d756
+2026-08-07 15:38:22 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step5583: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +14
+  step5605: ENERGY PICKUP at ((15, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step5621: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +30
+  step5638: ENERGY PICKUP at ((10, 39), (466, 12), 6) -> ((5, 39), (466, 12), 6), +32
+  step5660: ENERGY PICKUP at ((15, 19), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:23 | INFO | Created new scorecard: 37e9a9c0-f925-4091-ab43-31e15483dd34
+2026-08-07 15:38:23 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step5700: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +36
+  step5717: ENERGY PICKUP at ((10, 39), (466, 12), 6) -> ((5, 39), (466, 12), 6), +32
+  step5739: ENERGY PICKUP at ((25, 54), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step5761: ENERGY PICKUP at ((15, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step5772: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +20
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:24 | INFO | Created new scorecard: 9ecb8d07-eaa7-46b1-9363-087f52012207
+2026-08-07 15:38:24 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step5815: ENERGY PICKUP at ((15, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step5834: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +36
+  step5856: ENERGY PICKUP at ((10, 14), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step5869: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +24
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:24 | INFO | Created new scorecard: 57806fd3-7148-48c9-b8c5-7d34550d3d8b
+2026-08-07 15:38:24 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step5912: ENERGY PICKUP at ((15, 14), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+  step5930: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +34
+  step5952: ENERGY PICKUP at ((30, 9), (466, 12), 6) -> ((15, 19), (466, 12), 6), +42
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:38:25 | INFO | Created new scorecard: 860c85ff-353a-4e38-b078-57c831dd0832
+2026-08-07 15:38:25 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+  step5987: ENERGY PICKUP at ((5, 14), (466, 12), 6) -> ((5, 9), (466, 12), 6), +26
+step 6000: 282 transitions, 9 states, 139 conflicts, 61 deaths
+DONE: 282 transitions over ~105 states, 139 conflicts, 61 deaths, 0 levelups
+  CONFLICT (((5, 24), (466, 12), 6), 2) seen ['((5, 24), (466, 12), 6)', -2, 'NOT_FINISHED'] now ['((15, 19), (466, 12), 6)', 42, 'NOT_FINISHED']
+  CONFLICT (((10, 19), (466, 12), 6), 4) seen ['((10, 19), (466, 12), 6)', -2, 'NOT_FINISHED'] now ['((15, 19), (466, 12), 6)', 42, 'NOT_FINISHED']
+  CONFLICT (((30, 9), (466, 12), 6), 1) seen ['((25, 9), (466, 12), 6)', -2, 'NOT_FINISHED'] now ['((15, 19), (466, 12), 6)', 42, 'NOT_FINISHED']
+  CONFLICT (((15, 14), (466, 12), 6), 2) seen ['((15, 14), (466, 12), 6)', -2, 'NOT_FINISHED'] now ['((15, 19), (466, 12), 6)', 42, 'NOT_FINISHED']
+  CONFLICT (((5, 9), (466, 12), 6), 3) seen ['((5, 9), (466, 12), 6)', -2, 'NOT_FINISHED'] now ['((15, 19), (466, 12), 6)', 42, 'NOT_FINISHED']

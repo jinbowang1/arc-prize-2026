@@ -1,0 +1,9 @@
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 15:49:25 | INFO | Created new scorecard: fe5b7b43-ad37-42bf-867f-62d9243a7695
+2026-08-07 15:49:25 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+2026-08-07 15:49:25 | INFO | Successfully loaded game class Ls20 from environment_files/ls20/9607627b/ls20.py
+扩展4000 队列159 状态549 深度~21 见过形状9 含413=False 40s
+扩展8000 队列213 状态1069 深度~27 见过形状9 含413=False 82s
+扩展12000 队列245 状态1616 深度~31 见过形状13 含413=False 125s
+扩展16000 队列329 状态2188 深度~35 见过形状20 含413=False 169s
+扩展20000 队列536 状态2799 深度~37 见过形状21 含413=False 211s

@@ -1,0 +1,9 @@
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-07 10:27:09 | INFO | Created new scorecard: 01fbb32a-3c8c-40ab-b36c-ba3957fd678d
+2026-08-07 10:27:09 | INFO | Found latest version of ls20: ls20-9607627b (downloaded: 2026-08-06 14:41:01.255108+00:00)
+2026-08-07 10:27:09 | INFO | Successfully loaded game class Ls20 from environment_files/ls20/9607627b/ls20.py
+prefix 140 actions -> level 4
+  depth 10, frontier 35, nodes 396, 186 n/s
+  depth 20, frontier 542, nodes 7600, 171 n/s
+  depth 30, frontier 3049, nodes 51508, 163 n/s
+  depth 40, frontier 8028, nodes 243324, 153 n/s

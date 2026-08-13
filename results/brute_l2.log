@@ -1,0 +1,40 @@
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-09 09:26:31 | INFO | Created new scorecard: 65b41643-07aa-4492-8e72-780468f121fc
+2026-08-09 09:26:31 | INFO | Found latest version of tr87: tr87-cd924810 (downloaded: 2026-08-07 09:21:35.807251+00:00)
+2026-08-09 09:26:31 | INFO | Successfully loaded game class Tr87 from environment_files/tr87/cd924810/tr87.py
+重放已有 1 关, levels=1
+— L2: 题面4 答案7位 人类基准58
+  符号1: 2 候选段, 段长 [1]
+  符号2: 8 候选段, 段长 [3]
+  符号3: 2 候选段, 段长 [2]
+  符号4: 2 候选段, 段长 [1]
+  1536 个组合全空 (0.0s)
+L2 未解, 停
+
+最终: levels=1/6 state=NOT_FINISHED
+各关步数: [14]
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-09 09:26:32 | INFO | Created new scorecard: 660ec23a-3ddd-403c-ae02-42ed5841b9f6
+2026-08-09 09:26:32 | INFO | Found latest version of tr87: tr87-cd924810 (downloaded: 2026-08-07 09:21:35.807251+00:00)
+L2: 7 位, DFS 穷举开始
+  clones=5000 acts=34980 21s path=[0, 1, 5, 3, 2, 6]
+  clones=10000 acts=69982 42s path=[0, 3, 3, 6, 6, 1]
+  clones=15000 acts=104977 63s path=[0, 5, 2, 3, 2, 2]
+  clones=20000 acts=139979 84s path=[1, 0, 0, 6, 5, 4]
+  clones=25000 acts=174981 105s path=[1, 1, 6, 3, 1, 6]
+  clones=30000 acts=209983 126s path=[1, 3, 4, 6, 5, 1]
+  clones=35000 acts=244978 147s path=[1, 5, 3, 3, 1, 2]
+  clones=40000 acts=279980 168s path=[2, 0, 1, 6, 4, 4]
+  clones=45000 acts=314975 189s path=[2, 2, 0, 3, 0, 5]
+  clones=50000 acts=349984 210s path=[2, 3, 5, 6, 4, 1]
+  clones=55000 acts=384979 231s path=[2, 5, 4, 3, 0, 2]
+  clones=60000 acts=419981 252s path=[3, 0, 2, 6, 3, 4]
+  clones=65000 acts=454983 273s path=[3, 2, 1, 2, 6, 6]
+  clones=70000 acts=489985 294s path=[3, 3, 6, 6, 3, 1]
+  clones=75000 acts=524987 315s path=[3, 5, 5, 2, 6, 3]
+  clones=80000 acts=559982 336s path=[4, 0, 3, 6, 2, 4]
+  clones=85000 acts=594984 357s path=[4, 2, 2, 2, 5, 6]
+  clones=90000 acts=629979 378s path=[4, 4, 0, 6, 2, 0]
+结果: [4, 5, 3, 2, 3, 3, 4] (clones=93784 acts=656476 393s)
+真机: levels=2 (25步)
+已存

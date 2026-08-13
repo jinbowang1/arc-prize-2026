@@ -1,0 +1,11 @@
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-12 17:54:46 | INFO | Created new scorecard: 876cd5c8-1300-42fb-9b8c-dfc7fec60035
+2026-08-12 17:54:46 | INFO | Found latest version of r11l: r11l-495a7899 (downloaded: 2026-08-07 09:20:41.476175+00:00)
+2026-08-12 17:54:46 | INFO | Successfully loaded game class R11l from environment_files/r11l/495a7899/r11l.py
+L1: BFS [search] 解出, 3 步 | 扩展 65 节点, 见过 309 状态, 最深 3 层, 队列剩 244, 用时 3.0s
+  -> 到 level 1, 本关 3 步
+L2: BFS 交白卷 -> 转分槽
+  [factored] 2 个槽 大小=[28, 8], 独立动作 0 个, 无效 12, 致死 0 | 覆盖率 60% | 组合数约 261
+  [factored] 槽搜索未解出(每槽各按一次的组合已穷尽) | 走过 187 个状态, 344 次 fork, h 最好 inf, 0.7s
+
+解: [['A6(38,18)', 'A6(28,59)', 'A6(41,19)']]

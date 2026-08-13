@@ -24,3 +24,6 @@ reference/
 
 # harness 跑测产物
 harness_runs/
+
+# 例外: results/ 是实验证据存档, 跑测日志在这里破例入库, 见 results/README.md
+!results/**
