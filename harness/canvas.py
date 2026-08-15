@@ -288,9 +288,48 @@ def _trajectory_floors(game: Game, obs: Obs, st: CanvasSetup, anchor: list[Actio
     return base, cur, floors
 
 
+class _ActionPool:
+    """BFS 用的动作表 —— **随状态长, 不是关卡常数**。
+
+    🚨坐标固定的点击在不同画面上点到的是不同东西, 所以"从这里能走到哪些构型"
+    根本不是一张静态的图。cd82 L3 实测出过一个逻辑上不可能的结果:
+    从当前构型 BFS 穷尽 56 个构型, 从 anchor 终点(就是从当前构型走过去的)
+    穷尽 190 个 —— 静态图上可达集只会变小, 不可能涨。原因就是 BFS 全程在用
+    关卡开局算出来的那份动作表。
+
+    新冒出来的动作当场做二分, 判据和 `classify` 一样: 改得动答案区的是提交。
+    ⚠️**当过提交就一直是提交**(跨状态取并集) —— 第一笔涂完再涂同样内容是
+    无变化, 提交动作会被重新归类成调整, 下一笔直接采不到画笔。
+    """
+
+    def __init__(self, st: CanvasSetup, box: tuple[int, int, int, int], acts_fn):
+        self.box = box
+        self.acts_fn = acts_fn
+        self.submit_keys = {repr(a) for a in st.submitters}
+        self.adjusters: dict[str, Action] = {repr(a): a for a in st.adjusters}
+        self.submitters: dict[str, Action] = {repr(a): a for a in st.submitters}
+
+    def at(self, node: Game, ob: Obs) -> list[Action]:
+        if self.acts_fn is not None:
+            before = _region(np.array(ob.grid), self.box)
+            for a in self.acts_fn(ob):
+                r = repr(a)
+                if r in self.submit_keys or r in self.adjusters:
+                    continue
+                o2 = node.peek(a)
+                if o2.dead or o2.level != ob.level:
+                    continue
+                if np.array_equal(_region(np.array(o2.grid), self.box), before):
+                    self.adjusters[r] = a
+                else:
+                    self.submit_keys.add(r)
+                    self.submitters[r] = a
+        return list(self.adjusters.values())
+
+
 def _sample(root: Game, robs: Obs, st: CanvasSetup, box: tuple[int, int, int, int],
             mask, floors: list[tuple[Game, np.ndarray]], prefix: list[Action],
-            max_configs: int, max_seconds: float, t0: float
+            max_configs: int, max_seconds: float, t0: float, pool: "_ActionPool | None" = None
             ) -> tuple[list[Brush], bool, int, int, int]:
     """从 root 的构型 BFS 遍历构型 × 提交动作, 用 floors 双底判出每支笔的覆盖区。"""
     fp0 = _config_fp(np.array(robs.grid), box, mask)
@@ -299,7 +338,8 @@ def _sample(root: Game, robs: Obs, st: CanvasSetup, box: tuple[int, int, int, in
     configs: list[tuple[list[Action], bytes]] = [([], fp0)]
     while q and len(configs) < max_configs and time.time() - t0 < max_seconds:
         seq, node, ob = q.popleft()
-        for a in st.adjusters:
+        adjs = pool.at(node, ob) if pool is not None else st.adjusters
+        for a in adjs:
             child = node.fork()
             o = child.act(a)
             if o.dead or o.level > robs.level:
@@ -311,6 +351,8 @@ def _sample(root: Game, robs: Obs, st: CanvasSetup, box: tuple[int, int, int, in
             configs.append((seq + [a], fp))
             q.append((seq + [a], child, o))
     complete = not q
+    # 提交动作也可能是 BFS 途中才冒出来的, 用最新的全集去采笔
+    submitters = list(pool.submitters.values()) if pool is not None else st.submitters
 
     # 哪些格子这次采集**有证据可判**: 底之间确实不同的格子。
     # 底都一样的格子, 这次采集给不出任何信息 —— 报出来的数字必须说清楚
@@ -336,7 +378,7 @@ def _sample(root: Game, robs: Obs, st: CanvasSetup, box: tuple[int, int, int, in
                 break
         if bad:
             continue
-        for sub in st.submitters:
+        for sub in submitters:
             regs = [_region(np.array(c.fork().act(sub).grid), box) for c in clones]
             same = np.ones_like(regs[0], dtype=bool)
             for r in regs[1:]:
@@ -376,7 +418,7 @@ def _sample(root: Game, robs: Obs, st: CanvasSetup, box: tuple[int, int, int, in
 def collect_brushes(game: Game, obs: Obs, st: CanvasSetup,
                     mask: np.ndarray | None = None,
                     max_configs: int = 400, max_seconds: float = 180.0,
-                    min_ratio: float = 0.9
+                    min_ratio: float = 0.9, acts_fn=None
                     ) -> tuple[list[Brush], bool, int, int, int]:
     """枚举可达构型 × 提交动作, 双底采出每支笔的真实覆盖区。
 
@@ -432,8 +474,10 @@ def collect_brushes(game: Game, obs: Obs, st: CanvasSetup,
             if add_floor(f, o):
                 break
 
+    # 动作池跨轮共用: BFS 途中新发现的点击目标, 后面几轮直接就能用上
+    pool = _ActionPool(st, box, acts_fn)
     brushes, complete, judged, total, ncfg, tb = _sample(
-        game, obs, st, box, mask, floors, [], max_configs, max_seconds, t0)
+        game, obs, st, box, mask, floors, [], max_configs, max_seconds, t0, pool)
     if judged >= total * min_ratio:
         return brushes, complete, judged, total, ncfg
 
@@ -482,7 +526,7 @@ def collect_brushes(game: Game, obs: Obs, st: CanvasSetup,
         if root is None or len(tfloors) < 2:
             continue
         alt_b, alt_complete, _j, _t, alt_ncfg, alt_tb = _sample(
-            root, robs, st, box, mask, tfloors, anchor, max_configs, max_seconds, t0)
+            root, robs, st, box, mask, tfloors, anchor, max_configs, max_seconds, t0, pool)
         ncfg_total = max(ncfg_total, alt_ncfg)
         for b in alt_b:
             key = (b.cfg, repr(b.submit))
@@ -645,9 +689,13 @@ def solve(game: Game, obs: Obs, st: CanvasSetup, target: np.ndarray,
 
 
 def _path_to_cfg(node: Game, obs: Obs, adjusters: list[Action], target_cfg: bytes,
-                 box: tuple[int, int, int, int], mask, max_nodes: int = 6000
-                 ) -> list[Action] | None:
-    """从当前构型 BFS 走到指定构型。搜的是构型图, 不是画布。"""
+                 box: tuple[int, int, int, int], mask, max_nodes: int = 6000,
+                 pool: "_ActionPool | None" = None) -> list[Action] | None:
+    """从当前构型 BFS 走到指定构型。搜的是构型图, 不是画布。
+
+    ⚠️动作表同样要随状态重算 —— 否则会报"走不到", 而实际上是从开局那份名单里
+    根本发不出通往那里的动作(cd82 L3 实测: 第 2 笔就报走不到)。
+    """
     cur_fp = _config_fp(np.array(obs.grid), box, mask)
     if cur_fp == target_cfg:
         return []
@@ -655,7 +703,7 @@ def _path_to_cfg(node: Game, obs: Obs, adjusters: list[Action], target_cfg: byte
     q: deque[tuple[list[Action], Game, Obs]] = deque([([], node.fork(), obs)])
     while q and len(seen) < max_nodes:
         seq, nd, ob = q.popleft()
-        for a in adjusters:
+        for a in (pool.at(nd, ob) if pool is not None else adjusters):
             ch = nd.fork()
             o = ch.act(a)
             if o.dead or o.level != obs.level:
@@ -671,7 +719,8 @@ def _path_to_cfg(node: Game, obs: Obs, adjusters: list[Action], target_cfg: byte
 
 
 def execute_cfg(game: Game, obs: Obs, st: CanvasSetup, plan: CanvasPlan,
-                mask: np.ndarray | None = None) -> tuple[list[Action], Obs, str]:
+                mask: np.ndarray | None = None, acts_fn=None
+                ) -> tuple[list[Action], Obs, str]:
     """把抽象方案翻译回真机: **每一笔都从当前构型重新找路**。
 
     🚨这是 `execute` 的 bug 所在。画笔库里每支笔的 `seq` 都是从"采集时那个根
@@ -690,8 +739,9 @@ def execute_cfg(game: Game, obs: Obs, st: CanvasSetup, plan: CanvasPlan,
     node = game.fork()
     cur = obs
     full: list[Action] = []
+    pool = _ActionPool(st, box, acts_fn)
     for k, b in enumerate(plan.brushes):
-        path = _path_to_cfg(node, cur, st.adjusters, b.cfg, box, mask)
+        path = _path_to_cfg(node, cur, st.adjusters, b.cfg, box, mask, pool=pool)
         if path is None:
             return full, cur, f"第 {k+1} 笔: 构型图上走不到这支笔的构型"
         for a in list(path) + [b.submit]:
@@ -739,6 +789,7 @@ def solve_committed(game: Game, obs: Obs, st: CanvasSetup, target: np.ndarray,
     log: list[str] = []
     plan: CanvasPlan | None = None
     idx = 0
+    pool = _ActionPool(st, box, acts_fn)
 
     for k in range(max_strokes):
         if time.time() - t0 > max_seconds:
@@ -761,7 +812,7 @@ def solve_committed(game: Game, obs: Obs, st: CanvasSetup, target: np.ndarray,
                                  adjusters=list(adjs.values()))
             brushes, complete, judged, total, ncfg = collect_brushes(
                 node, cur, st, mask, max_configs=max_configs,
-                max_seconds=collect_seconds)
+                max_seconds=collect_seconds, acts_fn=acts_fn)
             if not brushes:
                 return full, cur, f"第 {k+1} 笔: 采不到画笔; " + "; ".join(log)
             plan = plan_canvas(canvas, target, brushes)
@@ -779,7 +830,15 @@ def solve_committed(game: Game, obs: Obs, st: CanvasSetup, target: np.ndarray,
 
         pick = plan.brushes[idx]
         want = plan.cumulative[idx]
-        for a in list(pick.seq) + [pick.submit]:
+        # 🚨不能直接走 pick.seq —— 那条路是从**采集时那个根构型**出发的, 而现在
+        # 站在上一笔停下的构型上。改成在构型图上从当前位置找路; 找不到就地重规划
+        # (走不到本身就是一种分歧, 按闭环的规矩处理, 不当失败)。
+        path = _path_to_cfg(node, cur, st.adjusters, pick.cfg, box, mask, pool=pool)
+        if path is None:
+            log.append(f"[分歧] 第 {k+1} 笔: 从当前构型走不到这支笔 -> 重规划")
+            plan = None
+            continue
+        for a in list(path) + [pick.submit]:
             cur = node.act(a)
             full.append(a)
             if cur.dead:
