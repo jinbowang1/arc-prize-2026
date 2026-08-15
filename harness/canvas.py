@@ -54,22 +54,40 @@ def _config_fp(grid: np.ndarray, box: tuple[int, int, int, int],
     return (g * mask).tobytes() if mask is not None else g.tobytes()
 
 
+UNKNOWN = -1     # 抽象画布上的"不知道"。真实颜色是 0..15, 所以它和任何目标都不等。
+
+
 @dataclass
 class Brush:
     """一支笔: 走 seq 调整到某构型, 再按 submit, 会在答案区盖出 stroke。"""
 
     seq: list[Action]
     submit: Action
-    covered: np.ndarray          # 布尔, 哪些格真的被这一笔盖到
+    covered: np.ndarray          # 布尔, 哪些格**有证据**被这一笔盖到
     stroke: np.ndarray           # 盖成什么色(只在 covered 上有意义)
+    unknown: np.ndarray | None = None   # 这次采集**没有证据**的格
+    cfg: bytes = b""             # 终点构型指纹 = 这支笔的**身份**(跨轮合并靠它)
 
     @property
     def size(self) -> int:
         return int(self.covered.sum())
 
     def apply(self, canvas: np.ndarray) -> np.ndarray:
+        """涂一笔。**没有证据的格子涂成 UNKNOWN, 不是"保持原样"。**
+
+        🚨这一条是 cd82 L3 卡在差 12 格的最后一环。此前 `apply` 把"采集判不了"
+        默默当成了"这一笔不覆盖它" —— 于是抽象层能算出"第 4 笔涂完就全对",
+        而真机上根本没有这支笔(execute 逐笔搜: 第 4 笔找不到摆法)。
+        判不了的 50 格全都是被改变过的, 只是没有底能给出证据。
+
+        标成 UNKNOWN 之后, 抽象层要么找到一条**处处有证据**的方案, 要么诚实地
+        说未解出 —— 后者会把"该去补采集哪一块"直接指出来。
+        **"漏解可以, 错解不行"** 在抽象层的同一句话。
+        """
         out = canvas.copy()
         out[self.covered] = self.stroke[self.covered]
+        if self.unknown is not None:
+            out[self.unknown] = UNKNOWN
         return out
 
 
@@ -118,82 +136,179 @@ def _inverse_pairs(game: Game, obs: Obs, adjusters: list[Action], base_cfg: byte
     return out
 
 
-def collect_brushes(game: Game, obs: Obs, st: CanvasSetup,
-                    mask: np.ndarray | None = None,
-                    max_configs: int = 400, max_seconds: float = 180.0
-                    ) -> tuple[list[Brush], bool, int, int, int]:
-    """枚举可达构型 × 提交动作, 双底采出每支笔的真实覆盖区。
+def _merge_brush(a: Brush, b: Brush) -> tuple[Brush, int]:
+    """把同一支笔在两轮采集里的证据合起来。
 
-    返回 (画笔库, 构型是否枚举完)。
-    🚨**第二个返回值必须往上报。** 库不全时抽象层会稳定收敛到一个非零差异,
-    看起来像"这关无解" —— 那是采集被截断, 不是游戏无解。
+    "同一支笔"的身份是 **(构型指纹, 提交动作)** —— 不是 (covered, stroke)。
+    用后者当身份, 会把"A 轮判了上半区、B 轮判了下半区"的同一支笔拆成两支
+    各带盲区的笔, 两轮挣来的证据永远合不到一起(实测: 底差异并集到 100/100,
+    单笔盲区中位仍有 20 格, 抽象层照样解不出)。
+
+    盲区取**交**(两轮都不知道才算不知道), 覆盖取**并**。
+    返回冲突格数: 两轮都说盖到、却给出不同颜色的格子。**冲突不为 0 说明这支笔
+    不是构型的函数**, 那是骨架("提交只按当前构型盖")出了问题, 必须报上去。
     """
-    t0 = time.time()
-    box = st.answer_box
+    ua = a.unknown if a.unknown is not None else np.zeros_like(a.covered)
+    ub = b.unknown if b.unknown is not None else np.zeros_like(b.covered)
+    both = a.covered & b.covered
+    conflict = int((a.stroke[both] != b.stroke[both]).sum())
+    stroke = a.stroke.copy()
+    stroke[b.covered] = b.stroke[b.covered]
+    stroke[a.covered] = a.stroke[a.covered]      # 冲突时保留先采到的
+    seq = a.seq if len(a.seq) <= len(b.seq) else b.seq
+    return Brush(seq=list(seq), submit=a.submit, covered=a.covered | b.covered,
+                 stroke=stroke, unknown=ua & ub, cfg=a.cfg), conflict
 
-    # 多个底。构型都不变(提交不改构型), 只有画布内容不同。
-    #
-    # 🚨**判据的前提是"两底在这一格上本来就不同"。** 第一版只用两个底
-    # (b = a 上按一次提交), 那一笔只改了几十格, 剩下的格子两底本来就一样,
-    # 于是"结果也一样"被当成了"这一笔盖过" —— 报出**一支盖满整个 10×10
-    # 答案区的笔**, 全是假的。当年手工铺两种纯色底是处处不同的, 自动版
-    # 把这个前提丢了。
-    #
-    # 所以: 多铺几个底, 并且**只在"底之间确实不同"的格子上做判定**;
-    # 底都一样的格子这次采集没有证据, 既不能算覆盖, 也不能装作知道。
-    base_cfg = _config_fp(np.array(obs.grid), box, mask)
-    floors: list[tuple[Game, np.ndarray]] = [(game.fork(), _region(np.array(obs.grid), box))]
 
-    def add_floor(f: Game, o: Obs) -> bool:
-        """只收**构型没变**的底。构型变了的底走同一条调整序列会到别处,
-        双底判据的前提就没了。这里不靠假设, 走完直接比对构型指纹自证。"""
-        if o.dead or o.level != obs.level:
-            return False
-        if _config_fp(np.array(o.grid), box, mask) != base_cfg:
-            return False
-        floors.append((f, _region(np.array(o.grid), box)))
-        return True
+def _config_mask(game: Game, obs: Obs, st: CanvasSetup,
+                 box: tuple[int, int, int, int], mask: np.ndarray | None,
+                 spread: int = 6) -> np.ndarray:
+    """构型掩码 = mask 再扣掉**提交动作会改动的、答案区之外的格子**。
 
-    for sub in st.submitters[:4]:
-        f = game.fork()
-        add_floor(f, f.act(sub))
+    骨架那句话("提交只改画布, 调整只改构型")本身就给出了判据: 答案区之外
+    任何被提交动作改动的格子, 按定义就不属于构型 —— 它是计数器/进度条。
+    不用去认它是什么, 因果结构直接把它划出去。
 
-    # 🚨从当前构型再提交往往是**幂等**的(刚涂完的东西再涂一次没变化),
-    # 于是所有底长得一模一样, 能判的格子降到 0 —— cd82 L3 实测: 第 1 笔
-    # 能判 50/100 格, 第 2 笔起判 **0/100**, 画笔覆盖被系统性低估, 最后
-    # 卡在差 12 格说"没有任何一笔能缩小差异"。
-    #
-    # 造出真正不同的底要**去别的构型涂一笔再走回来**: 画布变了, 构型回原处。
-    # 走回来靠 probe 已经测出来的互逆动作对; 而且不靠假设 —— 回来之后比对
-    # 构型指纹, 对不上就不收这个底。
-    for a, b in _inverse_pairs(game, obs, st.adjusters, base_cfg, box, mask)[:3]:
-        for sub in st.submitters[:2]:
-            f = game.fork()
-            o = f.act(a)
-            if o.dead:
-                continue
-            o = f.act(sub)
-            if o.dead:
-                continue
-            o = f.act(b)
-            if add_floor(f, o):
+    🚨这个洞的代价是完整的一条链: cd82 L3 上 probe 的跨步判据漏了 (63,55)
+    这个落笔计数器(每涂一笔 4->5), 于是"提交改变了构型" -> 双底自证 10/10
+    全被拒 -> 收不到底 -> 采集判 0/100 格 -> 画笔库瞎 -> 第 4 笔找不到摆法
+    -> 卡在差 12 格。而它在**关卡开局测不出来**(开局提交, 答案区外 0 格变化),
+    只有涂了几笔之后才现形。
+
+    ⚠️必须在**多个构型**上问。只在当前构型问一次会漏掉"再提交一次才动"的格子 ——
+    手工补掩 (63,55) 之后实测仍是 0/100, 就是因为污染格不止一个。
+    "采样只在一个状态上做"在这个项目里已经栽到第六次了。
+    """
+    m = np.ones((64, 64), dtype=bool) if mask is None else mask.copy()
+    r0, r1, c0, c1 = box
+    nodes: list[tuple[Game, Obs]] = [(game.fork(), obs)]
+    seen = {_config_fp(np.array(obs.grid), box, m)}
+    # 摊开到若干个不同构型上, 每个都问一遍
+    frontier = [(game.fork(), obs)]
+    while frontier and len(nodes) < spread:
+        nd, ob = frontier.pop(0)
+        for a in st.adjusters:
+            if len(nodes) >= spread:
                 break
+            ch = nd.fork()
+            o = ch.act(a)
+            if o.dead or o.level != obs.level:
+                continue
+            fp = _config_fp(np.array(o.grid), box, m)
+            if fp in seen:
+                continue
+            seen.add(fp)
+            nodes.append((ch, o))
+            frontier.append((ch, o))
 
-    seen = {_config_fp(np.array(obs.grid), box, mask)}
-    q: deque[tuple[list[Action], Game, Obs]] = deque([([], game.fork(), obs)])
-    configs: list[list[Action]] = [[]]
+    touched = np.zeros((64, 64), dtype=bool)
+    for nd, ob in nodes:
+        g0 = np.array(ob.grid)
+        for sub in st.submitters:
+            o = nd.fork().act(sub)
+            if o.dead or o.level != obs.level:
+                continue
+            touched |= (g0 != np.array(o.grid))
+    touched[r0:r1 + 1, c0:c1 + 1] = False        # 答案区内被改是天经地义的
+    return m & ~touched
+
+
+def _trajectory_floors(game: Game, obs: Obs, st: CanvasSetup, anchor: list[Action],
+                       box: tuple[int, int, int, int], mask, want: int = 6
+                       ) -> tuple[Game, Obs, list[tuple[Game, np.ndarray]]] | tuple[None, None, list]:
+    """第三种造底: 沿**同一条调整轨迹**走到同一个终点构型, 只在中途提交与否上不同。
+
+    前两种造底在 cd82 L3 上都被实测堵死了:
+      ① 在当前构型直接提交 —— 刚涂完的再涂一次是**幂等**的, 所有底一模一样
+         (第 1 笔能判 65/100, 第 3 笔起判 **0/100**)
+      ② 去别的构型涂一笔再走回来 —— 要求构型可逆, 而实测**构型图不强连通**:
+         落 3 笔后 4 层 BFS 走不回开局构型(见过 88 个构型, 一个都不是)
+
+    这条路两样都不要。依据只有一条已验事实: **提交不改构型**(cd82 实测 60/60)。
+    于是两条轨迹只要调整序列逐步相同, 终点构型就必然相同, 而"中途涂了没涂"
+    让画布不同 —— 正是双底判据要的那个前提。
+
+    代价: 采集根从当前构型挪到了 anchor 终点, 所以每支笔的 seq 都要补上 anchor
+    前缀, 真机多走 len(anchor) 步。
+
+    ⚠️终点构型不靠假设, 逐个比对指纹自证; 对不上就不收这个底。
+    """
+    base = game.fork()
+    cur = obs
+    for a in anchor:
+        cur = base.act(a)
+        if cur.dead or cur.level != obs.level:
+            return None, None, []
+    anchor_cfg = _config_fp(np.array(cur.grid), box, mask)
+    floors: list[tuple[Game, np.ndarray]] = [(base, _region(np.array(cur.grid), box))]
+
+    # 在轨迹的哪些点位上提交 —— 枚举**点位组合**, 不是只插一笔。
+    #
+    # 🚨这一步就是把 cd82 当年手工的"答案区铺满两种底色"自动化。插一笔只能造出
+    # 几十格的差异(实测开局判 65/100), 剩下的格子两底本来就一样, 采集给不出证据,
+    # 画笔在那些格上的覆盖是猜的 —— 抽象层据此排出的第 4 笔真机上根本不存在。
+    # 每个点位的构型不同 -> 涂的是不同的笔 -> 多涂几笔就能把答案区铺开。
+    n = len(anchor)
+    combos: list[tuple[int, ...]] = []
+    for i in range(n + 1):
+        combos.append((i,))                       # 单点
+    if n >= 1:
+        combos.append(tuple(range(n + 1)))        # 每个点位都涂: 铺得最满
+        combos.append(tuple(range(0, n + 1, 2)))  # 隔点涂
+        combos.append(tuple(range(1, n + 1, 2)))
+    seen_floor = {_region(np.array(cur.grid), box).tobytes()}
+
+    for combo in combos:
+        for sub in st.submitters:
+            if len(floors) >= want:
+                return base, cur, floors
+            f = game.fork()
+            o = obs
+            ok = True
+            seq: list[Action] = []
+            for i in range(n + 1):
+                if i in combo:
+                    seq.append(sub)
+                if i < n:
+                    seq.append(anchor[i])
+            for a in seq:
+                o = f.act(a)
+                if o.dead or o.level != obs.level:
+                    ok = False
+                    break
+            if not ok:
+                continue
+            if _config_fp(np.array(o.grid), box, mask) != anchor_cfg:
+                continue          # 构型自证没过, 不收
+            reg = _region(np.array(o.grid), box)
+            if reg.tobytes() in seen_floor:
+                continue          # 和已有的底一模一样, 收了也判不出新格子
+            seen_floor.add(reg.tobytes())
+            floors.append((f, reg))
+    return base, cur, floors
+
+
+def _sample(root: Game, robs: Obs, st: CanvasSetup, box: tuple[int, int, int, int],
+            mask, floors: list[tuple[Game, np.ndarray]], prefix: list[Action],
+            max_configs: int, max_seconds: float, t0: float
+            ) -> tuple[list[Brush], bool, int, int, int]:
+    """从 root 的构型 BFS 遍历构型 × 提交动作, 用 floors 双底判出每支笔的覆盖区。"""
+    fp0 = _config_fp(np.array(robs.grid), box, mask)
+    seen = {fp0}
+    q: deque[tuple[list[Action], Game, Obs]] = deque([([], root.fork(), robs)])
+    configs: list[tuple[list[Action], bytes]] = [([], fp0)]
     while q and len(configs) < max_configs and time.time() - t0 < max_seconds:
         seq, node, ob = q.popleft()
         for a in st.adjusters:
             child = node.fork()
             o = child.act(a)
-            if o.dead or o.level > obs.level:
+            if o.dead or o.level > robs.level:
                 continue
             fp = _config_fp(np.array(o.grid), box, mask)
             if fp in seen:
                 continue
             seen.add(fp)
-            configs.append(seq + [a])
+            configs.append((seq + [a], fp))
             q.append((seq + [a], child, o))
     complete = not q
 
@@ -207,7 +322,7 @@ def collect_brushes(game: Game, obs: Obs, st: CanvasSetup,
             testable |= (bases[i] != bases[j])
 
     out: dict[tuple[bytes, bytes], Brush] = {}
-    for seq in configs:
+    for seq, cfg in configs:
         if time.time() - t0 > max_seconds * 2:
             complete = False
             break
@@ -235,16 +350,156 @@ def collect_brushes(game: Game, obs: Obs, st: CanvasSetup,
             changed = np.zeros_like(same, dtype=bool)
             for base_reg in bases:
                 changed |= (regs[0] != base_reg)
-            covered = same & (testable | changed)
+            # evidence = 这次采集对这一格**有话可说**的范围。
+            # 范围之外既不能算覆盖, 也不能算"不覆盖" —— 它是未知, 必须往上报,
+            # 否则抽象层会把"不知道"当成"不覆盖", 算出真机上不存在的方案。
+            evidence = testable | changed
+            covered = same & evidence
             if not covered.any():
                 continue
             stroke = np.zeros_like(regs[0])
             stroke[covered] = regs[0][covered]
+            unknown = ~evidence
             key = (covered.tobytes(), stroke.tobytes())
-            if key not in out or len(seq) < len(out[key].seq):
-                out[key] = Brush(seq=list(seq), submit=sub,
-                                 covered=covered, stroke=stroke)
-    return list(out.values()), complete, int(testable.sum()), int(testable.size), len(configs)
+            cand = list(prefix) + list(seq)
+            if key not in out or len(cand) < len(out[key].seq):
+                out[key] = Brush(seq=cand, submit=sub, covered=covered,
+                                 stroke=stroke, unknown=unknown, cfg=cfg)
+    # 末位返回 testable 数组本身: 上层要拿它决定"下一轮该往哪造底"。
+    # ⚠️只返回 sum 不够 —— 也不能用"跨笔的证据并集"代替它: 并集一开始就是满的,
+    # 拿它当停止条件会让定向采集一轮都不跑(实测: 4 秒返回, 报 100/100, 而抽象层
+    # 比认真采集过的那一版还差一倍)。**单笔盲区受 testable 约束, 并集不受。**
+    return (list(out.values()), complete, int(testable.sum()),
+            int(testable.size), len(configs), testable)
+
+
+def collect_brushes(game: Game, obs: Obs, st: CanvasSetup,
+                    mask: np.ndarray | None = None,
+                    max_configs: int = 400, max_seconds: float = 180.0,
+                    min_ratio: float = 0.9
+                    ) -> tuple[list[Brush], bool, int, int, int]:
+    """枚举可达构型 × 提交动作, 双底采出每支笔的真实覆盖区。
+
+    返回 (画笔库, 构型是否枚举完, 判了几格, 共几格, 构型数)。
+    🚨**第二个返回值必须往上报。** 库不全时抽象层会稳定收敛到一个非零差异,
+    看起来像"这关无解" —— 那是采集被截断, 不是游戏无解。
+
+    造底分两档: 先用当前构型的底(便宜); **判得动的格子不到 min_ratio 就换
+    轨迹底重采**(见 `_trajectory_floors`)。不无条件用轨迹底, 是因为它要真机
+    多走 anchor 那几步 —— 判得动的时候没必要花这个钱。
+    """
+    t0 = time.time()
+    box = st.answer_box
+
+    # 🚨先把构型掩码算出来, 后面所有构型指纹都用它。probe 的掩码只保证掩掉了
+    # 按步数走的计数器, 保证不了"每提交一次才动一格"的落笔计数器。
+    mask = _config_mask(game, obs, st, box, mask)
+
+    # 多个底。构型都不变(提交不改构型), 只有画布内容不同。
+    #
+    # 🚨**判据的前提是"两底在这一格上本来就不同"。** 第一版只用两个底
+    # (b = a 上按一次提交), 那一笔只改了几十格, 剩下的格子两底本来就一样,
+    # 于是"结果也一样"被当成了"这一笔盖过" —— 报出**一支盖满整个 10×10
+    # 答案区的笔**, 全是假的。当年手工铺两种纯色底是处处不同的, 自动版
+    # 把这个前提丢了。
+    base_cfg = _config_fp(np.array(obs.grid), box, mask)
+    floors: list[tuple[Game, np.ndarray]] = [(game.fork(), _region(np.array(obs.grid), box))]
+
+    def add_floor(f: Game, o: Obs) -> bool:
+        """只收**构型没变**的底。构型变了的底走同一条调整序列会到别处,
+        双底判据的前提就没了。这里不靠假设, 走完直接比对构型指纹自证。"""
+        if o.dead or o.level != obs.level:
+            return False
+        if _config_fp(np.array(o.grid), box, mask) != base_cfg:
+            return False
+        floors.append((f, _region(np.array(o.grid), box)))
+        return True
+
+    for sub in st.submitters[:4]:
+        f = game.fork()
+        add_floor(f, f.act(sub))
+
+    for a, b in _inverse_pairs(game, obs, st.adjusters, base_cfg, box, mask)[:3]:
+        for sub in st.submitters[:2]:
+            f = game.fork()
+            o = f.act(a)
+            if o.dead:
+                continue
+            o = f.act(sub)
+            if o.dead:
+                continue
+            o = f.act(b)
+            if add_floor(f, o):
+                break
+
+    brushes, complete, judged, total, ncfg, tb = _sample(
+        game, obs, st, box, mask, floors, [], max_configs, max_seconds, t0)
+    if judged >= total * min_ratio:
+        return brushes, complete, judged, total, ncfg
+
+    # 判不动了 —— 换轨迹底, 而且**定向**挑 anchor。
+    #
+    # 🚨均摊式地随便挑几个调整动作当 anchor 是不行的。cd82 L3 开局实测, 可判性
+    # 地图是一条完美的水平分界线: **上半 5 行全可判, 下半 5 行一格都判不了**,
+    # 随便挑 anchor 只能把 50 抬到 65, 换三种造底方式数字纹丝不动。而那 50 格
+    # 判不了的**全都被改变过**(够不着的 0 格) —— 缺的不是笔, 是"去涂那里的底"。
+    # 后果: 第 4 笔那支笔在下半区的覆盖全是猜的, 抽象层据此算出"涂完就全对",
+    # 真机上根本没有这支笔。
+    #
+    # 定向的做法: 拿第一档采到的库, 挑**覆盖到判不了区域**最多的笔, 用它的调整
+    # 序列当 anchor —— 走到那个构型去涂一笔, 底就在判不了的地方有了差异。
+    # (这些笔在判不了区的 covered 本身不可靠, 但拿来**排序**够用了 ——
+    #  模型当排序器和当预测器是两条不同的及格线。)
+    need = ~tb
+
+    # 🚨各轮的笔要**合并成一个库**, 不能只留"最好的那一轮"。
+    # 没有哪一支笔需要单独判满 —— 第一档的笔在上半区有证据, 定向轮的笔在下半区
+    # 有证据, 抽象层完全可以用不同的笔去覆盖不同的区域。只留一轮等于把另一轮
+    # 挣来的证据扔掉。
+    scored = sorted(brushes, key=lambda b: -int((b.covered & need).sum()))
+    cands: list[list[Action]] = [list(b.seq) for b in scored[:4]
+                                 if (b.covered & need).any() and b.seq]
+    cands += [[a] for a in st.adjusters[:2]]        # 兜底: 短序列
+
+    # 身份 = (构型指纹, 提交动作)。同一支笔在不同轮采到的证据在这里合并。
+    merged: dict[tuple[bytes, str], Brush] = {}
+    for b in brushes:
+        merged[(b.cfg, repr(b.submit))] = b
+    tb_union = tb.copy()
+    ncfg_total = ncfg
+    conflicts = 0
+
+    for anchor in cands:
+        if time.time() - t0 > max_seconds * 2:
+            break
+        # 🚨停止条件用 **testable 的并集**, 不能用"跨笔的证据并集"。后者一开始
+        # 就是满的(每格总有某支笔的 changed 说得清), 拿它当条件会让这个循环
+        # 一轮都不跑 —— 实测 4 秒返回、报 100/100, 而抽象层比认真采集过的那版
+        # 还差一倍(差 20 vs 差 10)。**好看的数字和有用的数字是两回事。**
+        if int(tb_union.sum()) >= total * min_ratio:
+            break
+        root, robs, tfloors = _trajectory_floors(game, obs, st, anchor, box, mask)
+        if root is None or len(tfloors) < 2:
+            continue
+        alt_b, alt_complete, _j, _t, alt_ncfg, alt_tb = _sample(
+            root, robs, st, box, mask, tfloors, anchor, max_configs, max_seconds, t0)
+        ncfg_total = max(ncfg_total, alt_ncfg)
+        for b in alt_b:
+            key = (b.cfg, repr(b.submit))
+            if key in merged:
+                merged[key], c = _merge_brush(merged[key], b)
+                conflicts += c
+            else:
+                merged[key] = b
+        complete = complete and alt_complete
+        tb_union |= alt_tb
+        need = ~tb_union          # 下一个 anchor 针对还没有底差异的地方
+
+    if conflicts:
+        # 不静默吞掉: 同一构型两轮给出不同颜色 = 笔不是构型的函数, 骨架有问题
+        print(f"[canvas] ⚠️跨轮合并出现 {conflicts} 个冲突格 —— 笔可能不是构型的函数",
+              flush=True)
+    return list(merged.values()), complete, int(tb_union.sum()), total, ncfg_total
 
 
 @dataclass
@@ -386,6 +641,158 @@ def solve(game: Game, obs: Obs, st: CanvasSetup, target: np.ndarray,
                 return full, cur, f"第 {k+1} 笔后 GAME_OVER; " + "; ".join(log)
             if cur.level > obs.level:
                 return full, cur, f"✅通关, {len(full)} 步; " + "; ".join(log)
+    return full, cur, f"落满 {max_strokes} 笔仍未过关; " + "; ".join(log)
+
+
+def _path_to_cfg(node: Game, obs: Obs, adjusters: list[Action], target_cfg: bytes,
+                 box: tuple[int, int, int, int], mask, max_nodes: int = 6000
+                 ) -> list[Action] | None:
+    """从当前构型 BFS 走到指定构型。搜的是构型图, 不是画布。"""
+    cur_fp = _config_fp(np.array(obs.grid), box, mask)
+    if cur_fp == target_cfg:
+        return []
+    seen = {cur_fp}
+    q: deque[tuple[list[Action], Game, Obs]] = deque([([], node.fork(), obs)])
+    while q and len(seen) < max_nodes:
+        seq, nd, ob = q.popleft()
+        for a in adjusters:
+            ch = nd.fork()
+            o = ch.act(a)
+            if o.dead or o.level != obs.level:
+                continue
+            fp = _config_fp(np.array(o.grid), box, mask)
+            if fp == target_cfg:
+                return seq + [a]
+            if fp in seen:
+                continue
+            seen.add(fp)
+            q.append((seq + [a], ch, o))
+    return None
+
+
+def execute_cfg(game: Game, obs: Obs, st: CanvasSetup, plan: CanvasPlan,
+                mask: np.ndarray | None = None) -> tuple[list[Action], Obs, str]:
+    """把抽象方案翻译回真机: **每一笔都从当前构型重新找路**。
+
+    🚨这是 `execute` 的 bug 所在。画笔库里每支笔的 `seq` 都是从"采集时那个根
+    构型"出发的; 连着用两支笔时, 第二支的 seq 从根走没有意义 —— 落完第一笔,
+    构型已经停在第一笔那里了。`solve` 每落一笔整库重采所以撞不上; `execute`
+    改用"在真机上搜一支能涂出目标画布的笔"来回避, 但那个 BFS 要从头搜到很深的
+    构型, 180 秒里到不了, 报出来的是"第 4 笔找不到摆法" —— 看着像抽象层与真机
+    脱节, 其实是路径找错了起点。
+
+    有了 `Brush.cfg` 就不用绕: 直接在构型图上 BFS 到目标构型, 再按提交。
+    提交不改构型, 所以落笔不会打乱这张图。
+
+    ⚠️落完仍然逐笔核对实测画布 —— 对不上就停, 不硬走完。
+    """
+    box = st.answer_box
+    node = game.fork()
+    cur = obs
+    full: list[Action] = []
+    for k, b in enumerate(plan.brushes):
+        path = _path_to_cfg(node, cur, st.adjusters, b.cfg, box, mask)
+        if path is None:
+            return full, cur, f"第 {k+1} 笔: 构型图上走不到这支笔的构型"
+        for a in list(path) + [b.submit]:
+            cur = node.act(a)
+            full.append(a)
+            if cur.dead:
+                return full, cur, f"第 {k+1} 笔后 GAME_OVER"
+            if cur.level > obs.level:
+                return full, cur, f"✅通关, {len(full)} 步"
+        got = _region(np.array(cur.grid), box)
+        want = plan.cumulative[k]
+        if not np.array_equal(got, want):
+            return full, cur, (f"第 {k+1} 笔实测与预测差 {int((got != want).sum())} 格 "
+                               f"(抽象层与真机在这一笔上脱节)")
+    return full, cur, f"{len(plan.brushes)} 笔全部落对但未过关"
+
+
+def solve_committed(game: Game, obs: Obs, st: CanvasSetup, target: np.ndarray,
+                    mask: np.ndarray | None = None, max_strokes: int = 12,
+                    max_seconds: float = 900.0, acts_fn=None,
+                    max_configs: int = 2000, collect_seconds: float = 300.0
+                    ) -> tuple[list[Action], Obs, str]:
+    """**信任整套方案, 只在预测与实测分岔时才重规划。**
+
+    对照 `solve`(每落一笔都重新采集+重新规划): 那一版会被贪心毁掉顺序。
+    cd82 L3 实测 —— 卡住的 12 格是一个**必须先涂**的块, 库里有 5 支颜色全对的
+    笔够得着, 但落下去会盖坏已涂好的部分(**后涂盖先涂**)。抽象层开局解出的
+    4 笔方案本来含着正确顺序, 是逐笔重规划的贪心把顺序拆散的 ——
+    贪心只看"这一笔之后差异最小", 而覆盖式涂色常常必须先让画面变差。
+
+    当初改成逐笔重规划的理由是"开环第 4 笔找不到摆法", 而那次失败的真因是
+    计数器 (63,55) 漏进构型指纹导致采集退化(见 `_config_mask`), 不是抽象层与
+    真机脱节。前提修掉了, 结论也就不成立。
+
+    分歧检测本身还是有用的: 它把"重规划"从每笔一次降到只在真出错时一次,
+    并且**报出在第几笔脱节** —— 那是个诊断信号, 比默默重来值钱。
+
+    ⚠️闭环省的是搜索预算, 不是真机步数。整个过程跑在克隆体上。
+    """
+    t0 = time.time()
+    box = st.answer_box
+    node = game.fork()
+    cur = obs
+    full: list[Action] = []
+    log: list[str] = []
+    plan: CanvasPlan | None = None
+    idx = 0
+
+    for k in range(max_strokes):
+        if time.time() - t0 > max_seconds:
+            return full, cur, f"超时, 落了 {k} 笔; " + "; ".join(log)
+        canvas = _region(np.array(cur.grid), box)
+        if int((canvas != target).sum()) == 0:
+            return full, cur, "画布已等于题面但未过关(判定不止看这块); " + "; ".join(log)
+
+        if plan is None or idx >= len(plan.brushes):
+            # 只有这里会重新采集 —— 开局一次, 之后只在分歧后一次
+            if acts_fn is not None:
+                fresh = classify(node, cur, acts_fn(cur), box)
+                subs = {repr(a): a for a in st.submitters}
+                subs.update({repr(a): a for a in fresh.submitters})
+                adjs = {repr(a): a for a in st.adjusters}
+                adjs.update({repr(a): a for a in fresh.adjusters})
+                for k2 in subs:
+                    adjs.pop(k2, None)
+                st = CanvasSetup(answer_box=box, submitters=list(subs.values()),
+                                 adjusters=list(adjs.values()))
+            brushes, complete, judged, total, ncfg = collect_brushes(
+                node, cur, st, mask, max_configs=max_configs,
+                max_seconds=collect_seconds)
+            if not brushes:
+                return full, cur, f"第 {k+1} 笔: 采不到画笔; " + "; ".join(log)
+            plan = plan_canvas(canvas, target, brushes)
+            idx = 0
+            log.append(f"[规划] 构型{ncfg}{'' if complete else '(截断)'} 笔{len(brushes)} "
+                       f"判{judged}/{total} -> "
+                       f"{'解出 '+str(len(plan.brushes))+' 笔' if plan.found else '未解出(最好差 '+str(plan.best_gap)+')'}")
+            if not plan.found:
+                best = min(brushes, key=lambda b: int((b.apply(canvas) != target).sum()))
+                if int((best.apply(canvas) != target).sum()) >= int((canvas != target).sum()):
+                    return full, cur, (f"第 {k+1} 笔: 没有任何一笔能缩小差异"
+                                       f"(当前差 {int((canvas != target).sum())}); " + "; ".join(log))
+                plan = CanvasPlan(True, [best], [best.apply(canvas)], 0, 0.0)
+                idx = 0
+
+        pick = plan.brushes[idx]
+        want = plan.cumulative[idx]
+        for a in list(pick.seq) + [pick.submit]:
+            cur = node.act(a)
+            full.append(a)
+            if cur.dead:
+                return full, cur, f"第 {k+1} 笔后 GAME_OVER; " + "; ".join(log)
+            if cur.level > obs.level:
+                return full, cur, f"✅通关, {len(full)} 步; " + "; ".join(log)
+
+        got = _region(np.array(cur.grid), box)
+        if np.array_equal(got, want):
+            idx += 1                      # 预测对上了, 接着走原方案, 不重采
+        else:
+            log.append(f"[分歧] 第 {k+1} 笔实测与预测差 {int((got != want).sum())} 格 -> 重规划")
+            plan = None
     return full, cur, f"落满 {max_strokes} 笔仍未过关; " + "; ".join(log)
 
 
