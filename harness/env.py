@@ -64,6 +64,7 @@ class Obs:
     state: str
     layers: int = 1
     actions: tuple[int, ...] = ()   # 引擎自报的可用动作 id, 别在上层写死
+    pending: int = 0                # 已注入但**尚未结算**的动作 id(0=无), 见 Game.act
 
     @property
     def done(self) -> bool:
@@ -74,8 +75,9 @@ class Obs:
         return self.state == "GAME_OVER"
 
 
-def _obs(frame) -> Obs:
+def _obs(frame, pending: int = 0) -> Obs:
     return Obs(
+        pending=pending,
         grid=frame.frame[-1],
         level=frame.levels_completed,
         win_levels=frame.win_levels,
@@ -107,6 +109,7 @@ class Game:
         self.game_id = game_id
         self.is_fork = is_fork
         self.steps = 0
+        self._pending = 0
 
     @classmethod
     def make(cls, game_id: str) -> tuple["Game", Obs]:
@@ -120,11 +123,27 @@ class Game:
         return game, _obs(frame)
 
     def act(self, a: Action) -> Obs:
+        """走一步。
+
+        🚨**返回的画面未必包含这一步的效果。** sc25 实测: `perform_action` 只把
+        动作放进输入缓冲, 引擎的 `step()` 才结算, 而官方 SDK 的 `Environment.step`
+        内部同样只调 `perform_action` —— 所以这是**游戏的规则, 不是 harness 的
+        bug**, 不能靠偷调 `step()` 绕过去(那样算出的解在官方接口下不成立)。
+
+        后果是隐藏状态: 走 A3 和走 A1 之后画面**完全相同**(都还是开局), 只有
+        "缓冲里待结算的是谁"不同。指纹只看画面就会把它们当成同一个状态,
+        全部去重 -> BFS 深度 0 就报"队列穷尽"(sc25 裸跑 1 秒结束就是这么来的)。
+        所以把待结算动作记进 `Obs.pending`, 让指纹带上它。
+
+        ⚠️与 ls20/tr87/ft09/cd82 不冲突: 那四局动作即时生效, pending 只是多一个
+        恒定维度, 四局在案解重放回归照常通过。
+        """
         frame = self._g.perform_action(
             ActionInput(id=_ACTION_BY_ID[a.id], data=a.payload), raw=True
         )
         self.steps += 1
-        return _obs(frame)
+        self._pending = a.id
+        return _obs(frame, a.id)
 
     def replay(self, seq: list[Action]) -> Obs:
         obs = None
@@ -143,6 +162,7 @@ class Game:
         copied._clean_levels = clean
         child = Game(copied, self.game_id, is_fork=True)
         child.steps = self.steps
+        child._pending = self._pending      # 缓冲里待结算的动作也要跟着克隆
         return child
 
     def peek(self, a: Action) -> Obs:

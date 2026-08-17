@@ -24,8 +24,20 @@ from .env import Action, Game, Obs
 from .percept import click_targets
 
 
-def fingerprint(grid: np.ndarray, mask: np.ndarray | None) -> bytes:
-    return (grid * mask).tobytes() if mask is not None else grid.tobytes()
+def fingerprint(grid: np.ndarray, mask: np.ndarray | None,
+                pending: int = 0) -> bytes:
+    """状态指纹。
+
+    🚨`pending` = 已注入但尚未结算的动作 id(见 `env.Game.act`)。**画面之外的
+    隐藏状态必须进指纹。** sc25 上走 A3 和走 A1 之后画面完全相同(动作要下一次
+    调用才结算), 只看画面就会把两者当成同一个状态全部去重, BFS 深度 0 就报
+    "队列穷尽" —— 裸跑 1 秒结束。
+
+    与"指纹不能用整帧像素(会混进计时器)"是同一条原则的两面: 指纹要正好等于
+    **语义状态**, 多一点(计时器)会让去重失效, 少一点(输入缓冲)会让去重过头。
+    """
+    base = (grid * mask).tobytes() if mask is not None else grid.tobytes()
+    return base if not pending else base + b"|p" + bytes([pending])
 
 
 def candidates(obs: Obs, keys: list[int], click_id: int | None) -> list[Action]:
@@ -63,7 +75,7 @@ def bfs_level_up(game: Game, base: Obs, keys: list[int], click_id: int | None,
     把 ask_human 永远挡在后面。
     """
     t0 = time.time()
-    seen = {fingerprint(np.array(base.grid), mask)}
+    seen = {fingerprint(np.array(base.grid), mask, base.pending)}
     # 队列元素: (动作序列, 到达该状态的 game 快照, 该状态的观测)
     q: deque[tuple[list[Action], Game, Obs]] = deque([([], game.fork(), base)])
     expanded = 0
@@ -94,7 +106,7 @@ def bfs_level_up(game: Game, base: Obs, keys: list[int], click_id: int | None,
                 return SearchResult(True, seq=seq + [a], nodes=len(seen), expanded=expanded,
                                     deepest=len(seq) + 1, frontier=len(q),
                                     seconds=time.time() - t0)
-            fp = fingerprint(np.array(o.grid), mask)
+            fp = fingerprint(np.array(o.grid), mask, o.pending)
             if fp in seen:
                 continue
             seen.add(fp)
@@ -129,7 +141,7 @@ def best_first(game: Game, base: Obs, keys: list[int], click_id: int | None,
 
     t0 = time.time()
     g0 = np.array(base.grid)
-    seen = {fingerprint(g0, mask)}
+    seen = {fingerprint(g0, mask, base.pending)}
     counter = 0
     root = game.fork()
     skip = {repr(a) for a in (exclude or [])}
@@ -179,7 +191,7 @@ def best_first(game: Game, base: Obs, keys: list[int], click_id: int | None,
                                     deepest=len(seq) + 1, frontier=len(heap),
                                     seconds=time.time() - t0)
             cg = np.array(o.grid)
-            fp = fingerprint(cg, mask)
+            fp = fingerprint(cg, mask, o.pending)
             if fp in seen:
                 continue
             seen.add(fp)
