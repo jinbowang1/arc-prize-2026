@@ -1,0 +1,22 @@
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-17 23:39:25 | INFO | Created new scorecard: fa3194e1-05a1-4f51-917d-e704dfc1e98b
+2026-08-17 23:39:25 | INFO | Found latest version of sc25: sc25-635fd71a (downloaded: 2026-08-07 09:21:02.685063+00:00)
+2026-08-17 23:39:25 | INFO | Successfully loaded game class Sc25 from environment_files/sc25/635fd71a/sc25.py
+重放在案解 18 步 -> level=2 (现在是 L3)
+动作 32 个 (按键 4 + 点击 28) | lagged=False
+
+因果目标提议 12 条, 前 3:
+  RegionMatch(a=(18, 29, 31, 46), b=(48, 59, 8, 23), name='region_match')
+  RegionMatch(a=(18, 29, 31, 46), b=(49, 60, 8, 23), name='region_match')
+  RegionMatch(a=(18, 29, 31, 46), b=(50, 61, 8, 23), name='region_match')
+
+[canvas] 答案区 (18, 29, 31, 46) | 提交动作 4 个 ['A1', 'A2', 'A3', 'A4'] | 调整动作 28 个
+  提交动作: ['A1', 'A2', 'A3', 'A4']
+  调整动作: ['A6(62,31)', 'A6(40,21)', 'A6(48,22)', 'A6(36,22)', 'A6(55,24)', 'A6(56,23)', 'A6(36,24)', 'A6(48,25)']
+  构型掩码有效 4092 格
+
+[采画笔库]
+  画笔 4 支 | 判 96/192 格 | 构型 803(截断) | 193s
+  [canvas] 抽象画布未解出(最好差 149 格), 0.00s beam 宽 300 深 8 未到 0
+
+总耗时 193s
