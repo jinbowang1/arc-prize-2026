@@ -19,6 +19,7 @@ from typing import Any, Iterator
 
 os.environ.setdefault("OPERATION_MODE", "OFFLINE")
 
+import numpy as np  # noqa: E402
 import arc_agi  # noqa: E402  (必须在 OPERATION_MODE 之后)
 from arcengine import ActionInput, GameAction  # noqa: E402
 
@@ -110,6 +111,7 @@ class Game:
         self.is_fork = is_fork
         self.steps = 0
         self._pending = 0
+        self.lagged = False        # 见 detect_lag: 动作是否要下一次调用才结算
 
     @classmethod
     def make(cls, game_id: str) -> tuple["Game", Obs]:
@@ -163,11 +165,63 @@ class Game:
         child = Game(copied, self.game_id, is_fork=True)
         child.steps = self.steps
         child._pending = self._pending      # 缓冲里待结算的动作也要跟着克隆
+        child.lagged = self.lagged
         return child
 
     def peek(self, a: Action) -> Obs:
         """在克隆体上试一个动作, 不影响本体。真机试探的唯一正确姿势。"""
         return self.fork().act(a)
+
+    def detect_lag(self, acts: list[Action]) -> bool:
+        """探测这一局是不是"动作要下一次调用才结算"。就地记在 self.lagged。
+
+        判据: **单步 peek 全都改 0 格, 而走两次有变化**。两个条件都要 ——
+        只看前者会把"开局恰好动不了"误判成滞后。
+
+        sc25 实测 27 个动作单步 peek **全部**改 0 格, 走两次 14 个有效;
+        ls20/tr87/ft09/cd82 动作即时生效, 这里返回 False, 表征层照旧走单步。
+        """
+        base = self._grid()
+        single_any = double_any = False
+        for a in acts[:8]:
+            o1 = self.peek(a)
+            if not o1.dead and not np.array_equal(np.array(o1.grid), base):
+                single_any = True
+                break
+            n = self.fork()
+            oa = n.act(a)
+            if oa.dead:
+                continue
+            ob = n.act(a)
+            if not ob.dead and not np.array_equal(np.array(ob.grid), base):
+                double_any = True
+        self.lagged = (not single_any) and double_any
+        return self.lagged
+
+    def _grid(self) -> "np.ndarray":
+        return np.array(self._g.get_pixels(0, 0, 64, 64))
+
+    def effect(self, a: Action) -> Obs:
+        """看清 a 的效果。滞后局走两次, 其余等同 peek。
+
+        🚨为什么需要它: sc25 的 `perform_action` 只注入、`step()` 才结算(见
+        `act` 的注释), 所以单步 peek 看到的是**上一个**动作的效果。实测后果 ——
+        27 个动作单步全报"改 0 格" -> 实体发现 **0 个** / model **可用 0** /
+        抽象层建不出覆盖表, 整个表征层是瞎的; 而 best_first 的 h 卡在 3,
+        算力加 5.2 倍一格不动(表征墙, 不是搜索墙)。
+
+        走两次 a 得到的正是 a 的**单次真效果**(实测 viaact(3,3) 逐格等于
+        truth(3)), 且克隆体试探免费 —— 不必偷调 `step()` 脱离官方语义。
+
+        ⚠️返回的状态是"a 已结算一次 + 缓冲里还有一个 a", **不是**"走了一次 a"。
+        所以只能用来**观测效果**(建表征), 不能当搜索的后继状态 —— 搜索走 act
+        语义, 指纹带 pending 就够(见 search.fingerprint)。
+        """
+        if not getattr(self, "lagged", False):
+            return self.peek(a)
+        n = self.fork()
+        o = n.act(a)
+        return o if o.dead else n.act(a)
 
 
 def action_space(obs_actions: list[int], grid_h: int = 64, grid_w: int = 64) -> dict:

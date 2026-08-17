@@ -146,7 +146,14 @@ def solve_level(game: Game, obs: Obs, know: Knowledge, prev_scene,
                                prev_scene)
 
     rep = run_probe(game, obs, sp["kind"], sp["keys"], clicks)
-    ents, _ = discover(lambda a: np.array(game.peek(a).grid), np.array(obs.grid), acts)
+
+    # 🚨先探"动作是不是要下一次调用才结算"。sc25 是这样的: 单步 peek 看到的是
+    # **上一个**动作的效果, 27 个动作全报"改 0 格" -> 实体 0 个 / model 可用 0 /
+    # 抽象层建不出覆盖表, 表征层整个是瞎的(而 h 卡在 3, 算力 5.2 倍不动)。
+    # 探到了就用 game.effect(走两次)看效果; ls20/cd82 这类即时生效的局判 False,
+    # 表征层照旧走单步 —— 无条件走两次会把"移动一格"看成"移动两格"。
+    game.detect_lag(acts)
+    ents, _ = discover(lambda a: np.array(game.effect(a).grid), np.array(obs.grid), acts)
     budget = rep.depth_cap(100)
 
     # 可变格必须在**多个状态**上求并集。只在开局采会低估: cd82 的答案区
@@ -154,7 +161,7 @@ def solve_level(game: Game, obs: Obs, know: Knowledge, prev_scene,
     # 上半区), 答案区少一半, 题面配对就再也对不上尺寸。
     states = collect_states(game, obs, acts, cfg["mutable_states"])
     mutable = mutable_over_states(
-        [lambda a, c=c: np.array(c.peek(a).grid) for c, _ in states],
+        [lambda a, c=c: np.array(c.effect(a).grid) for c, _ in states],
         [np.array(o.grid) for _, o in states], acts) & (
         rep.mask if rep.mask is not None else True)
 
