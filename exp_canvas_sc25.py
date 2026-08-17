@@ -58,8 +58,25 @@ print(f"\n因果目标提议 {len(props)} 条, 前 3:", flush=True)
 for h in props[:3]:
     print(f"  {h}", flush=True)
 
-BOX = props[0].a
-st = classify(game, obs, acts, BOX)
+# 🚨不能盲目用 props[0]。**选第一条"提交动作非空且全是同一类"的提议** ——
+# sc25 L3 上 props[0] 把轨道当答案区, 于是按键=提交、点击=调整, 与顺序实验的
+# 地面真值正好相反, 画笔库全废。正确的是 #3 (49,61,24,36)(整块九宫格)。
+# 判据: 提交集**同类**(不混按键与点击) 且 **提交动作数最多** ——
+# 画布的"笔"应该多。props[0](轨道)只有 4 个提交(全按键), props[3](九宫格)
+# 有 10 个(全点击)。只看"同类"会误选前者(它也同类), 必须比数量。
+pick = st = None
+best_n = 0
+for h in props:
+    st_try = classify(game, obs, acts, h.a)
+    subs = [repr(a) for a in st_try.submitters]
+    nc = sum(1 for r in subs if r.startswith("A6"))
+    if subs and nc in (0, len(subs)) and len(subs) > best_n:
+        pick, st, best_n = h, st_try, len(subs)
+if pick is None:
+    pick, st = props[0], classify(game, obs, acts, props[0].a)
+    print("⚠️没有提议给出干净的提交集, 退回 props[0]", flush=True)
+BOX = pick.a
+print(f"\n选中提议: 答案区 {pick.a} 题面 {pick.b}", flush=True)
 print(f"\n{st.text()}", flush=True)
 print(f"  提交动作: {[repr(a) for a in st.submitters][:8]}", flush=True)
 print(f"  调整动作: {[repr(a) for a in st.adjusters][:8]}", flush=True)
@@ -76,7 +93,7 @@ print(f"  画笔 {len(brushes)} 支 | 判 {judged}/{total} 格 | 构型 {ncfg}"
 
 if brushes:
     canvas = _region(np.array(obs.grid), BOX)
-    tgt = _region(np.array(obs.grid), props[0].b)
+    tgt = _region(np.array(obs.grid), pick.b)
     plan = plan_canvas(canvas, tgt, brushes)
     print(f"  {plan.text()}", flush=True)
 print(f"\n总耗时 {time.time()-t0:.0f}s", flush=True)

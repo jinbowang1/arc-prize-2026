@@ -407,29 +407,44 @@ def propose_prompt_answer(grid: np.ndarray, mutable: np.ndarray,
         bg = background(grid)
     h, w = grid.shape
 
-    # 答案区候选: 可变格的连通块(按 4 邻域), 取其 bbox
+    # 答案区候选: 可变格的连通块, 取其 bbox。
+    # 🚨要跑**两种连通粒度**: 紧(4 邻域)和松(距离<=GAP)。
+    # 画布可能是**分离格子组成的网格**, 格与格之间有分隔行/列 —— 紧连通会把它
+    # 切成 N 块, 每块单独成候选, 整块画布反而提不出来。
+    # sc25 L3 实测: 九宫格(13x13, 9 个 3x3 格、间隔 2)被切成 9 个候选, 每个只
+    # 对应 **1 个**提交动作; 而正确答案区是整块 (49,61,24,36), classify 在它上面
+    # 才把 10 个点击判成提交、A1-A4 判成调整(与顺序实验的地面真值一致)。
+    # ⚠️只放宽到 GAP=3: 轨道(行18-29)与九宫格(行49-61)相距很远, 不会被误连成
+    # 一块。两种粒度的候选**并列**加入, 让后面的排序去选 —— 宁可多一条, 不可漏。
+    GAP = 3
     ans: list[tuple[int, int, int, int]] = []
-    seen = np.zeros_like(mutable, dtype=bool)
-    for r0 in range(h):
-        for c0 in range(w):
-            if not mutable[r0, c0] or seen[r0, c0]:
-                continue
-            stack = [(r0, c0)]
-            seen[r0, c0] = True
-            cells = []
-            while stack:
-                r, c = stack.pop()
-                cells.append((r, c))
-                for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
-                    rr, cc = r + dr, c + dc
-                    if 0 <= rr < h and 0 <= cc < w and mutable[rr, cc] and not seen[rr, cc]:
-                        seen[rr, cc] = True
-                        stack.append((rr, cc))
-            if len(cells) < 4:
-                continue
-            rs = [x for x, _ in cells]
-            cs = [y for _, y in cells]
-            ans.append((min(rs), max(rs), min(cs), max(cs)))
+    offsets = {"tight": ((1, 0), (-1, 0), (0, 1), (0, -1)),
+               "loose": tuple((dr, dc) for dr in range(-GAP, GAP + 1)
+                              for dc in range(-GAP, GAP + 1) if (dr or dc))}
+    for nbrs in offsets.values():
+        seen = np.zeros_like(mutable, dtype=bool)
+        for r0 in range(h):
+            for c0 in range(w):
+                if not mutable[r0, c0] or seen[r0, c0]:
+                    continue
+                stack = [(r0, c0)]
+                seen[r0, c0] = True
+                cells = []
+                while stack:
+                    r, c = stack.pop()
+                    cells.append((r, c))
+                    for dr, dc in nbrs:
+                        rr, cc = r + dr, c + dc
+                        if 0 <= rr < h and 0 <= cc < w and mutable[rr, cc] and not seen[rr, cc]:
+                            seen[rr, cc] = True
+                            stack.append((rr, cc))
+                if len(cells) < 4:
+                    continue
+                rs = [x for x, _ in cells]
+                cs = [y for _, y in cells]
+                ans.append((min(rs), max(rs), min(cs), max(cs)))
+
+    ans = list(dict.fromkeys(ans))          # 两种粒度会产生重复, 去掉
     ans.sort(key=lambda b: -((b[1] - b[0] + 1) * (b[3] - b[2] + 1)))
 
     out: list[RegionMatch] = []
