@@ -58,6 +58,53 @@ UNKNOWN = -1     # 抽象画布上的"不知道"。真实颜色是 0..15, 所以
 
 
 @dataclass
+class Budget:
+    """搜索预算: **主判据是确定性的(扩展节点数), 墙钟只当安全阀。**
+
+    🚨**预算按秒给, A/B 对照就没有可比性** —— 同一份代码在机器忙的时候少搜
+    一截, 走上完全不同的路。08-17 实测 (exp_canvas_openloop cd82 L3, 同一份
+    基线代码跑两次):
+
+        一次重采到构型 1107 -> 最终 "9 步, 差 22 格"
+        一次被秒预算截到 879(截断) -> 最终 "13 步, 差 12 格"
+
+    而仓库里这两个数字本来分别记在 fdf5626 和 f846d17 两次提交上, 当成了两次
+    改动各自的效果 —— 至少有一部分是墙钟噪声。**判据挂在端到端结果上是对的,
+    但端到端结果本身必须先可复现。**
+
+    墙钟触发时 `wall_hit` 置位, 并且**必须一路报到日志**: 那一次的数字不可
+    复现, 拿去跟别的跑做对照就是错的。安全阀只防跑飞, 不参与决定搜多深。
+    """
+
+    max_expansions: int = 4000
+    wall_seconds: float = 1800.0
+    expansions: int = 0
+    t0: float = field(default_factory=time.time)
+    wall_hit: bool = False
+
+    def spend(self) -> bool:
+        """花掉一次节点扩展。返回 False 表示预算到头, 该停了。"""
+        if self.expansions >= self.max_expansions:
+            return False
+        if self.wall_expired():
+            return False
+        self.expansions += 1
+        return True
+
+    def wall_expired(self) -> bool:
+        """只问安全阀。触发即记 wall_hit —— 这一位是"本次不可复现"的凭据。"""
+        if time.time() - self.t0 > self.wall_seconds:
+            self.wall_hit = True
+            return True
+        return False
+
+    @property
+    def note(self) -> str:
+        return (" 🚨**墙钟安全阀触发, 本次结果不可复现, 不可用于对照**"
+                if self.wall_hit else "")
+
+
+@dataclass
 class Brush:
     """一支笔: 走 seq 调整到某构型, 再按 submit, 会在答案区盖出 stroke。"""
 
@@ -96,15 +143,31 @@ class CanvasSetup:
     answer_box: tuple[int, int, int, int]
     submitters: list[Action] = field(default_factory=list)
     adjusters: list[Action] = field(default_factory=list)
+    # 只有显式 prune_noops(apply=True) 才会填这两个字段。默认不剔 —— 剔了
+    # 可达构型会塌(1074 -> 56), 原委见 prune_noops 的实测表。
+    noops: list[Action] = field(default_factory=list)
+    pruned: bool = False
 
     def text(self) -> str:
+        tail = f" | ⚠️已剔 {len(self.noops)} 条 noop 边" if self.pruned else ""
         return (f"[canvas] 答案区 {self.answer_box} | 提交动作 {len(self.submitters)} 个 "
-                f"{[repr(a) for a in self.submitters[:4]]} | 调整动作 {len(self.adjusters)} 个")
+                f"{[repr(a) for a in self.submitters[:4]]} | 调整动作 {len(self.adjusters)} 个"
+                + tail)
 
 
 def classify(game: Game, obs: Obs, acts: list[Action],
              answer_box: tuple[int, int, int, int]) -> CanvasSetup:
-    """按"改不改得动答案区"把动作二分。"""
+    """按"改不改得动答案区"把动作二分。
+
+    ⚠️这里只有二分, 也只在**当前这一个状态**上分一次: 改得动答案区的是提交,
+    **剩下一律算调整** —— 一个动作到底有没有用, 这个函数没问也答不出来。
+    所以它的 adjusters 是"名义边表", 里头混着 noop(cd82 L3: 32 条里 15 条在
+    开局附近什么都不改)。
+
+    **但不要因此去剔它** —— 试过, 端到端更差, 实测记录见 `prune_noops`。
+    BFS 自己会跳过 noop 边(构型指纹不变 -> `fp in seen`), 混进来只多花一次
+    fork; 而剔错一条真边是漏解。想看水分有多大就用 `prune_noops` 的诊断模式。
+    """
     st = CanvasSetup(answer_box=answer_box)
     before = _region(np.array(obs.grid), answer_box)
     for a in acts:
@@ -213,6 +276,93 @@ def _config_mask(game: Game, obs: Obs, st: CanvasSetup,
     return m & ~touched
 
 
+def prune_noops(game: Game, obs: Obs, st: CanvasSetup,
+                box: tuple[int, int, int, int], mask, spread: int = 8,
+                apply: bool = False) -> tuple[int, int, int]:
+    """统计边表里有多少条"在采样到的构型上什么都改不动"的边。
+
+    返回 (疑似 noop 几条, 真边几条, 在几个构型上问过)。
+    **默认只报告不动手。** `apply=True` 才真剔 —— 而下面的实测说明基本不该用。
+
+    起因是个真问题: `classify` 只做二分, 剩下的一律进 adjusters。cd82 L3 上
+    32 条名义边里 15 条在开局附近什么都不干(点在两个控件之间的缝上 ——
+    `scene.targets` 把控件间隙也当成了可点目标), 任一构型上真实出度只有 14。
+
+    🚨**但把它们剔掉是错的, 实测(08-17, exp_canvas_openloop cd82 L3):**
+
+                    采集    画笔   可达构型   单笔盲区中位   抽象层
+        不剔(基线)   143s   84 支   **1074**        0 格     解出 4 笔
+        剔 15 条      10s   84 支   **56**         20 格   未解出(差 14)
+
+    **可达构型塌掉 95%, 端到端从解出退成解不出。** 那 15 个动作在开局附近确实
+    什么都不干, 走远了就不是了 —— 8 个采样构型听着"多", 占 1074 个只有 0.7%,
+    而且是 BFS 最先探到的、彼此高度相似的一小撮。"采样只在一个状态上做"这次
+    换的马甲是**"采样只在一小撮相邻状态上做"**: 样本量要相对**状态空间规模**
+    衡量, 不是相对 1。
+
+    🚨更根本的一笔账, 一开始就该算: **BFS 天然会跳过 noop 边** —— 走完构型
+    指纹与父节点相同, `if fp in seen: continue` 当场跳掉。所以一条 noop 边的
+    真实代价只是**一次 fork(线性常数)**, 而误剔一条真边的代价是**可达集塌缩**。
+    风险与收益完全不对称, 拿指数去换常数, 方向本身就是反的。
+    (分支因子"虚高 2.3 倍"这个数字没错, 错在它根本不是瓶颈。中间指标好看 ——
+     采集快 14 倍、判 100/100 格 —— 端到端更差, 又一次。)
+
+    所以这个函数的正当用途只剩**诊断**: 报出"名义边表里有多少水分", 给感知层
+    (`scene.targets` 把控件间隙当目标)提改进线索, 而不是替搜索做剪枝决定。
+    """
+    if st.pruned:
+        return 0, len(st.adjusters), 0
+
+    # 采一批互不相同的构型当提问现场
+    sites: list[tuple[Game, Obs]] = [(game.fork(), obs)]
+    seen = {_config_fp(np.array(obs.grid), box, mask)}
+    frontier = [(game.fork(), obs)]
+    while frontier and len(sites) < spread:
+        nd, ob = frontier.pop(0)
+        for a in st.adjusters:
+            if len(sites) >= spread:
+                break
+            ch = nd.fork()
+            o2 = ch.act(a)
+            if o2.dead or o2.level != ob.level:
+                continue
+            f = _config_fp(np.array(o2.grid), box, mask)
+            if f in seen:
+                continue
+            seen.add(f)
+            sites.append((ch, o2))
+            frontier.append((ch.fork(), o2))
+
+    live: set[str] = set()
+    for nd, o in sites:
+        base_cfg = _config_fp(np.array(o.grid), box, mask)
+        base_canvas = _region(np.array(o.grid), box)
+        for a in st.adjusters:
+            r = repr(a)
+            if r in live:
+                continue                      # 已经证明有用了, 别再花 fork
+            o2 = nd.peek(a)
+            if o2.dead or o2.level != o.level:
+                continue
+            if _config_fp(np.array(o2.grid), box, mask) != base_cfg:
+                live.add(r)
+            elif not np.array_equal(_region(np.array(o2.grid), box), base_canvas):
+                live.add(r)                   # 改画布不改构型 = 漏判的提交, 留着
+    keep = [a for a in st.adjusters if repr(a) in live]
+    drop = [a for a in st.adjusters if repr(a) not in live]
+    if apply:
+        # ⚠️只有在"采样构型数相对状态空间不算小"时才配这么做。上面的实测里
+        # 8/1074 就把可达集砍掉了 95%。
+        st.adjusters, st.noops, st.pruned = keep, drop, True
+        print(f"[canvas] ⚠️边表剔 noop: {len(drop) + len(keep)} -> {len(keep)} 条 "
+              f"(仅在 {len(sites)} 个构型上问过) {[repr(a) for a in drop[:6]]}", flush=True)
+    elif drop:
+        print(f"[canvas] 边表水分诊断: {len(drop)}/{len(drop) + len(keep)} 条边在这 "
+              f"{len(sites)} 个构型上什么都不改(**没剔**) {[repr(a) for a in drop[:6]]}",
+              flush=True)
+    return len(drop), len(keep), len(sites)
+
+
 def _trajectory_floors(game: Game, obs: Obs, st: CanvasSetup, anchor: list[Action],
                        box: tuple[int, int, int, int], mask, want: int = 6
                        ) -> tuple[Game, Obs, list[tuple[Game, np.ndarray]]] | tuple[None, None, list]:
@@ -300,6 +450,12 @@ class _ActionPool:
     新冒出来的动作当场做二分, 判据和 `classify` 一样: 改得动答案区的是提交。
     ⚠️**当过提交就一直是提交**(跨状态取并集) —— 第一笔涂完再涂同样内容是
     无变化, 提交动作会被重新归类成调整, 下一笔直接采不到画笔。
+
+    🚨**这里不做 noop 剔除**(试过在这里当场剔"改不动答案区也改不动构型"的新
+    动作, 单独测下来对结果无影响, 而它是个单构型判断 —— 一个新目标在它刚出现
+    的那个构型上没用, 完全可能在别处有用)。noop 边的代价只是一次 fork, BFS
+    自己会跳过它; 剔错一条真边则是漏解。**多扩废节点只是慢, 掐窄可达集是漏解。**
+    完整实测见 `prune_noops`。
     """
 
     def __init__(self, st: CanvasSetup, box: tuple[int, int, int, int], acts_fn):
@@ -308,13 +464,16 @@ class _ActionPool:
         self.submit_keys = {repr(a) for a in st.submitters}
         self.adjusters: dict[str, Action] = {repr(a): a for a in st.adjusters}
         self.submitters: dict[str, Action] = {repr(a): a for a in st.submitters}
+        # 多构型验过的 noop, 可以永久跳过, 连 peek 都省了
+        self.noop_keys: set[str] = {repr(a) for a in st.noops}
 
     def at(self, node: Game, ob: Obs) -> list[Action]:
         if self.acts_fn is not None:
             before = _region(np.array(ob.grid), self.box)
             for a in self.acts_fn(ob):
                 r = repr(a)
-                if r in self.submit_keys or r in self.adjusters:
+                # noop_keys 是 prune_noops 在多个构型上验过的, 才敢一直跳过
+                if r in self.submit_keys or r in self.adjusters or r in self.noop_keys:
                     continue
                 o2 = node.peek(a)
                 if o2.dead or o2.level != ob.level:
@@ -329,15 +488,21 @@ class _ActionPool:
 
 def _sample(root: Game, robs: Obs, st: CanvasSetup, box: tuple[int, int, int, int],
             mask, floors: list[tuple[Game, np.ndarray]], prefix: list[Action],
-            max_configs: int, max_seconds: float, t0: float, pool: "_ActionPool | None" = None
+            max_configs: int, budget: Budget, pool: "_ActionPool | None" = None,
+            adj: dict[bytes, list[tuple[Action, bytes]]] | None = None
             ) -> tuple[list[Brush], bool, int, int, int]:
-    """从 root 的构型 BFS 遍历构型 × 提交动作, 用 floors 双底判出每支笔的覆盖区。"""
+    """从 root 的构型 BFS 遍历构型 × 提交动作, 用 floors 双底判出每支笔的覆盖区。
+
+    `adj` 非空时顺带把**构型图的边**记下来(构型 --动作--> 构型)。规划要用它:
+    把"从上一笔的构型走不走得到这一笔"变成硬约束, 而不是挑完笔才发现走不过去。
+    ⚠️指向"已经见过的构型"的边也要记 —— 那种边不产生新构型, 却正是回头路。
+    """
     fp0 = _config_fp(np.array(robs.grid), box, mask)
     seen = {fp0}
-    q: deque[tuple[list[Action], Game, Obs]] = deque([([], root.fork(), robs)])
+    q: deque[tuple[list[Action], Game, Obs, bytes]] = deque([([], root.fork(), robs, fp0)])
     configs: list[tuple[list[Action], bytes]] = [([], fp0)]
-    while q and len(configs) < max_configs and time.time() - t0 < max_seconds:
-        seq, node, ob = q.popleft()
+    while q and len(configs) < max_configs and budget.spend():
+        seq, node, ob, cur_fp = q.popleft()
         adjs = pool.at(node, ob) if pool is not None else st.adjusters
         for a in adjs:
             child = node.fork()
@@ -345,11 +510,13 @@ def _sample(root: Game, robs: Obs, st: CanvasSetup, box: tuple[int, int, int, in
             if o.dead or o.level > robs.level:
                 continue
             fp = _config_fp(np.array(o.grid), box, mask)
+            if adj is not None:
+                adj.setdefault(cur_fp, []).append((a, fp))
             if fp in seen:
                 continue
             seen.add(fp)
             configs.append((seq + [a], fp))
-            q.append((seq + [a], child, o))
+            q.append((seq + [a], child, o, fp))
     complete = not q
     # 提交动作也可能是 BFS 途中才冒出来的, 用最新的全集去采笔
     submitters = list(pool.submitters.values()) if pool is not None else st.submitters
@@ -365,7 +532,8 @@ def _sample(root: Game, robs: Obs, st: CanvasSetup, box: tuple[int, int, int, in
 
     out: dict[tuple[bytes, bytes], Brush] = {}
     for seq, cfg in configs:
-        if time.time() - t0 > max_seconds * 2:
+        # 采笔的规模已经被 max_configs 定死(确定性), 这里只留安全阀防跑飞
+        if budget.wall_expired():
             complete = False
             break
         clones = [f.fork() for f, _ in floors]
@@ -417,8 +585,9 @@ def _sample(root: Game, robs: Obs, st: CanvasSetup, box: tuple[int, int, int, in
 
 def collect_brushes(game: Game, obs: Obs, st: CanvasSetup,
                     mask: np.ndarray | None = None,
-                    max_configs: int = 400, max_seconds: float = 180.0,
-                    min_ratio: float = 0.9, acts_fn=None
+                    max_configs: int = 400, budget: Budget | None = None,
+                    min_ratio: float = 0.9, acts_fn=None,
+                    adj_out: dict[bytes, list[tuple[Action, bytes]]] | None = None
                     ) -> tuple[list[Brush], bool, int, int, int]:
     """枚举可达构型 × 提交动作, 双底采出每支笔的真实覆盖区。
 
@@ -426,16 +595,22 @@ def collect_brushes(game: Game, obs: Obs, st: CanvasSetup,
     🚨**第二个返回值必须往上报。** 库不全时抽象层会稳定收敛到一个非零差异,
     看起来像"这关无解" —— 那是采集被截断, 不是游戏无解。
 
+    预算走 `Budget`(确定性扩展数 + 墙钟安全阀), **不接受"多少秒"这种预算** ——
+    原因见 `Budget` 的注释: 按秒给预算, 两次跑的结果没有可比性。
+
     造底分两档: 先用当前构型的底(便宜); **判得动的格子不到 min_ratio 就换
     轨迹底重采**(见 `_trajectory_floors`)。不无条件用轨迹底, 是因为它要真机
     多走 anchor 那几步 —— 判得动的时候没必要花这个钱。
     """
-    t0 = time.time()
+    budget = budget if budget is not None else Budget()
     box = st.answer_box
 
     # 🚨先把构型掩码算出来, 后面所有构型指纹都用它。probe 的掩码只保证掩掉了
     # 按步数走的计数器, 保证不了"每提交一次才动一格"的落笔计数器。
     mask = _config_mask(game, obs, st, box, mask)
+
+    # 🚨这里**不要**调 prune_noops 去剔 noop 边。理由见那个函数的实测记录:
+    # 剔完可达构型 1074 -> 56, 抽象层从"解出 4 笔"退成"解不出(差 14 格)"。
 
     # 多个底。构型都不变(提交不改构型), 只有画布内容不同。
     #
@@ -477,7 +652,7 @@ def collect_brushes(game: Game, obs: Obs, st: CanvasSetup,
     # 动作池跨轮共用: BFS 途中新发现的点击目标, 后面几轮直接就能用上
     pool = _ActionPool(st, box, acts_fn)
     brushes, complete, judged, total, ncfg, tb = _sample(
-        game, obs, st, box, mask, floors, [], max_configs, max_seconds, t0, pool)
+        game, obs, st, box, mask, floors, [], max_configs, budget, pool, adj_out)
     if judged >= total * min_ratio:
         return brushes, complete, judged, total, ncfg
 
@@ -514,7 +689,7 @@ def collect_brushes(game: Game, obs: Obs, st: CanvasSetup,
     conflicts = 0
 
     for anchor in cands:
-        if time.time() - t0 > max_seconds * 2:
+        if budget.wall_expired():      # 安全阀; 轮数本身由 cands 定死
             break
         # 🚨停止条件用 **testable 的并集**, 不能用"跨笔的证据并集"。后者一开始
         # 就是满的(每格总有某支笔的 changed 说得清), 拿它当条件会让这个循环
@@ -526,7 +701,8 @@ def collect_brushes(game: Game, obs: Obs, st: CanvasSetup,
         if root is None or len(tfloors) < 2:
             continue
         alt_b, alt_complete, _j, _t, alt_ncfg, alt_tb = _sample(
-            root, robs, st, box, mask, tfloors, anchor, max_configs, max_seconds, t0, pool)
+            root, robs, st, box, mask, tfloors, anchor, max_configs, budget, pool,
+            adj_out)
         ncfg_total = max(ncfg_total, alt_ncfg)
         for b in alt_b:
             key = (b.cfg, repr(b.submit))
@@ -599,10 +775,114 @@ def plan_canvas(start: np.ndarray, target: np.ndarray, brushes: list[Brush],
                       note=f"beam 宽 {width} 深 {max_depth} 未到 0")
 
 
+def _dists_from(cfg: bytes, adj: dict[bytes, list[tuple[Action, bytes]]],
+                cache: dict[bytes, dict[bytes, int]]) -> dict[bytes, int]:
+    """构型图上从 cfg 出发的单源最短距离(按调整动作步数)。结果缓存。"""
+    if cfg in cache:
+        return cache[cfg]
+    dist = {cfg: 0}
+    q: deque[bytes] = deque([cfg])
+    while q:
+        c = q.popleft()
+        for _a, c2 in adj.get(c, ()):
+            if c2 not in dist:
+                dist[c2] = dist[c] + 1
+                q.append(c2)
+    cache[cfg] = dist
+    return dist
+
+
+def _path_on_graph(src: bytes, dst: bytes,
+                   adj: dict[bytes, list[tuple[Action, bytes]]]) -> list[Action] | None:
+    """在**采集时记下的构型图**上找路, 不在真机上重新 BFS。
+
+    🚨"规划说可达、执行说走不到"的根源就在这里: 规划按 `adj` 算可达, 执行却用
+    真机 BFS 重搜, 而两边的动作表是两个不同的 `_ActionPool` 实例 —— 采集时
+    发现的动作, 执行时那个池子未必发现得了。同一张图问出两个答案。
+
+    走图上的路是合法的, 因为骨架第二句实测成立(`diag_skeleton.py`: 同构型
+    不同画布走同一条调整序列, 终点构型 **20/20 相同**) —— 调整动作的效果与
+    画布无关, 所以采集时记下的边在执行时依然有效。
+    """
+    if src == dst:
+        return []
+    prev: dict[bytes, tuple[bytes, Action] | None] = {src: None}
+    q: deque[bytes] = deque([src])
+    while q:
+        c = q.popleft()
+        for a, c2 in adj.get(c, ()):
+            if c2 in prev:
+                continue
+            prev[c2] = (c, a)
+            if c2 == dst:
+                path: list[Action] = []
+                cur: bytes = dst
+                while prev[cur] is not None:
+                    p, act = prev[cur]          # type: ignore[misc]
+                    path.append(act)
+                    cur = p
+                return list(reversed(path))
+            q.append(c2)
+    return None
+
+
+def plan_canvas_graph(start_cfg: bytes, start: np.ndarray, target: np.ndarray,
+                      brushes: list[Brush], adj: dict[bytes, list[tuple[Action, bytes]]],
+                      width: int = 200, max_depth: int = 8
+                      ) -> CanvasPlan:
+    """在**构型图上**做图层分解 —— "走得过去"是硬约束, 不是事后才发现的问题。
+
+    🚨`plan_canvas` 把画笔当成一个无序集合来挑, 挑完才在真机上发现走不过去
+    (cd82 L3 实测: 抽象层解出 4 笔, 执行到第 2 笔报"构型图上走不到这支笔")。
+    根子在于**根本没有一张静态的构型图**: 坐标固定的点击在不同画面上点到的是
+    不同东西, 所以可达性依赖你站在哪。执行期补救只能救"走不到",
+    救不了"顺序已经被前一笔破坏"。
+
+    这里把可达性提进规划: 状态带上当前构型, 每一笔只能选**从当前构型走得到**的笔,
+    代价 = 走过去的步数 + 提交那一步。于是排出来的方案在构型图上天然可执行。
+    """
+    t0 = time.time()
+    tgt = np.asarray(target)
+    cache: dict[bytes, dict[bytes, int]] = {}
+    # (差异, 步数, 构型, 画布, 选中的笔)
+    lanes = [(int((start != tgt).sum()), 0, start_cfg, start, [])]
+    best = int((start != tgt).sum())
+    for _ in range(max_depth):
+        nxt: dict[tuple[bytes, bytes], tuple[int, int, bytes, np.ndarray, list[Brush]]] = {}
+        for _gap, cost, cfg, canvas, path in lanes:
+            dist = _dists_from(cfg, adj, cache)
+            for b in brushes:
+                d = dist.get(b.cfg)
+                if d is None:          # 从这里走不到这支笔 —— 直接不是候选
+                    continue
+                nc = b.apply(canvas)
+                key = (b.cfg, nc.tobytes())
+                ncost = cost + d + 1
+                if key in nxt and nxt[key][1] <= ncost:
+                    continue
+                nxt[key] = (int((nc != tgt).sum()), ncost, b.cfg, nc, path + [b])
+        if not nxt:
+            return CanvasPlan(False, best_gap=best, seconds=time.time() - t0,
+                              note="构型图上没有可达的笔")
+        ranked = sorted(nxt.values(), key=lambda x: (x[0], x[1]))
+        best = min(best, ranked[0][0])
+        if ranked[0][0] == 0:
+            picked = ranked[0][4]
+            cum, acc = start.copy(), []
+            for b in picked:
+                cum = b.apply(cum)
+                acc.append(cum.copy())
+            return CanvasPlan(True, picked, acc, 0, time.time() - t0,
+                              note=f"(构型图上, 共 {ranked[0][1]} 步)")
+        lanes = [(c[0], c[1], c[2], c[3], c[4]) for c in ranked[:width]]
+    return CanvasPlan(False, best_gap=best, seconds=time.time() - t0,
+                      note=f"构型图上 beam 宽 {width} 深 {max_depth} 未到 0")
+
+
 def solve(game: Game, obs: Obs, st: CanvasSetup, target: np.ndarray,
           mask: np.ndarray | None = None, max_strokes: int = 10,
-          max_seconds: float = 900.0, acts_fn=None, max_configs: int = 400,
-          collect_seconds: float = 180.0) -> tuple[list[Action], Obs, str]:
+          wall_seconds: float = 900.0, acts_fn=None, max_configs: int = 400,
+          collect_expansions: int = 4000) -> tuple[list[Action], Obs, str]:
     """闭环求解: **每落一笔就用实测画布重新规划**, 不开环执行整套方案。
 
     为什么不能开环: 实测在 cd82 L3 上, 抽象层 0.07 秒解出 4 笔, 真机把前
@@ -623,8 +903,10 @@ def solve(game: Game, obs: Obs, st: CanvasSetup, target: np.ndarray,
     log: list[str] = []
 
     for k in range(max_strokes):
-        if time.time() - t0 > max_seconds:
-            return full, cur, f"超时, 落了 {k} 笔; " + "; ".join(log)
+        # 总控只是安全阀。真到了这里, 这次跑就不可复现了, 必须说出来。
+        if time.time() - t0 > wall_seconds:
+            return full, cur, ("🚨墙钟安全阀触发(本次结果不可复现, 不可用于对照), "
+                               f"落了 {k} 笔; " + "; ".join(log))
         canvas = _region(np.array(cur.grid), box)
         gap = int((canvas != target).sum())
         if gap == 0:
@@ -655,16 +937,16 @@ def solve(game: Game, obs: Obs, st: CanvasSetup, target: np.ndarray,
             st = CanvasSetup(answer_box=box, submitters=list(subs.values()),
                              adjusters=list(adjs.values()))
 
+        cb = Budget(max_expansions=collect_expansions, wall_seconds=wall_seconds)
         brushes, complete, judged, total, ncfg = collect_brushes(
-            node, cur, st, mask, max_configs=max_configs,
-            max_seconds=collect_seconds)
+            node, cur, st, mask, max_configs=max_configs, budget=cb)
         if not brushes:
             return full, cur, f"第 {k+1} 笔: 采不到画笔; " + "; ".join(log)
 
         plan = plan_canvas(canvas, target, brushes)
         if plan.found:
             pick = plan.brushes[0]
-            log.append(f"第{k+1}笔: 构型{ncfg}{'' if complete else '(截断)'} 笔{len(brushes)} 判{judged}/{total} -> 抽象层 {len(plan.brushes)} 笔到底, 先落第一笔")
+            log.append(f"第{k+1}笔: 构型{ncfg}{'' if complete else '(截断)'} 笔{len(brushes)} 判{judged}/{total} -> 抽象层 {len(plan.brushes)} 笔到底, 先落第一笔{cb.note}")
         else:
             # 抽象层到不了底就走贪心: 挑这一笔之后差异最小的。
             # ⚠️贪心可能被"必须先变差"卡住, 但至少每一笔都有实测反馈,
@@ -761,8 +1043,8 @@ def execute_cfg(game: Game, obs: Obs, st: CanvasSetup, plan: CanvasPlan,
 
 def solve_committed(game: Game, obs: Obs, st: CanvasSetup, target: np.ndarray,
                     mask: np.ndarray | None = None, max_strokes: int = 12,
-                    max_seconds: float = 900.0, acts_fn=None,
-                    max_configs: int = 2000, collect_seconds: float = 300.0
+                    wall_seconds: float = 900.0, acts_fn=None,
+                    max_configs: int = 2000, collect_expansions: int = 6000
                     ) -> tuple[list[Action], Obs, str]:
     """**信任整套方案, 只在预测与实测分岔时才重规划。**
 
@@ -790,10 +1072,16 @@ def solve_committed(game: Game, obs: Obs, st: CanvasSetup, target: np.ndarray,
     plan: CanvasPlan | None = None
     idx = 0
     pool = _ActionPool(st, box, acts_fn)
+    # 构型图跨轮累积 —— 重规划时上一轮探到的边依然有效(骨架②: 调整动作的
+    # 效果与画布无关, diag_skeleton 实测 20/20)
+    adj: dict[bytes, list[tuple[Action, bytes]]] = {}
 
+    cb = Budget(max_expansions=collect_expansions, wall_seconds=wall_seconds)
     for k in range(max_strokes):
-        if time.time() - t0 > max_seconds:
-            return full, cur, f"超时, 落了 {k} 笔; " + "; ".join(log)
+        # 总控只是安全阀。真到了这里, 这次跑就不可复现了, 必须说出来。
+        if time.time() - t0 > wall_seconds:
+            return full, cur, ("🚨墙钟安全阀触发(本次结果不可复现, 不可用于对照), "
+                               f"落了 {k} 笔; " + "; ".join(log))
         canvas = _region(np.array(cur.grid), box)
         if int((canvas != target).sum()) == 0:
             return full, cur, "画布已等于题面但未过关(判定不止看这块); " + "; ".join(log)
@@ -810,16 +1098,20 @@ def solve_committed(game: Game, obs: Obs, st: CanvasSetup, target: np.ndarray,
                     adjs.pop(k2, None)
                 st = CanvasSetup(answer_box=box, submitters=list(subs.values()),
                                  adjusters=list(adjs.values()))
+            cb = Budget(max_expansions=collect_expansions, wall_seconds=wall_seconds)
             brushes, complete, judged, total, ncfg = collect_brushes(
                 node, cur, st, mask, max_configs=max_configs,
-                max_seconds=collect_seconds, acts_fn=acts_fn)
+                budget=cb, acts_fn=acts_fn, adj_out=adj)
             if not brushes:
                 return full, cur, f"第 {k+1} 笔: 采不到画笔; " + "; ".join(log)
-            plan = plan_canvas(canvas, target, brushes)
+            # 在构型图上规划: "从上一笔走得到这一笔"是硬约束, 不是事后才发现的问题
+            plan = plan_canvas_graph(_config_fp(np.array(cur.grid), box, mask),
+                                     canvas, target, brushes, adj)
             idx = 0
             log.append(f"[规划] 构型{ncfg}{'' if complete else '(截断)'} 笔{len(brushes)} "
                        f"判{judged}/{total} -> "
-                       f"{'解出 '+str(len(plan.brushes))+' 笔' if plan.found else '未解出(最好差 '+str(plan.best_gap)+')'}")
+                       f"{'解出 '+str(len(plan.brushes))+' 笔' if plan.found else '未解出(最好差 '+str(plan.best_gap)+')'}"
+                       f"{cb.note}")
             if not plan.found:
                 best = min(brushes, key=lambda b: int((b.apply(canvas) != target).sum()))
                 if int((best.apply(canvas) != target).sum()) >= int((canvas != target).sum()):
@@ -833,7 +1125,10 @@ def solve_committed(game: Game, obs: Obs, st: CanvasSetup, target: np.ndarray,
         # 🚨不能直接走 pick.seq —— 那条路是从**采集时那个根构型**出发的, 而现在
         # 站在上一笔停下的构型上。改成在构型图上从当前位置找路; 找不到就地重规划
         # (走不到本身就是一种分歧, 按闭环的规矩处理, 不当失败)。
-        path = _path_to_cfg(node, cur, st.adjusters, pick.cfg, box, mask, pool=pool)
+        cur_cfg = _config_fp(np.array(cur.grid), box, mask)
+        path = _path_on_graph(cur_cfg, pick.cfg, adj)
+        if path is None:      # 图上没记到这条路, 才退回真机重搜
+            path = _path_to_cfg(node, cur, st.adjusters, pick.cfg, box, mask, pool=pool)
         if path is None:
             log.append(f"[分歧] 第 {k+1} 笔: 从当前构型走不到这支笔 -> 重规划")
             plan = None
@@ -857,7 +1152,8 @@ def solve_committed(game: Game, obs: Obs, st: CanvasSetup, target: np.ndarray,
 
 def execute(game: Game, obs: Obs, st: CanvasSetup, plan: CanvasPlan,
             mask: np.ndarray | None = None,
-            per_stroke_seconds: float = 120.0) -> tuple[list[Action], Obs, str]:
+            per_stroke_expansions: int = 3000,
+            wall_seconds: float = 600.0) -> tuple[list[Action], Obs, str]:
     """把抽象计划翻译回真机: 逐笔搜"怎么调才能涂出累积画布该有的样子"。
 
     🚨判据必须用**累积画布**, 不能用单笔图案。踩过一次: 第 1 笔涂完后再提交
@@ -866,11 +1162,12 @@ def execute(game: Game, obs: Obs, st: CanvasSetup, plan: CanvasPlan,
     box = st.answer_box
     full: list[Action] = []
     for k, want in enumerate(plan.cumulative):
-        t0 = time.time()
+        # 每笔一份新预算, 确定性主判据 + 墙钟安全阀(见 Budget)
+        bud = Budget(max_expansions=per_stroke_expansions, wall_seconds=wall_seconds)
         seen = {fingerprint(np.array(obs.grid), mask)}
         q: deque[tuple[list[Action], Game, Obs]] = deque([([], game.fork(), obs)])
         found = None
-        while q and time.time() - t0 < per_stroke_seconds and found is None:
+        while q and found is None and bud.spend():
             seq, node, ob = q.popleft()
             for sub in st.submitters:
                 got = _region(np.array(node.fork().act(sub).grid), box)

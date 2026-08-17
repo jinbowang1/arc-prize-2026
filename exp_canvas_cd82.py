@@ -51,7 +51,7 @@ st = classify(game, obs, acts, h.a)
 print(st.text(), flush=True)
 
 # ③ 画笔库(双底)
-brushes, complete, judged, total_cells, ncfg = collect_brushes(game, obs, st, rep.mask, max_configs=2000, max_seconds=300)
+brushes, complete, judged, total_cells, ncfg = collect_brushes(game, obs, st, rep.mask, max_configs=2000)
 sizes = sorted((b.size for b in brushes), reverse=True)[:5]
 print(f"[canvas] 画笔 {len(brushes)} 支, 最大覆盖 {sizes}, 本次采集能判 {judged}/{total_cells} 格, "
       f"构型 {ncfg} 个{'完整' if complete else '**被截断**(库不全时抽象层会像无解)'}"
@@ -70,7 +70,7 @@ def acts_fn(o):
     return ([Action.key(i) for i in sp['keys']] +
             [Action.click(c, r) for (r, c) in sc.targets])
 seq, obs2, why = solve(game, obs, st, target, rep.mask, acts_fn=acts_fn,
-                       max_configs=2000, collect_seconds=300)
+                       max_configs=2000)
 print(f"[canvas] {why}", flush=True)
 print(f"真机 {len(seq)} 步 -> level {obs2.level} | 总耗时 {time.time()-t0:.0f}s", flush=True)
 if obs2.level > LV:

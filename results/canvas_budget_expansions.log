@@ -1,0 +1,30 @@
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-17 19:57:02 | INFO | Created new scorecard: 9f3ef3fb-4d12-4165-8df1-c8f68beff090
+2026-08-17 19:57:02 | INFO | Found latest version of cd82: cd82-fb555c5d (downloaded: 2026-08-07 09:21:09.678017+00:00)
+2026-08-17 19:57:02 | INFO | Successfully loaded game class Cd82 from environment_files/cd82/fb555c5d/cd82.py
+到 L3, level=2, 已知解 18 步, 人类 41 步
+目标: region_match((34, 43, 27, 36) 要等于 (3, 12, 3, 12))  开局差 100 格
+[canvas] 答案区 (34, 43, 27, 36) | 提交动作 5 个 ['A5', 'A6(34,19)', 'A6(31,19)', 'A6(31,21)'] | 调整动作 32 个
+[掩码] probe 掩 5 格, 因果判据再掩 0 格: []
+[canvas] 画笔 84 支, 判 100/100 格, 构型 1074 完整 | 146s
+[证据] 跨笔并集判不了 0 格 | 至少一支笔判不了 10 格
+       单笔盲区: 最小 0 格, 中位 0 格, 最大 10 格 <- **收尾要用盲区为 0 的笔**
+       盲区为 0 的笔: 83 支
+[至少一支笔判不了的格] o=全部笔都有证据 .=有笔没证据
+    o o o o o o o o o o
+    o o o o o o o o o o
+    o o o o o o o o o o
+    o o o o o o o o o o
+    o o o o o o o o o o
+    . . . . o o o o o o
+    . . . o o o o o o o
+    . . o o o o o o o o
+    . o o o o o o o o o
+    o o o o o o o o o o
+[canvas] 抽象画布解出 4 笔, 0.13s 
+  第 1 笔之后应有差异 65 格
+  第 2 笔之后应有差异 55 格
+  第 3 笔之后应有差异 12 格
+  第 4 笔之后应有差异 0 格
+[execute] 第 5 笔: 没有任何一笔能缩小差异(当前差 12); [规划] 构型1074 笔84 判100/100 -> 解出 4 笔; [分歧] 第 4 笔: 从当前构型走不到这支笔 -> 重规划; [规划] 构型879 笔135 判65/100 -> 未解出(最好差 12)
+真机 13 步 -> level 2 | 总耗时 744s

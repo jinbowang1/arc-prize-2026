@@ -75,7 +75,7 @@ print(f"[A] 从当前构型 BFS: {len(S0)} 个构型{'(穷尽)' if done0 else '(
 
 # 拿第一档的库, 取一支笔的 seq 当 anchor(和 collect_brushes 里的定向一样)
 brushes, complete, judged, total, ncfg = collect_brushes(
-    game, obs, st, rep.mask, max_configs=2000, max_seconds=120, min_ratio=0.0)
+    game, obs, st, rep.mask, max_configs=2000, min_ratio=0.0)
 print(f"[A] 第一档库 {len(brushes)} 支, 判 {judged}/{total}, 构型 {ncfg}", flush=True)
 anchor = max(brushes, key=lambda b: len(b.seq)).seq
 print(f"[B] anchor = {[str(a) for a in anchor]} ({len(anchor)} 步)", flush=True)

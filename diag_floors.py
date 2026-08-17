@@ -55,7 +55,7 @@ def acts_fn(o):
 
 # 复现「落 3 笔之后」: 直接让闭环跑 3 笔, 再把它走过的序列在克隆体上重放
 seq3, _o3, why3 = solve(game, obs, st, target, rep.mask, max_strokes=3,
-                        acts_fn=acts_fn, max_configs=2000, collect_seconds=300)
+                        acts_fn=acts_fn, max_configs=2000)
 node = game.fork()
 cur = obs
 for a in seq3:

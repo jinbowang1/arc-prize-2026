@@ -110,7 +110,7 @@ print(f"[A] 提交动作不改构型: {tested_a - bad_a}/{tested_a} 次成立"
 
 # ---- 采开局画笔库 -------------------------------------------------------
 brushes, complete, judged, total, ncfg = collect_brushes(
-    game, obs, st, rep.mask, max_configs=MAX_CFG, max_seconds=120)
+    game, obs, st, rep.mask, max_configs=MAX_CFG)
 print(f"[B0] 开局画笔 {len(brushes)} 支, 能判 {judged}/{total} 格 | {time.time()-t0:.0f}s",
       flush=True)
 

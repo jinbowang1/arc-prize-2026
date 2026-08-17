@@ -101,7 +101,7 @@ for k in range(1, 4):
 from harness.canvas import collect_brushes, plan_canvas  # noqa: E402
 
 brushes, complete, judged, total, ncfg = collect_brushes(
-    game, obs, st, rep.mask, max_configs=80, max_seconds=120)
+    game, obs, st, rep.mask, max_configs=80)
 start = _region(np.array(obs.grid), BOX)
 target = _region(np.array(obs.grid), h.b)
 plan = plan_canvas(start, target, brushes)

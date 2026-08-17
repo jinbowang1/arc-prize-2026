@@ -55,7 +55,7 @@ def acts_fn(o):
 
 
 seq3, _o, why = solve(game, obs, st, target, rep.mask, max_strokes=3,
-                      acts_fn=acts_fn, max_configs=400, collect_seconds=120)
+                      acts_fn=acts_fn, max_configs=400)
 node, cur = game.fork(), obs
 for a in seq3:
     cur = node.act(a)
@@ -89,7 +89,7 @@ for k in subs:
 st3 = CanvasSetup(answer_box=BOX, submitters=list(subs.values()),
                   adjusters=list(adjs.values()))
 brushes, complete, judged, total, ncfg = collect_brushes(
-    node, cur, st3, rep.mask, max_configs=400, max_seconds=120)
+    node, cur, st3, rep.mask, max_configs=400)
 print(f"\n[2] 此状态画笔 {len(brushes)} 支, 判 {judged}/{total} 格, 构型 {ncfg} "
       f"{'完整' if complete else '**截断**'} | {time.time()-t0:.0f}s", flush=True)
 
@@ -116,7 +116,7 @@ else:
 
 # 这 12 格历史上被盖到过吗? 用开局的库对照
 b0, _c, j0, t_, n0 = collect_brushes(game, obs, st, rep.mask,
-                                     max_configs=400, max_seconds=120)
+                                     max_configs=400)
 reach0 = [b for b in b0 if (b.covered & gap).any()]
 print(f"\n[3] 对照: **开局**的库里够得着这 12 格的笔 {len(reach0)}/{len(b0)} 支 "
       f"(判 {j0}/{t_} 格)", flush=True)

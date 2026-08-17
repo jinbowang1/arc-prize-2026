@@ -66,7 +66,7 @@ def acts_fn(o):
 
 
 brushes, complete, judged, total, ncfg = collect_brushes(
-    game, obs, st, rep.mask, max_configs=2000, max_seconds=300, acts_fn=acts_fn)
+    game, obs, st, rep.mask, max_configs=2000, acts_fn=acts_fn)
 print(f"[canvas] 画笔 {len(brushes)} 支, 判 {judged}/{total} 格, 构型 {ncfg} "
       f"{'完整' if complete else '**截断**'} | {time.time()-t0:.0f}s", flush=True)
 
@@ -107,7 +107,7 @@ for i, cum in enumerate(plan.cumulative):
 # 开环执行。跑在克隆体上, 真机不动。
 node = game.fork()
 seq, o2, why = solve_committed(node, obs, st, target, cmask, acts_fn=acts_fn,
-                               max_configs=2000, collect_seconds=300)
+                               max_configs=2000)
 print(f"[execute] {why}", flush=True)
 print(f"真机 {len(seq)} 步 -> level {o2.level} | 总耗时 {time.time()-t0:.0f}s", flush=True)
 if o2.level > LV:

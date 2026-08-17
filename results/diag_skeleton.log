@@ -1,0 +1,17 @@
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-17 20:14:18 | INFO | Created new scorecard: f62d04e1-94f1-4a9c-a8f5-5d3c75e00784
+2026-08-17 20:14:18 | INFO | Found latest version of cd82: cd82-fb555c5d (downloaded: 2026-08-07 09:21:09.678017+00:00)
+2026-08-17 20:14:18 | INFO | Successfully loaded game class Cd82 from environment_files/cd82/fb555c5d/cd82.py
+答案区 (34, 43, 27, 36) | 提交 5 调整 32 | 构型掩码有效 4091 格
+
+[② 调整动作的效果与画布无关?]
+  开局: 两底画布差 50 格
+  走过 A1: 两底画布差 50 格
+  走过 A2: 两底画布差 50 格
+  走过 A3: 两底画布差 55 格
+
+结论: 终点构型相同 20 / 不同 0 / 走不通跳过 0
+区分力: 互不相同的构型指纹 3 个 | 真挪动了构型的比对 7 组, 原地未动 13 组
+  ✅ ② 成立 —— 调整动作的效果与画布无关, 骨架没问题,
+     那么'走不到'另有原因(adj 记录不全 / 找路的动作表不够)
+总耗时 1s
