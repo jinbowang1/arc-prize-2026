@@ -1,0 +1,24 @@
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-18 00:36:22 | INFO | Created new scorecard: 4033ede5-ebe3-48f6-a2b4-cc7610adc830
+2026-08-18 00:36:22 | INFO | Found latest version of sc25: sc25-635fd71a (downloaded: 2026-08-07 09:21:02.685063+00:00)
+2026-08-18 00:36:22 | INFO | Successfully loaded game class Sc25 from environment_files/sc25/635fd71a/sc25.py
+重放在案解 18 步 -> level=2 (现在是 L3)
+动作 32 个 (按键 4 + 点击 28) | lagged=False
+
+因果目标提议 12 条, 前 3:
+  RegionMatch(a=(18, 29, 31, 46), b=(48, 59, 8, 23), name='region_match')
+  RegionMatch(a=(18, 29, 31, 46), b=(49, 60, 8, 23), name='region_match')
+  RegionMatch(a=(18, 29, 31, 46), b=(50, 61, 8, 23), name='region_match')
+
+选中提议: 答案区 (49, 61, 24, 36) 题面 (47, 59, 11, 23)
+
+[canvas] 答案区 (49, 61, 24, 36) | 提交动作 10 个 ['A6(32,55)', 'A6(25,50)', 'A6(30,50)', 'A6(35,50)'] | 调整动作 22 个
+  提交动作: ['A6(32,55)', 'A6(25,50)', 'A6(30,50)', 'A6(35,50)', 'A6(25,55)', 'A6(30,55)', 'A6(35,55)', 'A6(25,60)']
+  调整动作: ['A1', 'A2', 'A3', 'A4', 'A6(62,31)', 'A6(40,21)', 'A6(48,22)', 'A6(36,22)']
+  构型掩码有效 4068 格
+
+[采画笔库]
+  画笔 8 支 | 判 81/169 格 | 构型 82完整 | 39s
+  [canvas] 抽象画布未解出(最好差 126 格), 0.00s beam 宽 300 深 8 未到 0
+
+总耗时 39s

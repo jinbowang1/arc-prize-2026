@@ -272,6 +272,20 @@ def _config_mask(game: Game, obs: Obs, st: CanvasSetup,
             if o.dead or o.level != obs.level:
                 continue
             touched |= (g0 != np.array(o.grid))
+
+    # 🚨计数器可能**连着提交好几次才现形**, 单次提交一次都测不到。
+    # sc25 L3 实测: 右上角 列62-63 有根竖条(色14->0), **第 4 次提交才开始动**;
+    # cd82 的落笔计数器 (63,55) 同样"开局测不出来, 涂了几笔才现形"。
+    # ⚠️此前"必须在多个状态上问"一直是**横向**铺开不同构型(nodes), 从没**纵向**
+    # 连着提交多次 —— 同一句教训的两个方向, 这次栽在纵向。
+    for nd, ob in nodes[:3]:
+        g0 = np.array(ob.grid)
+        f = nd.fork()
+        for sub in st.submitters:
+            o = f.act(sub)
+            if o.dead or o.level != obs.level:
+                break
+            touched |= (g0 != np.array(o.grid))
     touched[r0:r1 + 1, c0:c1 + 1] = False        # 答案区内被改是天经地义的
     return m & ~touched
 
@@ -635,6 +649,24 @@ def collect_brushes(game: Game, obs: Obs, st: CanvasSetup,
     for sub in st.submitters[:4]:
         f = game.fork()
         add_floor(f, f.act(sub))
+
+    # 🚨**小笔画布**: 一次提交只改几格, 两底就只差几格, 其余格子"本来就一样",
+    # 双底判据在那里给不出任何信息。
+    # sc25 L3 实测: 一次提交只改 9 格(九宫格的一格 3x3), 判得动 **45/169**。
+    # 补一种"**连续按下所有提交动作**"的底 —— 把差异铺满整块画布。
+    # 对 sc25 = 依次点 10 个格子, 九宫格整块被切换, 与原底处处不同。
+    # ⚠️仍走 add_floor, 它会验证"构型没变"; 且这是**新增**的底不替换原有的,
+    # 多一个底只会让 testable 变大, 不会让已有证据变差。
+    if len(st.submitters) > 1:
+        f = game.fork()
+        last = None
+        for sub in st.submitters:
+            o2 = f.act(sub)
+            if o2.dead or o2.level != obs.level:
+                break
+            last = o2
+        if last is not None:
+            add_floor(f, last)
 
     for a, b in _inverse_pairs(game, obs, st.adjusters, base_cfg, box, mask)[:3]:
         for sub in st.submitters[:2]:
