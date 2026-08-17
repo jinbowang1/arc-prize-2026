@@ -40,6 +40,26 @@ def fingerprint(grid: np.ndarray, mask: np.ndarray | None,
     return base if not pending else base + b"|p" + bytes([pending])
 
 
+def _settled_win(game: "Game", child: "Game", a: Action, o: Obs, base_level: int):
+    """过关信号也可能滞后 —— 补一步再看 level。返回补步后的动作序列尾巴或 None。
+
+    🚨sc25 实测: L1 的解**只有靠这一步才找得到**(13 步 vs 人类 36, 整条重放复核
+    通过)。此前多轮搜索(12000 节点 BFS、五倍预算 best_first)很可能都走到过解、
+    却没认出来 —— 因为只查当前 `o.level`。
+
+    机理: 这类游戏 `perform_action` 只注入、下一次调用才结算(见 env.Game.act),
+    画面滞后一拍已经确认, **过关信号没理由不滞后**。最后一步已经达标但还没显示,
+    只看 o.level 就整个漏掉。
+
+    ⚠️只对 lagged 局做(每节点多一次 fork, 成本翻倍)。ls20/cd82 这类即时生效的
+    局 game.lagged=False, 一次都不多花。
+    """
+    if o.level > base_level or not getattr(game, "lagged", False):
+        return None
+    p = child.fork().act(a)
+    return [a, a] if (not p.dead and p.level > base_level) else None
+
+
 def candidates(obs: Obs, keys: list[int], click_id: int | None) -> list[Action]:
     """当前状态下的候选动作: 全部按键 + 塌缩后的点击目标。"""
     acts = [Action.key(i) for i in keys]
@@ -105,6 +125,11 @@ def bfs_level_up(game: Game, base: Obs, keys: list[int], click_id: int | None,
             if o.level > base.level:
                 return SearchResult(True, seq=seq + [a], nodes=len(seen), expanded=expanded,
                                     deepest=len(seq) + 1, frontier=len(q),
+                                    seconds=time.time() - t0)
+            tail = _settled_win(game, child, a, o, base.level)
+            if tail:
+                return SearchResult(True, seq=seq + tail, nodes=len(seen), expanded=expanded,
+                                    deepest=len(seq) + len(tail), frontier=len(q),
                                     seconds=time.time() - t0)
             fp = fingerprint(np.array(o.grid), mask, o.pending)
             if fp in seen:
@@ -189,6 +214,11 @@ def best_first(game: Game, base: Obs, keys: list[int], click_id: int | None,
             if o.level > base.level:
                 return SearchResult(True, seq=seq + [a], nodes=len(seen), expanded=expanded,
                                     deepest=len(seq) + 1, frontier=len(heap),
+                                    seconds=time.time() - t0)
+            tail = _settled_win(game, child, a, o, base.level)
+            if tail:
+                return SearchResult(True, seq=seq + tail, nodes=len(seen), expanded=expanded,
+                                    deepest=len(seq) + len(tail), frontier=len(heap),
                                     seconds=time.time() - t0)
             cg = np.array(o.grid)
             fp = fingerprint(cg, mask, o.pending)

@@ -1,0 +1,22 @@
+=== sc25 攻关 (预算 x3.0) ===
+cfg = {'bfs_seconds': 135.0, 'best_first_seconds': 360.0, 'slot_seconds': 360.0, 'max_nodes': 60000}
+人类基准 [36, 6, 32, 83, 143, 50] 合计 350
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-17 23:10:02 | INFO | Created new scorecard: 4c1db4d5-0b39-4886-8c2a-2349e4917925
+2026-08-17 23:10:02 | INFO | Found latest version of sc25: sc25-635fd71a (downloaded: 2026-08-07 09:21:02.685063+00:00)
+2026-08-17 23:10:02 | INFO | Successfully loaded game class Sc25 from environment_files/sc25/635fd71a/sc25.py
+[agent] sc25 动作空间=keyboard_click
+[交接] L1 是第一关, 无可继承知识, 全部要探
+  [ReAct] 实体 12 个, 动作预算 52(GAME_OVER(两种走法一致, 判定为硬动作预算))
+  [ReAct] 因果目标假设 12 条, 首选 region_match((19, 22, 31, 42) 要等于 (50, 53, 11, 22)) 开局 h=31
+  [Plan] BFS(最短) [search] 未解出(超时 135.0s) | 扩展 1331 节点, 见过 4782 状态, 最深 5 层, 队列剩 3451, 用时 135.0s
+  [Plan] [model] 27 个动作: 可用 0(最大覆盖 []) / 状态相关 14 / 无效果 13 / 致死 0 / 样本不足 0
+  [Plan] region_match((19, 22, 31, 42) 要等于 (50, 53, 11, 22)) 第1轮 [plan] 抽象层未解出(没有任何动作建成了常量覆盖表 —— 这个游戏的效果与状态有关, 抽象层用不上, 该回真机搜) | 展开 0 节点, h 最好 inf, 0.0s
+  [Plan] region_match((19, 22, 31, 42) 要等于 (50, 53, 12, 23)) 第1轮 [plan] 抽象层未解出(没有任何动作建成了常量覆盖表 —— 这个游戏的效果与状态有关, 抽象层用不上, 该回真机搜) | 展开 0 节点, h 最好 inf, 0.0s
+  [Plan] 真机最佳优先(region_match((19, 22, 31, 42) 要等于 (50, 53, 11, 22))) [search] 未解出(超时 360.0s, 最好的 h=31) | 扩展 3723 节点, 见过 7101 状态, 最深 8 层, 队列剩 3378, 用时 360.1s
+  [Plan] 真机最佳优先(region_match((19, 22, 31, 42) 要等于 (50, 53, 12, 23))) [search] 未解出(超时 360.0s, 最好的 h=28) | 扩展 3642 节点, 见过 6781 状态, 最深 7 层, 队列剩 3139, 用时 360.0s
+=== sc25 ===
+ ✗ L1: 0 步 (人类 36) 856.4s
+ 通关 0/1 | AI 0 步 vs 人类 0 步
+ **人工介入次数 = 0**
+总耗时 856s
