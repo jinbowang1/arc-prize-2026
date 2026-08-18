@@ -116,14 +116,14 @@ def semantic_fp(game: Game, obs: Obs, acts: list[Action]):
     if len(cells) == 0:
         print(f"  语义指纹: 画布 {BOX} + 构型(全屏掩码 {int(mask.sum())} 格)", flush=True)
         return ((lambda g: (_region(g, BOX).tobytes(), _config_fp(g, BOX, mask))),
-                BOX, _region(mut, BOX), None, sc.bg)
+                BOX, _region(mut, BOX), None, None)
     CFG = (int(cells[:, 0].min()), int(cells[:, 0].max()),
            int(cells[:, 1].min()), int(cells[:, 1].max()))
     ch, cw = CFG[1] - CFG[0] + 1, CFG[3] - CFG[2] + 1
     print(f"  语义指纹: 画布 {BOX}(提交 {len(st.submitters)}) + 构型 {CFG} "
           f"({ch}x{cw}={ch*cw} 格, 而全屏掩码是 {int(mask.sum())} 格)", flush=True)
     return (lambda g: (_region(g, BOX).tobytes(), _region(g, CFG).tobytes()),
-            BOX, _region(mut, BOX), CFG, sc.bg)
+            BOX, _region(mut, BOX), CFG, adj_mut)
 
 
 def solve_level(game: Game, obs: Obs, lv: int):
@@ -141,7 +141,8 @@ def solve_level(game: Game, obs: Obs, lv: int):
     """
     acts = act_pool(game, obs)
     t0 = time.time()
-    fp, BOX, inbox, CFG, BG = semantic_fp(game, obs, acts)
+    fp, BOX, inbox, CFG, adj_mut = semantic_fp(game, obs, acts)
+    r0, r1, c0, c1 = BOX if BOX is not None else (0, 0, 0, 0)
 
     from harness.canvas import _region as _rg
     TCOL = 2                          # 画布目标色: 从 L1/L2 真解归纳
@@ -151,25 +152,71 @@ def solve_level(game: Game, obs: Obs, lv: int):
     # 所以过关不是"把方块推到某位置", 是"把它清掉"。
     # 只有画布那一项时, h 三步就降到 0 然后**失去方向**(L3 实测: h=0 之后
     # 扩展 4000 仍停在最深 8) —— 画布达标是必要不充分, 第二项补的正是那一半。
-    # ⚠️底色要取**构型区内的众数**, 不能用全屏背景色 scene.bg。
-    # 实测栽过: 轨道底色是 2, 而 scene.bg=5(画面背景), 于是"清空"被算成
-    # "把轨道全变成 5" —— **永远达不到**, h2 恒在 144 附近, 把画布那一项
-    # 完全淹没。L2 太简单(34 节点)没被影响, L3 会被带偏。
-    cfg_base = None
-    if CFG is not None:
-        from collections import Counter
-        sub = _rg(np.array(obs.grid), CFG)
-        cfg_base = Counter(sub.flatten().tolist()).most_common(1)[0][0]
+    # 🚨h2 = **把"能动的那块"送到"同色但不能动的那块"去**(通用的"送货"启发式)。
+    #
+    # 走到这一版之前错了两次, 都记在这里:
+    #  ①"清空构型区"的目标色取了全屏背景 scene.bg=5, 而轨道底色是 2 ->
+    #    目标**不可达**, h2 恒 ~144 把 h1 完全淹没(开局 h=162 里 128 是噪声)。
+    #    ⚠️h 曲线照样在降、L2 照样通关, 光看数字发现不了; 是把中间量打出来
+    #    跟渲染图对照才抓到的。
+    #  ②改成"清空到众数色"后 h 能降到 0 了, 但 **L3 上 h=0 仍不过关**:
+    #    方块离开构型区就算 0, 可它被推到哪儿并不管。L1 恰好是"推出去就过关",
+    #    所以这条在 L1 上看着对 —— **单关验证过的目标不等于跨关成立**。
+    #
+    # L3 真面目是**推箱子**: 按键 A1/A2/A3/A4 = 上/下/左/右各移 4 格,
+    # 方块(色 9/10, 中心 (23.5,36.5))要送进**同为色 9/10 的插槽**(行37-42 列22-26)。
+    # 于是判据变成"可动块与固定同色块重合", 用中心的曼哈顿距离当 h。
+    g1 = np.array(obs.grid)
+    mov_mask = adj_mut.copy() if adj_mut is not None else None
+    fixed_ctr = mov_colors = None
+    if mov_mask is not None and mov_mask.any():
+        mov_colors = {int(g1[r, c]) for r, c in np.argwhere(mov_mask)}
+        # ⚠️要**剔掉构型区的众数色**(轨道/管道的底色)。方块移动时, 它经过的格子
+        # 由底色变成方块色、离开的格子又变回底色 —— 底色因此也进了 adj_mut。
+        # 不剔的话"可动块"里混着遍布整条管道的底色, 中心被拉到管道正中:
+        # L3 实测算出 (27.0,33.2)(管道中心) 而不是插槽, 开局 h 只有 19,
+        # 而方块到插槽的真实曼哈顿距离约 28。
+        from collections import Counter as _C
+        if CFG is not None:
+            _sub = _rg(g1, CFG)
+            _bg = _C(_sub.flatten().tolist()).most_common(1)[0][0]
+            mov_colors.discard(int(_bg))
+        same = np.zeros_like(mov_mask)
+        for col in mov_colors:
+            same |= (g1 == col)
+        fixed = same & ~mov_mask
+        fixed[r0:r1 + 1, c0:c1 + 1] = False        # 画布内的同色不算目的地
+        fc = np.argwhere(fixed)
+        if len(fc) >= 4:
+            fixed_ctr = (float(fc[:, 0].mean()), float(fc[:, 1].mean()))
+
+    def mov_center(g):
+        if not mov_colors:
+            return None
+        m = np.zeros((64, 64), dtype=bool)
+        for col in mov_colors:
+            m |= (g == col)
+        m[r0:r1 + 1, c0:c1 + 1] = False
+        if fixed_ctr is not None:                  # 排除目的地本身
+            fr, fc2 = fixed_ctr
+            for rr in range(64):
+                for cc in range(64):
+                    if m[rr, cc] and abs(rr - fr) <= 3 and abs(cc - fc2) <= 3:
+                        m[rr, cc] = False
+        cells = np.argwhere(m)
+        return (float(cells[:, 0].mean()), float(cells[:, 1].mean())) if len(cells) else None
     def h_of(g):
         h = 0
         if BOX is not None and inbox is not None:
             h += int(((_rg(g, BOX) != TCOL) & inbox).sum())
-        if CFG is not None and cfg_base is not None:
-            h += int((_rg(g, CFG) != cfg_base).sum())
+        if fixed_ctr is not None:
+            mc = mov_center(g)
+            # 可动块不见了(送到了/被消掉) -> 距离记 0
+            h += 0 if mc is None else int(abs(mc[0] - fixed_ctr[0]) + abs(mc[1] - fixed_ctr[1]))
         return h
     h0 = h_of(np.array(obs.grid))
     print(f"  启发式: 画布可变格 {int(inbox.sum()) if inbox is not None else 0} 个"
-          f" + 构型区 {CFG}(目标=清空到众数色 {cfg_base}) | 开局 h={h0}", flush=True)
+          f" + 送货(可动色 {mov_colors} -> 固定同色中心 {fixed_ctr}) | 开局 h={h0}", flush=True)
 
     seen = {(fp(np.array(obs.grid)), obs.pending)}
     heap = [(h0, 0, [], game.fork(), obs)]
