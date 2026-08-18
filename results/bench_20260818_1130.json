@@ -1,0 +1,55 @@
+{
+ "seconds_per_stage": 30.0,
+ "rows": [
+  {
+   "game": "cd82",
+   "solved": 2,
+   "levels": 6,
+   "steps": 12,
+   "human": 63,
+   "seconds": 126.8
+  },
+  {
+   "game": "ft09",
+   "solved": 1,
+   "levels": 6,
+   "steps": 4,
+   "human": 43,
+   "seconds": 123.8
+  },
+  {
+   "game": "sc25",
+   "solved": 0,
+   "levels": 6,
+   "steps": 0,
+   "human": 0,
+   "seconds": 91.8
+  },
+  {
+   "game": "r11l",
+   "solved": 1,
+   "levels": 6,
+   "steps": 3,
+   "human": 22,
+   "seconds": 130.4
+  },
+  {
+   "game": "ls20",
+   "solved": 0,
+   "levels": 7,
+   "steps": 0,
+   "human": 0,
+   "seconds": 4.0
+  },
+  {
+   "game": "tr87",
+   "solved": 0,
+   "levels": 6,
+   "steps": 0,
+   "human": 0,
+   "seconds": 100.0
+  }
+ ],
+ "total_solved": 4,
+ "total_levels": 37
+}
