@@ -140,6 +140,14 @@ def learn(game: Game, base: Obs, actions: list[Action], n_states: int = 4,
         for c, o in states:
             child = c.fork()
             r = child.act(a)
+            # 🚨滞后局要走两次才看得到 a 的效果。这类游戏 perform_action 只把动作
+            # 放进缓冲、下一次调用才结算(见 env.Game.act), 单步看到的是**上一个**
+            # 动作的效果 —— sc25 上因此 27 个动作全报"改 0 格"。
+            # 走两次得到的正是 a 的**单次**真效果(实测 viaact(3,3) 逐格等于
+            # truth(3)), 与 Game.effect 同一套语义; 克隆体试探免费。
+            # ls20/cd82 这类即时生效的局 lagged=False, 一次都不多花。
+            if not r.dead and getattr(c, "lagged", False):
+                r = child.act(a)
             if r.dead:
                 m.kills = True
                 break
