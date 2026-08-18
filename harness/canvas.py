@@ -1,5 +1,17 @@
 """绘制类游戏的通用求解:自动认出答案区与提交动作, 然后走画笔库那条路。
 
+🚨**适用边界: 笔必须是"覆盖式"的 —— 提交把格子涂成**固定颜色**, 与原值无关。**
+`_sample` 的核心判据是"不同的底走同一条调整序列 + 同一个提交, 结果**相同**的格
+就是这笔盖到的格"(变量 `same`)。提交若依赖原值, 这个判据恒为空。
+
+sc25 L3 实测: 点九宫格是 **2 <-> 14 切换**(取反), 不是涂成定值。于是各底结果
+永不相同, `same` 恒空, `covered.any()` 永假 —— **画笔 0 支**, 哪怕采集本身
+判得动 81/81 格(100%)。这不是采集不到位, 是**模型假设不成立**。
+cd82 能用是因为它"后涂盖先涂"确实是覆盖式。
+
+要支持切换型的笔, 得把 Brush 从"格->色"改成"格->变换"(恒等/取反/映射),
+那是另一套东西, 没做。**换局之前先验证这条边界。**
+
 `paint.py` 当年解开了 cd82, 但它有两个洞是手工传参的:
     answer_box  答案区在哪
     submit      哪个动作是"提交"
@@ -545,6 +557,7 @@ def _sample(root: Game, robs: Obs, st: CanvasSetup, box: tuple[int, int, int, in
             testable |= (bases[i] != bases[j])
 
     out: dict[tuple[bytes, bytes], Brush] = {}
+    reachable = np.zeros_like(testable, dtype=bool)   # 见下方 denom
     for seq, cfg in configs:
         # 采笔的规模已经被 max_configs 定死(确定性), 这里只留安全阀防跑飞
         if budget.wall_expired():
@@ -577,6 +590,7 @@ def _sample(root: Game, robs: Obs, st: CanvasSetup, box: tuple[int, int, int, in
             # evidence = 这次采集对这一格**有话可说**的范围。
             # 范围之外既不能算覆盖, 也不能算"不覆盖" —— 它是未知, 必须往上报,
             # 否则抽象层会把"不知道"当成"不覆盖", 算出真机上不存在的方案。
+            reachable |= changed
             evidence = testable | changed
             covered = same & evidence
             if not covered.any():
@@ -593,8 +607,15 @@ def _sample(root: Game, robs: Obs, st: CanvasSetup, box: tuple[int, int, int, in
     # ⚠️只返回 sum 不够 —— 也不能用"跨笔的证据并集"代替它: 并集一开始就是满的,
     # 拿它当停止条件会让定向采集一轮都不跑(实测: 4 秒返回, 报 100/100, 而抽象层
     # 比认真采集过的那一版还差一倍)。**单笔盲区受 testable 约束, 并集不受。**
+    # 🚨分母要用"答案区内**可能变化**的格数", 不是整块面积。
+    # sc25 L3: 答案区 13x13=169, 但其中只有 9 个 3x3 的格子(81 格)会变, 其余 88
+    # 格是格子之间的**分隔**, 永远判不动。拿 169 当分母, judged 最高只能到 81/169
+    # = 48%, 于是 min_ratio=0.9 **永远达不到**, 每次都白跑一轮轨迹底重采。
+    # 可变格 = 任何一支笔改动过的格子的并集(reachable), 没有它就退回整块。
+    denom = int(reachable.sum()) if reachable is not None and reachable.any() \
+        else int(testable.size)
     return (list(out.values()), complete, int(testable.sum()),
-            int(testable.size), len(configs), testable)
+            denom, len(configs), testable)
 
 
 def collect_brushes(game: Game, obs: Obs, st: CanvasSetup,

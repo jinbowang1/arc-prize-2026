@@ -59,10 +59,53 @@ def act_pool(game: Game, obs: Obs) -> list[Action]:
     return keys + live
 
 
+def semantic_fp(game: Game, obs: Obs, acts: list[Action]):
+    """语义指纹 = (画布内容, 构型指纹) —— 不是全屏。
+
+    🚨L3 上一跑用**全屏** g.tobytes() 当指纹, 扩展 18000 节点、队列 23439、
+    **最深只到 6 层**(人类 32 步)就打转。全屏里混着计数器、轨道渲染细节这些
+    与决策无关的东西, 同一个语义状态被拆成无数份, 去重形同虚设。
+    L1 破关时用的正是语义指纹(九宫格 + 上半屏), 33384 节点就搜到了。
+
+    这里用 canvas 那套因果分解: **答案区(画布) + 掩码后的区外(构型)**,
+    答案区靠 propose_prompt_answer 自动认(双粒度连通之后能提出整块九宫格),
+    构型掩码靠 _config_mask 自动掩掉计数器(含"连着提交几次才现形"的那种)。
+    """
+    from harness.canvas import _config_fp, _config_mask, _region, classify
+    from harness.hypo import propose_prompt_answer
+    from harness.model import collect_states
+    from harness.percept import mutable_over_states
+    from harness.probe import run_probe
+    sp = action_space(list(obs.actions))
+    sc = analyze(obs.grid)
+    clicks = [a for a in acts if a.id >= 6]
+    rep = run_probe(game, obs, sp["kind"], sp["keys"], clicks)
+    states = collect_states(game, obs, acts, 5)
+    mut = mutable_over_states([lambda a, c=c: np.array(c.effect(a).grid) for c, _ in states],
+                              [np.array(o.grid) for _, o in states], acts) & rep.mask
+    props = propose_prompt_answer(np.array(obs.grid), mut, sc.bg)
+    pick = st = None
+    best = 0
+    for h in props:
+        t = classify(game, obs, acts, h.a)
+        subs = [repr(a) for a in t.submitters]
+        nc = sum(1 for r in subs if r.startswith("A6"))
+        if subs and nc in (0, len(subs)) and len(subs) > best:
+            pick, st, best = h, t, len(subs)
+    if pick is None:
+        print("  ⚠️认不出答案区, 退回全屏指纹", flush=True)
+        return lambda g: g.tobytes()
+    BOX = pick.a
+    mask = _config_mask(game, obs, st, BOX, rep.mask)
+    print(f"  语义指纹: 画布 {BOX}(提交 {len(st.submitters)}) + 构型掩码 "
+          f"{int(mask.sum())} 格", flush=True)
+    return lambda g: (_region(g, BOX).tobytes(), _config_fp(g, BOX, mask))
+
+
 def solve_level(game: Game, obs: Obs, lv: int):
     acts = act_pool(game, obs)
     t0 = time.time()
-    fp = lambda g: g.tobytes()
+    fp = semantic_fp(game, obs, acts)
     seen = {(fp(np.array(obs.grid)), obs.pending)}
     q = deque([([], game.fork(), obs)])
     expanded = deepest = 0
