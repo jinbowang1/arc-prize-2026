@@ -260,14 +260,25 @@ def fit(samples: list[Transition]) -> list[GoalHypothesis]:
         for a in after_blobs:
             if a.mask_key(s.after, bg_a) != kb or a.center == b.center:
                 continue
-            # 2a) 关系型(优先): 它移到了谁身上? 找 after 里与它同心的另一个块
+            # 2a) 关系型(优先): 它移到了谁身上?
+            # 🚨判据是"**有实质重叠**", 不是"中心完全重合"。
+            # ls20 实测: 钥匙走进锁房时两者只是靠近/重叠, 中心差一格,
+            # 于是 ObjectToObject **一条都拟合不出**(同形状块对 4、移动过的 2、
+            # 而"同心"的 0), 只剩 ColorCount 那种"色 3 的格数达到 1356"的
+            # 绝对型垃圾目标被继承到下一关 —— ls20 L2 的 h 卡在 3 就是被它带偏的。
+            ar0, ar1, ac0, ac1 = a.bbox
             for other in after_blobs:
                 ko = other.mask_key(s.after, bg_a)
-                if ko != kb and other.center == a.center:
+                if ko == kb:
+                    continue
+                orr0, orr1, oc0, oc1 = other.bbox
+                # 两个 bbox 相交即算"移到了它身上"
+                if min(ar1, orr1) >= max(ar0, orr0) and min(ac1, oc1) >= max(ac0, oc0):
                     cands.append(ObjectToObject(kb, ko))
             # 2b) 绝对坐标(退化版, 跨关不可用, 仅当关系型拟合不出时兜底)
             cands.append(ObjectReach(kb, a.center))
-            break
+            # ⚠️不再 break: 原来处理完第一个匹配块就退出, 后面的块根本没机会 ——
+            # 场上不止一个东西会动(ls20 有钥匙也有巡逻体)。
 
     # 3) RegionMatch: 同尺寸的块两两配对 —— "把这块弄成那块的样子"
     #    (此前定义了这一族却从没在这里枚举过, 属实现漏项)
@@ -461,6 +472,14 @@ def propose_prompt_answer(grid: np.ndarray, mutable: np.ndarray,
                 win = grid[r:r + ah, c:c + aw]
                 content = int((win != bg).sum())
                 if content < 4:
+                    continue
+                # 🚨题面必须**有图案**, 单色块不算。
+                # ls20 实测: harness 把"含钥匙的区域"与**一整块空白**(全是色 3,
+                # 而 bg 是别的色)配成了 region_match, 目标于是变成"把钥匙区域
+                # 清空" —— 那根本不是过关条件。搜索朝这个错目标努力, h 从 50
+                # 降到 3 就再也降不动(八倍算力也不动), 我一度误判成"表征墙"。
+                # 单一颜色 = 没有图案 = 不可能是题面。
+                if len(set(win.flatten().tolist())) < 2:
                     continue
                 best.append((content, (r, r + ah - 1, c, c + aw - 1)))
         best.sort(key=lambda x: -x[0])
