@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-from .percept import Blob, analyze, background, by_figure, canonical
+from .percept import Blob, analyze, background, by_color, by_figure, canonical
 
 
 @dataclass
@@ -95,20 +95,37 @@ class ObjectToObject(GoalHypothesis):
     anchor: tuple
     name: str = "object_to_object"
 
-    def _locate(self, grid: np.ndarray) -> tuple[tuple[int, int] | None, tuple[int, int] | None]:
+    def _locate(self, grid: np.ndarray):
+        """找 mover 与 anchor 的 bbox。
+
+        🚨**两种分割都取**, 且必须与 `fit` 生成候选时用的是同一套 ——
+        原先这里只用 by_figure, 而它把所有非背景色一锅烩: ls20 上色 3/5/9/12
+        彼此相邻连成 971 格巨块, 5x5 的钥匙整个被吞掉, 于是判定阶段**永远
+        找不到 mover**, is_goal 恒假, fit 生成的 68 条候选被自己全部过滤光。
+        """
         bg = background(grid)
+        blobs = list(by_figure(grid, bg)) + list(by_color(grid, bg))
         m = a = None
-        for b in by_figure(grid, bg):
+        for b in blobs:
             k = b.mask_key(grid, bg)
             if k == self.mover and m is None:
-                m = b.center
+                m = b.bbox
             elif k == self.anchor and a is None:
-                a = b.center
+                a = b.bbox
         return m, a
 
     def is_goal(self, grid: np.ndarray) -> bool:
+        """判据 = **bbox 有实质重叠**, 不是中心完全重合。
+
+        🚨必须与 `fit` 生成候选时的判据**一致**。原先生成用"重叠"、判定用
+        "同心", 生成宽判定严 —— 等于批量生产注定被自己否掉的候选。
+        而 ls20 的钥匙走进锁房本来就是**重叠**(两者差一格), 要求同心就永远不成立。
+        """
         m, a = self._locate(grid)
-        return m is not None and m == a
+        if m is None or a is None:
+            return False
+        return (min(m[1], a[1]) >= max(m[0], a[0])
+                and min(m[3], a[3]) >= max(m[2], a[2]))
 
     def distance(self, grid: np.ndarray) -> float:
         m, a = self._locate(grid)
@@ -253,8 +270,26 @@ def fit(samples: list[Transition]) -> list[GoalHypothesis]:
     s = samples[0]
     bg = background(s.before)
     bg_a = background(s.after)
-    before_blobs = by_figure(s.before, bg)
-    after_blobs = by_figure(s.after, bg_a)
+    # 🚨**两种分割都取**。by_figure 忽略色差(ft09 的杂色开关块靠它, 同色连通
+    # 会切成碎片); 但它把**所有非背景色一锅烩**, ls20 上色 3/5/9/12 彼此相邻,
+    # 连成一块 **971 格、跨 42x40** 的巨块, 5x5 的钥匙被整个吞掉 ——
+    # 于是 ObjectToObject(钥匙匹配锁 = ls20 的真判据)**一条都拟合不出**,
+    # 只剩 ColorCount 那种"色 3 的格数达到 919"的绝对型目标被继承到下一关。
+    # by_color 按颜色分别连通, 立刻能分出钥匙(色 12 在 (45,34) 10 格 /
+    # 色 9 在 (47,34) 15 格)。
+    # percept.click_targets 早就写着"两种分割都取, 去重 —— 宁可多几个候选,
+    # 也不要漏掉杂色部件", fit 却只用了一种。
+    def _blobs(g, b):
+        out = list(by_figure(g, b)) + list(by_color(g, b))
+        seen, uniq = set(), []
+        for x in out:
+            if x.bbox not in seen:
+                seen.add(x.bbox)
+                uniq.append(x)
+        return uniq
+
+    before_blobs = _blobs(s.before, bg)
+    after_blobs = _blobs(s.after, bg_a)
     for b in before_blobs:
         kb = b.mask_key(s.before, bg)
         for a in after_blobs:
