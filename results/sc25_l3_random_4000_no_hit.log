@@ -1,0 +1,12 @@
+INFO:arc_agi.scorecard:Initialized ScorecardManager with idle_for=0:15:00 and max_open_for=3 days, 0:00:00
+2026-08-18 13:23:48 | INFO | Created new scorecard: f71c9947-8621-4ace-9988-56ed92b836cf
+2026-08-18 13:23:48 | INFO | Found latest version of sc25: sc25-635fd71a (downloaded: 2026-08-07 09:21:02.685063+00:00)
+2026-08-18 13:23:48 | INFO | Successfully loaded game class Sc25 from environment_files/sc25/635fd71a/sc25.py
+L3: 动作 32 个; 随机序列, 只看 level
+  试了 1000 条, 过关 0 条
+  试了 2000 条, 过关 0 条
+  试了 3000 条, 过关 0 条
+  试了 4000 条, 过关 0 条
+
+4000 条随机序列(每条最多 40 步): **过关 0 条**
+=> 4000 条随机序列一条都没撞中 —— 过关条件很窄, 盲搜/随机都不可行

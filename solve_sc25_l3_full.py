@@ -23,8 +23,8 @@ from harness.env import Action, Game, action_space
 from harness.percept import analyze
 from harness.run import _parse
 
-MAX_NODES = 400000
-WALL = 5400.0
+MAX_NODES = 250000
+WALL = 2700.0
 
 sol = json.load(open("sc25_solutions.json"))
 game, obs = Game.make("sc25")
