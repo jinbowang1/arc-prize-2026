@@ -190,16 +190,68 @@ def solve_level(game: Game, obs: Obs, know: Knowledge, prev_scene,
     seen_desc = {h.describe() for h, _, _ in fresh}
     keep = fresh + [k for k in keep if k[0].describe() not in seen_desc]
 
+    # 语义掩码(可选): 把指纹从"全屏减计数器"收窄到"画布 + 构型区"。
+    # 建得出来就先用它搜; **一旦搜出"假穷尽"的迹象就退回全屏重搜**(见下方 3a)。
+    #
+    # 🚨为什么用自适应而不是事前判据: 改进 #1 无差别套语义掩码, 把 ls20 从
+    # 1/7 打到 0/7(掩到只剩 200 格 -> 26 个状态就"队列穷尽")。之后我试着用
+    # "画布类"判据事前挡住 ls20, 连试三版判据都挡不住(提交只改答案区 ✗ /
+    # 调整集非空 ✗), 再调就是在这六局上**过拟合**。
+    # 而搜索自己知道: harness 早有那条健全性检查("深度<=1 就队列穷尽 -> 指纹可疑")。
+    # **与其事前猜掩码安不安全, 不如让搜索用事实告诉我。**
+    sem_mask = None
+    try:
+        from .canvas import classify as _classify
+        _pick = _st = None
+        _best = 0
+        for _h in causal:
+            _t = _classify(game, obs, acts, _h.a)
+            _subs = [repr(a) for a in _t.submitters]
+            _nc = sum(1 for r in _subs if r.startswith("A6"))
+            if _subs and _nc in (0, len(_subs)) and len(_subs) > _best:
+                _pick, _st, _best = _h, _t, len(_subs)
+        if _pick is not None and _st.adjusters:
+            _sm = np.zeros((64, 64), dtype=bool)
+            _r0, _r1, _c0, _c1 = _pick.a
+            _sm[_r0:_r1 + 1, _c0:_c1 + 1] = True
+            _g0 = np.array(obs.grid)
+            for _a in _st.adjusters:
+                _o = game.effect(_a)
+                if not _o.dead:
+                    _sm |= (np.array(_o.grid) != _g0)
+            if rep.mask is not None:
+                _sm &= rep.mask
+            if _sm.sum() >= 16:
+                sem_mask = _sm
+    except Exception:
+        sem_mask = None
+
     # ③ Plan —— 由便宜到贵, 由最短到近似
     def cands(o: Obs) -> list[Action]:
         return ([Action.key(i) for i in sp["keys"]] +
                 [Action.click(c, r, 6) for (r, c) in click_targets(np.array(o.grid))])
 
     # 3a) BFS: 解出来的就是最短序列, 而步数就是分数。能最优就别用近似。
-    res = bfs_level_up(game, obs, sp["keys"], click_id, rep.mask,
-                       max_depth=budget, max_nodes=cfg["max_nodes"],
-                       max_seconds=cfg["bfs_seconds"])
-    tr.plans.append("BFS(最短) " + res.text())
+    res = None
+    if sem_mask is not None:
+        res = bfs_level_up(game, obs, sp["keys"], click_id, sem_mask,
+                           max_depth=budget, max_nodes=cfg["max_nodes"],
+                           max_seconds=cfg["bfs_seconds"] / 2)
+        # 🚨**假穷尽判据**: 队列穷尽却只见过很少状态 = 掩码把要害掩掉了。
+        # 这不是"这关无解", 是指纹坏了 —— ls20 上实测 26 个状态就"穷尽"。
+        fake = (not res.solved) and res.nodes < 200 and "穷尽" in res.reason
+        tr.plans.append(f"BFS(语义掩码 {int(sem_mask.sum())} 格) " + res.text()
+                        + ("  ⚠️疑似假穷尽, 退回全屏重搜" if fake else ""))
+        if fake:
+            res = None
+        elif res.solved:
+            tr.solved_by = "BFS 最短路(语义掩码)"
+            return res, tr, {"scene": scene, "slots": know.slots, "killed": killed}
+    if res is None or not res.solved:
+        res = bfs_level_up(game, obs, sp["keys"], click_id, rep.mask,
+                           max_depth=budget, max_nodes=cfg["max_nodes"],
+                           max_seconds=cfg["bfs_seconds"])
+        tr.plans.append("BFS(最短) " + res.text())
     if res.solved:
         tr.solved_by = "BFS 最短路"
         return res, tr, {"scene": scene, "slots": know.slots, "killed": killed}
