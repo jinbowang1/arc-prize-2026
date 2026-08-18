@@ -1,0 +1,15 @@
+{
+ "seconds_per_stage": 240.0,
+ "rows": [
+  {
+   "game": "ls20",
+   "solved": 1,
+   "levels": 7,
+   "steps": 13,
+   "human": 22,
+   "seconds": 752.5
+  }
+ ],
+ "total_solved": 1,
+ "total_levels": 7
+}
