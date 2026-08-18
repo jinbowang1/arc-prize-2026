@@ -1,0 +1,14 @@
+{
+ "seconds_per_stage": 30.0,
+ "rows": [
+  {
+   "game": "30",
+   "solved": 0,
+   "levels": 0,
+   "error": "RuntimeError: make(30) 返回 None",
+   "seconds": 0.0
+  }
+ ],
+ "total_solved": 0,
+ "total_levels": 0
+}
