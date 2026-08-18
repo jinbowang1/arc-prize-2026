@@ -39,11 +39,14 @@ def sem(g):
     """语义状态 = (9 格是否已变成 14, 方块中心)"""
     bits = tuple(1 if int(g[R[i] + 1, C[j] + 1]) == 14 else 0
                  for i in range(3) for j in range(3))
-    m = ((g == 9) | (g == 10))
-    m[37:43, 22:31] = False
-    m[49:62, 24:37] = False
+    # 🚨只在方块可达区找, 别扫全屏。方块可达 行11.5-31.5 x 列28.5-44.5,
+    # 取 (10..34, 26..46) 足够覆盖。全屏 argwhere 是 4096 格, 这里 480 格 ——
+    # 30 万个状态就是 12 亿次 vs 1.4 亿次扫描, sem() 本来是主要瓶颈。
+    sub = g[10:34, 26:46]
+    m = ((sub == 9) | (sub == 10))
     c = np.argwhere(m)
-    pos = (round(float(c[:, 0].mean()), 1), round(float(c[:, 1].mean()), 1)) if len(c) else None
+    pos = (round(float(c[:, 0].mean()) + 10, 1),
+           round(float(c[:, 1].mean()) + 26, 1)) if len(c) else None
     return (bits, pos)
 
 t0 = time.time()
