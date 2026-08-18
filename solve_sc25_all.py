@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import json
 import time
+import heapq
 from collections import deque
 
 import numpy as np
@@ -94,23 +95,89 @@ def semantic_fp(game: Game, obs: Obs, acts: list[Action]):
             pick, st, best = h, t, len(subs)
     if pick is None:
         print("  ⚠️认不出答案区, 退回全屏指纹", flush=True)
-        return lambda g: g.tobytes()
+        return (lambda g: g.tobytes()), None, None, None, None
     BOX = pick.a
     mask = _config_mask(game, obs, st, BOX, rep.mask)
-    print(f"  语义指纹: 画布 {BOX}(提交 {len(st.submitters)}) + 构型掩码 "
-          f"{int(mask.sum())} 格", flush=True)
-    return lambda g: (_region(g, BOX).tobytes(), _config_fp(g, BOX, mask))
+
+    # 🚨构型不能取"全屏减掩码" —— 掩码只掩掉计数器那几十格, 剩下 4059 格几乎还是
+    # 全屏, 语义指纹就退化成全屏指纹(L3 实测: 扩展 2000/最深 4, 与全屏版一模一样)。
+    # **构型的实质是"调整动作能改的那块"**(sc25 = 轨道上那个方块的位置/朝向),
+    # 只占屏幕一小块。取调整动作可改格的包围盒, 状态空间才真正压下来。
+    g0 = np.array(obs.grid)
+    adj_mut = np.zeros_like(mask)
+    for a in st.adjusters:
+        o = game.effect(a)
+        if not o.dead:
+            adj_mut |= (np.array(o.grid) != g0)
+    adj_mut &= mask
+    r0, r1, c0, c1 = BOX
+    adj_mut[r0:r1 + 1, c0:c1 + 1] = False        # 画布不算构型
+    cells = np.argwhere(adj_mut)
+    if len(cells) == 0:
+        print(f"  语义指纹: 画布 {BOX} + 构型(全屏掩码 {int(mask.sum())} 格)", flush=True)
+        return ((lambda g: (_region(g, BOX).tobytes(), _config_fp(g, BOX, mask))),
+                BOX, _region(mut, BOX), None, sc.bg)
+    CFG = (int(cells[:, 0].min()), int(cells[:, 0].max()),
+           int(cells[:, 1].min()), int(cells[:, 1].max()))
+    ch, cw = CFG[1] - CFG[0] + 1, CFG[3] - CFG[2] + 1
+    print(f"  语义指纹: 画布 {BOX}(提交 {len(st.submitters)}) + 构型 {CFG} "
+          f"({ch}x{cw}={ch*cw} 格, 而全屏掩码是 {int(mask.sum())} 格)", flush=True)
+    return (lambda g: (_region(g, BOX).tobytes(), _region(g, CFG).tobytes()),
+            BOX, _region(mut, BOX), CFG, sc.bg)
 
 
 def solve_level(game: Game, obs: Obs, lv: int):
+    """启发式搜索。h = 画布上"还不是目标色"的可变格数。
+
+    🚨为什么不是 BFS: L3 上三种指纹(全屏 4096 / 语义 4059 / 压缩构型 144)
+    结果**一模一样** —— 扩展 2000、最深都只有 4 层。换方法而数字纹丝不动,
+    说明**指纹不是瓶颈**, 盲搜没有方向才是: 分支 14、深度 4 已经 14^4=38416,
+    而解在 15 步开外。
+
+    h 从哪来: **L1/L2 的真解**。两关过关瞬间画布都是**全色 2**(见 results
+    README 第六节), 这是地面真值不是猜的。这里把它当作**跨关迁移的假设**用 ——
+    猜错了 h 会降不下去, 那本身就是可读信号(与"加算力 h 不动"同类)。
+    ⚠️判据仍然只认 level 上升, h 只负责排序(模型当排序器和当预测器是两条及格线)。
+    """
     acts = act_pool(game, obs)
     t0 = time.time()
-    fp = semantic_fp(game, obs, acts)
+    fp, BOX, inbox, CFG, BG = semantic_fp(game, obs, acts)
+
+    from harness.canvas import _region as _rg
+    TCOL = 2                          # 画布目标色: 从 L1/L2 真解归纳
+
+    # 🚨第二项: **清空构型区**。同样来自真解 —— L1 过关前那一帧, 轨道
+    # (19,22,23,42) 里**一个非底色格都没有**, 方块被那 8 次 A3 推出去了。
+    # 所以过关不是"把方块推到某位置", 是"把它清掉"。
+    # 只有画布那一项时, h 三步就降到 0 然后**失去方向**(L3 实测: h=0 之后
+    # 扩展 4000 仍停在最深 8) —— 画布达标是必要不充分, 第二项补的正是那一半。
+    # ⚠️底色要取**构型区内的众数**, 不能用全屏背景色 scene.bg。
+    # 实测栽过: 轨道底色是 2, 而 scene.bg=5(画面背景), 于是"清空"被算成
+    # "把轨道全变成 5" —— **永远达不到**, h2 恒在 144 附近, 把画布那一项
+    # 完全淹没。L2 太简单(34 节点)没被影响, L3 会被带偏。
+    cfg_base = None
+    if CFG is not None:
+        from collections import Counter
+        sub = _rg(np.array(obs.grid), CFG)
+        cfg_base = Counter(sub.flatten().tolist()).most_common(1)[0][0]
+    def h_of(g):
+        h = 0
+        if BOX is not None and inbox is not None:
+            h += int(((_rg(g, BOX) != TCOL) & inbox).sum())
+        if CFG is not None and cfg_base is not None:
+            h += int((_rg(g, CFG) != cfg_base).sum())
+        return h
+    h0 = h_of(np.array(obs.grid))
+    print(f"  启发式: 画布可变格 {int(inbox.sum()) if inbox is not None else 0} 个"
+          f" + 构型区 {CFG}(目标=清空到众数色 {cfg_base}) | 开局 h={h0}", flush=True)
+
     seen = {(fp(np.array(obs.grid)), obs.pending)}
-    q = deque([([], game.fork(), obs)])
+    heap = [(h0, 0, [], game.fork(), obs)]
+    cnt = 0
+    best_h = h0
     expanded = deepest = 0
-    while q and expanded < PER_LEVEL_NODES and time.time() - t0 < PER_LEVEL_WALL:
-        seq, node, ob = q.popleft()
+    while heap and expanded < PER_LEVEL_NODES and time.time() - t0 < PER_LEVEL_WALL:
+        _, _, seq, node, ob = heapq.heappop(heap)
         expanded += 1
         deepest = max(deepest, len(seq))
         for a in acts:
@@ -125,15 +192,22 @@ def solve_level(game: Game, obs: Obs, lv: int):
                 p = ch.fork().act(a)
                 if not p.dead and p.level > ob.level:
                     return seq + [a, a], expanded, time.time() - t0, "补步"
-            k = (fp(np.array(o.grid)), o.pending)
+            g = np.array(o.grid)
+            k = (fp(g), o.pending)
             if k in seen:
                 continue
             seen.add(k)
-            q.append((seq + [a], ch, o))
+            hv = h_of(g)
+            if hv < best_h:
+                best_h = hv
+                print(f"    h 降到 {hv} (深度 {len(seq)+1}, 扩展 {expanded}, "
+                      f"{time.time()-t0:.0f}s)", flush=True)
+            cnt += 1
+            heapq.heappush(heap, (hv + 0.05 * (len(seq) + 1), cnt, seq + [a], ch, o))
         if expanded % 2000 == 0:
-            print(f"    扩展 {expanded} | 见过 {len(seen)} | 队列 {len(q)} | "
-                  f"最深 {deepest} | {time.time()-t0:.0f}s", flush=True)
-    tag = "队列穷尽(硬结论)" if not q else "触上限"
+            print(f"    扩展 {expanded} | 见过 {len(seen)} | 堆 {len(heap)} | "
+                  f"最深 {deepest} | h 最好 {best_h} | {time.time()-t0:.0f}s", flush=True)
+    tag = "堆穷尽(硬结论)" if not heap else "触上限"
     return None, expanded, time.time() - t0, tag
 
 
