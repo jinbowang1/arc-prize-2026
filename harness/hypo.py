@@ -28,6 +28,10 @@ class Transition:
     before: np.ndarray
     after: np.ndarray
     level: int
+    # 该关开局的实体表(percept.discover 的输出, 带 movers=谁能动)。
+    # fit 用它做因果过滤: "谁是可动件"是因果信息不是尺寸特征 ——
+    # MoverToAnchor 两版尺寸猜(最小/最大)错向相反, 就是缺这个接口。
+    ents: list = field(default_factory=list)
 
 
 class GoalHypothesis:
@@ -128,10 +132,22 @@ class ObjectToObject(GoalHypothesis):
                 and min(m[3], a[3]) >= max(m[2], a[2]))
 
     def distance(self, grid: np.ndarray) -> float:
+        """距离 = 两 bbox 的轴向间隙之和(行 gap + 列 gap)。
+
+        🚨原版是 `abs(m[0]-a[0]) + abs(m[1]-a[1])` —— m 是 (r0,r1,c0,c1),
+        这两项是行起点差+**行终点差**, **列坐标根本没参与**。ls20 L2 实锤:
+        钥匙要横向走 17 格进锁房, 横向移动零梯度, 真机最佳优先搜到 65 层
+        h 卡在 5(那 5 就是两个行差)纹丝不动。ObjectToObject 修好生成链后
+        仍一关没解过, 死因就在这。
+        gap 版的另一个好处: distance=0 ⟺ 两轴都无间隙 ⟺ bbox 重叠 ——
+        与 is_goal 的判据**同语义**(判定和启发式用两套语义的亏吃过多次)。
+        """
         m, a = self._locate(grid)
         if m is None or a is None:
             return 999.0
-        return abs(m[0] - a[0]) + abs(m[1] - a[1])
+        gap_r = max(0, max(m[0], a[0]) - min(m[1], a[1]))
+        gap_c = max(0, max(m[2], a[2]) - min(m[3], a[3]))
+        return float(gap_r + gap_c)
 
     def describe(self) -> str:
         return (f"object_to_object(把 {len(self.mover)}行的块 "
@@ -290,7 +306,26 @@ def fit(samples: list[Transition]) -> list[GoalHypothesis]:
 
     before_blobs = _blobs(s.before, bg)
     after_blobs = _blobs(s.after, bg_a)
+
+    # 因果过滤: mover 候选必须与"带 movers 的实体"有格重叠。
+    # ls20 七关在案解重放实测(diag_mover_causal.log): 真 mover(钥匙色12/色9)
+    # 全部与实体重叠, 而 1x1 碎点等垃圾候选全部不在任何实体里 ——
+    # 垃圾 mover 生成的假关系型目标会挤占 max_goals 名额。
+    # 没有实体信息(ents 为空)时不过滤, 退回旧行为。
+    ent_cells: set = set()
+    for e in getattr(s, "ents", None) or []:
+        if getattr(e, "movers", None):
+            ent_cells |= set(e.cells_set)
+
+    def _causally_movable(blob) -> bool:
+        if not ent_cells:
+            return True
+        r0, r1, c0, c1 = blob.bbox
+        return any(r0 <= r <= r1 and c0 <= c <= c1 for (r, c) in ent_cells)
+
     for b in before_blobs:
+        if not _causally_movable(b):
+            continue
         kb = b.mask_key(s.before, bg)
         for a in after_blobs:
             if a.mask_key(s.after, bg_a) != kb or a.center == b.center:
@@ -563,13 +598,21 @@ def validate_heuristic(distance, solved_runs: list[list[np.ndarray]]) -> tuple[b
         if len(frames) < 2:
             continue
         hs = [distance(f) for f in frames]
-        if min(hs) < hs[0]:
+        # 🚨999 是"定位不到对象"的哨兵值, 不是距离。ls20 L2 实锤: 一条假设
+        # 45 步真解里 44 步定位不到, 却靠 "999->0" 混过下降判定、拿了
+        # "证据 100%" 排到第一名(把全程可定位、真有梯度的那条挤到后面)。
+        # 悬崖不是梯度: 大部分帧定位不到 => 这关不提供任何证据。
+        loc = [x for x in hs if x < 999]
+        if len(loc) * 2 < len(hs):
+            notes.append(f"L{i+1}: ⚠️{len(hs)-len(loc)}/{len(hs)} 帧定位不到, 不算证据")
+            continue
+        if loc and min(loc) < loc[0]:
             saw_drop = True
-            notes.append(f"L{i+1}: {hs[0]:.0f}->{min(hs):.0f} 有下降")
-        elif len(set(hs)) == 1:
-            notes.append(f"L{i+1}: 全程恒为 {hs[0]:.0f}(可能最后一步才结算)")
+            notes.append(f"L{i+1}: {loc[0]:.0f}->{min(loc):.0f} 有下降")
+        elif len(set(loc)) <= 1:
+            notes.append(f"L{i+1}: 全程恒为 {loc[0]:.0f}(可能最后一步才结算)")
         else:
-            notes.append(f"L{i+1}: 只升不降 {hs[0]:.0f}->{max(hs):.0f}")
+            notes.append(f"L{i+1}: 只升不降 {loc[0]:.0f}->{max(loc):.0f}")
     if saw_drop:
         return True, "; ".join(notes)
     return False, "所有已通关样本上都没出现过下降 —— 与目标无关; " + "; ".join(notes)

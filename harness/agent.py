@@ -188,7 +188,23 @@ def solve_level(game: Game, obs: Obs, know: Knowledge, prev_scene,
         tr.react.append(f"因果目标假设 {len(fresh)} 条, 首选 {fresh[0][0].describe()}"
                         f" 开局 h={fresh[0][2]:.0f}")
     seen_desc = {h.describe() for h, _, _ in fresh}
-    keep = fresh + [k for k in keep if k[0].describe() not in seen_desc]
+    keep = [k for k in keep if k[0].describe() not in seen_desc]
+    # 排序 = 新鲜因果提议 × 继承关系型**交错**, 绝对型继承垫底。
+    # 🚨为什么不是简单的 fresh 全排前面: max_goals=2 时那等于把继承的全饿死。
+    # bench_objobj.log 的 ls20 L2 实锤: 继承的 object_to_object(h=5, 带 L1
+    # 通关战绩+梯度检验)体检通过却从没被试过, 30s×2 全烧在两条新鲜
+    # region_match 垃圾上(最好 h=11 卡死)。
+    # 而 cd82 靠的是因果提议排第一(L1/L3 第一条就是地面真值) —— 两个来源
+    # 各有战绩, 各给一个名额, 谁也别把谁挤出 max_goals。
+    inh_rel = [k for k in keep if hypo.is_relational(k[0])]
+    inh_abs = [k for k in keep if not hypo.is_relational(k[0])]
+    merged = []
+    for i in range(max(len(fresh), len(inh_rel))):
+        if i < len(fresh):
+            merged.append(fresh[i])
+        if i < len(inh_rel):
+            merged.append(inh_rel[i])
+    keep = merged + inh_abs
 
     # 语义掩码(可选): 把指纹从"全屏减计数器"收窄到"画布 + 构型区"。
     # 建得出来就先用它搜; **一旦搜出"假穷尽"的迹象就退回全屏重搜**(见下方 3a)。
@@ -246,7 +262,7 @@ def solve_level(game: Game, obs: Obs, know: Knowledge, prev_scene,
             res = None
         elif res.solved:
             tr.solved_by = "BFS 最短路(语义掩码)"
-            return res, tr, {"scene": scene, "slots": know.slots, "killed": killed}
+            return res, tr, {"scene": scene, "slots": know.slots, "killed": killed, "ents": ents}
     if res is None or not res.solved:
         res = bfs_level_up(game, obs, sp["keys"], click_id, rep.mask,
                            max_depth=budget, max_nodes=cfg["max_nodes"],
@@ -254,7 +270,7 @@ def solve_level(game: Game, obs: Obs, know: Knowledge, prev_scene,
         tr.plans.append("BFS(最短) " + res.text())
     if res.solved:
         tr.solved_by = "BFS 最短路"
-        return res, tr, {"scene": scene, "slots": know.slots, "killed": killed}
+        return res, tr, {"scene": scene, "slots": know.slots, "killed": killed, "ents": ents}
 
     # 3b) 槽结构: 继承的先过体检, 没有或不合格就重新分
     live = [p.action for p in rep.profiles if not p.is_noop and not p.kills]
@@ -278,7 +294,7 @@ def solve_level(game: Game, obs: Obs, know: Knowledge, prev_scene,
                 if lp.found:
                     tr.solved_by = f"分层排序+真机验({h.describe()})"
                     return SearchResult(True, seq=lp.seq, seconds=lp.seconds), tr, \
-                        {"scene": scene, "slots": sm, "killed": killed}
+                        {"scene": scene, "slots": sm, "killed": killed, "ents": ents}
                 if lp.disproved:
                     # 反例回流: 拉黑这条假设, 本关不再试, 也不带去下一关。
                     # 硬否证比统计证据强 —— 别让一条已经被真机打死的假设
@@ -294,7 +310,7 @@ def solve_level(game: Game, obs: Obs, know: Knowledge, prev_scene,
         if sr.solved:
             tr.solved_by = "槽搜索"
             return SearchResult(True, seq=sr.seq, seconds=sr.seconds), tr, \
-                {"scene": scene, "slots": sm, "killed": killed}
+                {"scene": scene, "slots": sm, "killed": killed, "ents": ents}
 
     # 3c) 抽象模型 + ④闭环执行, 分歧就回流重采再规划
     models = model.learn(game, obs, acts, mask=rep.mask)
@@ -310,7 +326,7 @@ def solve_level(game: Game, obs: Obs, know: Knowledge, prev_scene,
             tr.divergences.append(loop.text())
             if loop.solved:
                 tr.solved_by = f"抽象规划+闭环({h.describe()})"
-                return SearchResult(True, seq=loop.seq), tr, {"scene": scene, "slots": sm, "killed": killed}
+                return SearchResult(True, seq=loop.seq), tr, {"scene": scene, "slots": sm, "killed": killed, "ents": ents}
             if loop.divergence is None:
                 break        # 计划走完没通关, 是目标假设不对, 换一条假设
             # ④→②: 在分歧现场重采, 然后重规划。**不是加大搜索。**
@@ -331,7 +347,7 @@ def solve_level(game: Game, obs: Obs, know: Knowledge, prev_scene,
             tr.solved_by = "真机最佳优先"
             break
 
-    return res, tr, {"scene": scene, "slots": sm, "killed": killed}
+    return res, tr, {"scene": scene, "slots": sm, "killed": killed, "ents": ents}
 
 
 DEFAULT_CFG = {
@@ -379,7 +395,8 @@ def solve_game(game_id: str, baselines: list[int] | None = None,
         frames = replay_frames(game, obs, res.seq)
         solved_runs.append(frames)
         if len(frames) >= 2:
-            samples.append(hypo.Transition(before=frames[0], after=frames[-1], level=lv))
+            samples.append(hypo.Transition(before=frames[0], after=frames[-1], level=lv,
+                                           ents=learned.get("ents") or []))
         fresh = learn_goals(samples, solved_runs) or know.goals
         dead = learned.get("killed") or set()
         know.goals = [(h, n) for h, n in fresh if h.describe() not in dead]

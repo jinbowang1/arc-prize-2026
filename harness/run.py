@@ -97,8 +97,13 @@ def _evidence(h: GoalHypothesis, runs: list[list[np.ndarray]]) -> float:
         if len(frames) < 2:
             continue
         hs = [h.distance(f) for f in frames]
-        if hs[0] > 0:
-            best = max(best, (hs[0] - min(hs)) / hs[0])
+        # 999 是"定位不到"的哨兵值不是距离 —— (999-0)/999 会算出假"证据 100%"
+        # (ls20 L2 实锤, 与 validate_heuristic 同一处坑)。定位不到的帧占多数
+        # 时这关不算证据; 幅度只在可定位的值上算。
+        loc = [x for x in hs if x < 999]
+        if len(loc) * 2 < len(hs) or not loc or loc[0] <= 0:
+            continue
+        best = max(best, (loc[0] - min(loc)) / loc[0])
     return best
 
 
