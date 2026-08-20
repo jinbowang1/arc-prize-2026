@@ -70,11 +70,43 @@
 (只按元数据选靶,不预看内容)。前两关是它裸跑下来的;L3 起是手工攻关,
 已不算盲测。**二十五关全部触顶。**
 
-**四份成绩都是全新环境从头重放复核出来的**,不是搜索进程里的自报——两者不是一回事,见第四节第 6 条。
+`sc25`(2026-08-17,白盒:读源码破译"画符施法"结构,方法论见 [`notes/sc25-playbook.md`](notes/sc25-playbook.md)):
+
+| 关卡 | L1 | L2 | L3 | L4 | L5 | L6 | 合计 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 本方案 | 13 | 5 | 11 | 25 | 36 | 35 | **125** |
+| 人类基准 | 36 | 6 | 32 | 83 | 143 | 50 | **350** |
+| 单关得分 | 115% | 115% | 115% | 115% | 115% | 115% | **游戏得分 100.00** |
+
+`sb26`(2026-08-20,**第一个"语义是程序"的靶**,方法论见 [`notes/sb26-playbook.md`](notes/sb26-playbook.md)):
+
+| 关卡 | L1 | L2 | L3 | L4 | L5 | L6 | L7 | L8 | 合计 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 本方案 | 9 | 15 | 15 | 15 | 17 | 19 | 17 | 17 | **124** |
+| 人类基准 | 18 | 28 | 18 | 19 | 31 | 23 | 58 | 18 | **213** |
+| 单关得分 | 115% | 115% | 115% | 115% | 115% | 115% | 115% | 112.1% | **游戏得分 100.00** |
+
+sb26 的动作空间是 `[5,6,7]`——一个方向键都没有,前五局的解法一条都用不上。
+harness 裸跑 0/8(L1 就卡死,350 秒),根因是**动作单独按全都没效果、必须成对**,
+于是它 20 个动作里 19 个被判"无效",搜索没有可用的边。人工介入四次探测问清机制后,
+发现题眼根本不是搜索:**面板是程序、空心零件是对子面板的调用、顶部那排框是展开后的
+输出**,L8 更是两个面板互相调用产出无限周期串、顶部 12 个框只是输出缓冲区。
+认出这个抽象之后求解是毫秒级的回溯。**三十九关里三十八关触顶**(L8 差 1 步)。
+
+> 🚨**如果只读一篇, 读 [`notes/reading-the-game.md`](notes/reading-the-game.md)。**
+> 那是 2026-08-20 用户自己玩完 sc25 之后提的批评所沉淀的:动手写求解代码之前,
+> 先问"这游戏在干嘛"、"第一关在教我什么"、"颜色在说什么"。本仓库栽在这三个
+> 问题上的次数, 比栽在搜索算法上的多。
+
+**六份成绩都是全新环境从头重放复核出来的**,不是搜索进程里的自报——两者不是一回事,见第四节第 6 条。
 
 ```bash
 OPERATION_MODE=OFFLINE uv run python score.py       # ls20: 通关 7/7, WIN, 335 步
 OPERATION_MODE=OFFLINE uv run python score_tr87.py  # tr87: 通关 6/6, WIN, 127 步
+OPERATION_MODE=OFFLINE uv run python score_ft09.py  # ft09: 通关 6/6, WIN, 86 击
+OPERATION_MODE=OFFLINE uv run python score_cd82.py  # cd82: 通关 6/6, WIN, 75 步
+OPERATION_MODE=OFFLINE uv run python score_sc25.py  # sc25: 通关 6/6, WIN, 125 步
+OPERATION_MODE=OFFLINE uv run python score_sb26.py  # sb26: 通关 8/8, WIN, 124 步
 ```
 
 ---
@@ -209,11 +241,15 @@ uv sync
 echo "ARC_API_KEY=你的key" > .env
 
 # 下载环境(SDK 会拉到 environment_files/,该目录不随仓库分发)
-uv run python fetch_games.py ls20
+uv run python fetch_games.py ls20 tr87 ft09 cd82 sc25 sb26
 
-# 终验两个满分解
-OPERATION_MODE=OFFLINE uv run python score.py       # ls20
-OPERATION_MODE=OFFLINE uv run python score_tr87.py  # tr87 (需先 fetch_games.py tr87)
+# 终验六个满分解
+OPERATION_MODE=OFFLINE uv run python score.py       # ls20: 7/7, 335 步
+OPERATION_MODE=OFFLINE uv run python score_tr87.py  # tr87: 6/6, 127 步
+OPERATION_MODE=OFFLINE uv run python score_ft09.py  # ft09: 6/6, 86 击
+OPERATION_MODE=OFFLINE uv run python score_cd82.py  # cd82: 6/6, 75 步
+OPERATION_MODE=OFFLINE uv run python score_sc25.py  # sc25: 6/6, 125 步
+OPERATION_MODE=OFFLINE uv run python score_sb26.py  # sb26: 8/8, 124 步
 ```
 
 `OPERATION_MODE=OFFLINE` 让 toolkit 完全不联网。在有网络限制的环境下,这一条能把每次 `make` 从等 SSL 超时变成秒回。
