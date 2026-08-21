@@ -63,6 +63,19 @@ def _prime_offline_scorecard(arcade, card_id: str, gid: str, env) -> None:
         card.new_play(full_gid, guid)
 
 
+def _build_llm():
+    """按环境变量装配 LLM 客户端(A3_LLM_BASE_URL 未设则返回 None -> 探索模式)。"""
+    base = os.environ.get("A3_LLM_BASE_URL")
+    if not base:
+        return None
+    from .llm import LLMClient
+    return LLMClient(
+        base_url=base,
+        model=os.environ.get("A3_LLM_MODEL", "default"),
+        max_tokens=int(os.environ.get("A3_LLM_MAX_TOKENS", "2048")),
+    )
+
+
 def main(
     env_dir: str = "environment_files",
     games: list[str] | None = None,
@@ -70,18 +83,25 @@ def main(
     max_actions: int = 1200,
     total_seconds: float | None = None,
     out_dir: str = ".",
+    agent: str | None = None,
 ) -> dict:
     t0 = time.monotonic()
     hard_deadline = t0 + total_seconds if total_seconds else None
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
 
+    agent = agent or os.environ.get("A3_AGENT", "explore")
+    llm = _build_llm() if agent == "llm" else None
+    if agent == "llm" and llm is None:
+        print("⚠️ A3_AGENT=llm 但 A3_LLM_BASE_URL 未设, 降级为 explore")
+        agent = "explore"
+
     arcade = _build_arcade(env_dir)
     infos = {i.game_id: i for i in arcade.get_environments()}
     game_ids = games or sorted(infos)
     if not game_ids:
         raise RuntimeError("环境列表为空(网关未就绪或 env_dir 不对)")
-    print(f"mode={'COMPETITION' if _COMPETITION else 'OFFLINE'} games={len(game_ids)}")
+    print(f"mode={'COMPETITION' if _COMPETITION else 'OFFLINE'} agent={agent} games={len(game_ids)}")
 
     card_id = arcade.open_scorecard(tags=["jinbo-explorer-v1"])
     results = []
@@ -97,7 +117,13 @@ def main(
         _prime_offline_scorecard(arcade, card_id, gid, env)
         # 单游戏隔离: 一个坏游戏(环境文件残缺/网关抽风)不许拖垮整场提交
         try:
-            res = play_game(ApiGame(env, gid), max_actions=max_actions, deadline=time.monotonic() + per)
+            g = ApiGame(env, gid)
+            dl = time.monotonic() + per
+            if llm is not None:
+                from .llm_agent import play_game_llm
+                res = play_game_llm(g, llm, max_actions=max_actions, deadline=dl)
+            else:
+                res = play_game(g, max_actions=max_actions, deadline=dl)
         except Exception as e:  # noqa: BLE001
             print(f"[{gid}] ERROR: {e!r}")
             results.append({"game_id": gid, "levels_completed": 0, "win_levels": 0,
@@ -111,6 +137,8 @@ def main(
 
     summary: dict = {
         "mode": "competition" if _COMPETITION else "offline",
+        "agent": agent,
+        "llm_stats": (vars(llm.stats) if llm is not None else None),
         "card_id": card_id,
         "games": results,
         "total_levels": sum(r["levels_completed"] for r in results),
