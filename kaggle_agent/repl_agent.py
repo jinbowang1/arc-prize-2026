@@ -50,7 +50,14 @@ SYSTEM_PROMPT = """你在玩一个 64x64 网格解谜游戏(颜色索引 0-15), 
 - patch(g, y0, x0, y1, x1): 把子区域渲染成字符串(每格一个十六进制色号)
 - notes: 一个 dict, 你的持久笔记本(跨轮保留), 把归纳出的规则、待验证假设记在里面
 
-策略建议: 先少量实验摸清动作效果 -> 在 history 上写代码归纳规则并验证 -> 想清楚过关条件 -> 用最少的 act 执行。
+- verify_wm(predict): 把你写的世界模型 predict(before_grid, action_str)->after_grid
+  在全部 history 上逐格重放验证, 返回每条错格数。**全 0 才算规则成立。**
+
+工作纪律(按顺序):
+1. 少量实验(几个 act)摸动作效果, 用 patch/diff 看清每次改了什么;
+2. 把猜出的规则写成 predict 函数, 用 verify_wm 验证 —— 验不过就修函数, 不要靠感觉;
+3. 规则成立后, 在脑外推演(写代码模拟)找出过关序列, 再用最少的 act 执行;
+4. 复杂关卡可以只对"关键子系统"建模(比如只预测被点击区域), 但验证不能省。
 print 出你想看的东西; 输出会截断到 3000 字符, 别打印整个 grid(用 patch 看局部)。"""
 
 
@@ -155,9 +162,26 @@ def play_game_repl(
             raise LevelUp()
         return len(_diff(prev.grid, cur.grid))
 
+    def verify_wm(predict):
+        """世界模型验证器(Tycho 纪律): 把你写的 predict(before_grid, action_str)
+        -> after_grid 在 history 全部转移上逐格重放, 返回每条的错格数。
+        全 0 才算世界模型成立; 成立之后你就能在脑外免费推演了。"""
+        report = []
+        for act_str, before, after in ns["history"]:
+            try:
+                pred = predict(before, act_str)
+                bad = sum(1 for y in range(len(after)) for x in range(len(after[0]))
+                          if pred[y][x] != after[y][x])
+            except Exception as e:  # noqa: BLE001
+                bad = f"异常:{e!r}"
+            report.append((act_str, bad))
+        ok = sum(1 for _, b in report if b == 0)
+        print(f"verify_wm: {ok}/{len(report)} 条转移逐格全对")
+        return report
+
     ns: dict = {
         "act": act, "history": [], "components": _components, "diff": _diff,
-        "patch": _patch, "notes": {},
+        "patch": _patch, "notes": {}, "verify_wm": verify_wm,
     }
 
     def _sync():

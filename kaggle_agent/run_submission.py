@@ -72,7 +72,8 @@ def _build_llm():
     return LLMClient(
         base_url=base,
         model=os.environ.get("A3_LLM_MODEL", "default"),
-        max_tokens=int(os.environ.get("A3_LLM_MAX_TOKENS", "2048")),
+        api_key=os.environ.get("A3_LLM_KEY", "EMPTY"),
+        max_tokens=int(os.environ.get("A3_LLM_MAX_TOKENS", "6000")),
     )
 
 
@@ -91,9 +92,9 @@ def main(
     out.mkdir(parents=True, exist_ok=True)
 
     agent = agent or os.environ.get("A3_AGENT", "explore")
-    llm = _build_llm() if agent == "llm" else None
-    if agent == "llm" and llm is None:
-        print("⚠️ A3_AGENT=llm 但 A3_LLM_BASE_URL 未设, 降级为 explore")
+    llm = _build_llm() if agent in ("llm", "repl") else None
+    if agent in ("llm", "repl") and llm is None:
+        print(f"⚠️ A3_AGENT={agent} 但 A3_LLM_BASE_URL 未设, 降级为 explore")
         agent = "explore"
 
     arcade = _build_arcade(env_dir)
@@ -119,7 +120,10 @@ def main(
         try:
             g = ApiGame(env, gid)
             dl = time.monotonic() + per
-            if llm is not None:
+            if llm is not None and agent == "repl":
+                from .repl_agent import play_game_repl
+                res = play_game_repl(g, llm, max_actions=max_actions, deadline=dl)
+            elif llm is not None:
                 from .llm_agent import play_game_llm
                 res = play_game_llm(g, llm, max_actions=max_actions, deadline=dl)
             else:
