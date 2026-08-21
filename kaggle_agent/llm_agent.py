@@ -62,18 +62,105 @@ def _grid_summary(grid: list[list[int]], max_items: int = 36) -> str:
                         ys.append(ny); xs.append(nx); n += 1
             comps.append((n, color, min(ys), min(xs), max(ys), max(xs)))
     comps.sort(reverse=True)
-    lines = [f"背景色={bg}, 连通块{len(comps)}个(前{min(len(comps), max_items)}):"]
+    lines = [f"全景(16x16 降采样, 每格=原图4x4):\n{_overview(grid)}\n",
+             f"背景色={bg}, 连通块{len(comps)}个(前{min(len(comps), max_items)}):"]
+    patches = 0
     for n, c, y0, x0, y1, x1 in comps[:max_items]:
-        lines.append(f"  色{c} {n}格 行{y0}-{y1} 列{x0}-{x1}")
+        line = f"  色{c} {n}格 行{y0}-{y1} 列{x0}-{x1}"
+        # 小块(图案候选)给像素级视图 —— 图案往往就是题眼
+        if patches < 10 and (y1 - y0) < 14 and (x1 - x0) < 14:
+            line += "\n" + "\n".join("    " + r for r in
+                                     _render_patch(grid, y0, x0, y1, x1).split("\n"))
+            patches += 1
+        lines.append(line)
     return "\n".join(lines)
 
 
-def _diff_summary(prev: list[list[int]], cur: list[list[int]]) -> str:
-    cells = [(y, x) for y in range(len(cur)) for x in range(len(cur[0])) if prev[y][x] != cur[y][x]]
+def _render_patch(grid: list[list[int]], y0: int, x0: int, y1: int, x1: int) -> str:
+    """把一小块像素渲染成十六进制字符行(0-f=色号16以内, 其余用'?')。
+
+    连通块摘要会抹掉图案本身(ft09 探针实测: 蓝图 3x3 花纹就是答案, 模型
+    看不见图案等于蒙眼玩拼图), 小块必须给像素级视图。
+    """
+    rows = []
+    for y in range(y0, y1 + 1):
+        rows.append("".join(format(grid[y][x], "x") if grid[y][x] < 16 else "?"
+                            for x in range(x0, x1 + 1)))
+    return "\n".join(rows)
+
+
+def _overview(grid: list[list[int]], cell: int = 4) -> str:
+    """64x64 -> 16x16 众数降采样全景图, 让模型有整体布局感。"""
+    h, w = len(grid), len(grid[0])
+    rows = []
+    for by in range(0, h, cell):
+        row = []
+        for bx in range(0, w, cell):
+            c = Counter(grid[y][x] for y in range(by, min(by + cell, h))
+                        for x in range(bx, min(bx + cell, w))).most_common(1)[0][0]
+            row.append(format(c, "x") if c < 16 else "?")
+        rows.append("".join(row))
+    return "\n".join(rows)
+
+
+def _diff_summary(prev: list[list[int]], cur: list[list[int]], detail: bool = True,
+                  ignore: frozenset = frozenset()) -> str:
+    cells = [(y, x) for y in range(len(cur)) for x in range(len(cur[0]))
+             if prev[y][x] != cur[y][x] and (y, x) not in ignore]
     if not cells:
         return "画面无变化"
     ys = [c[0] for c in cells]; xs = [c[1] for c in cells]
-    return f"{len(cells)}格变化, 范围 行{min(ys)}-{max(ys)} 列{min(xs)}-{max(xs)}"
+    s = f"{len(cells)}格变化, 范围 行{min(ys)}-{max(ys)} 列{min(xs)}-{max(xs)}"
+    if detail and (max(ys) - min(ys)) < 14 and (max(xs) - min(xs)) < 14:
+        s += ("; 变化区现状:\n" + _render_patch(cur, min(ys), min(xs), max(ys), max(xs)))
+    return s
+
+
+def _probe_actions(game: ApiGame, obs: Obs) -> tuple[Obs, str]:
+    """关卡开局把每个按键各走一步, 产出动作效果表。
+
+    每关最多花 5 个计分动作换一张效果表, 比让模型一轮一轮花 LLM 调用去
+    试便宜得多(主动学习效率=胜负手)。⚠️动作真实计分, 死了就地重置并记录。
+    """
+    lines = []
+    for i in [a for a in (obs.actions or ()) if a not in (0, 6)][:5]:
+        prev = obs
+        obs = game.act(Action.key(i))
+        if obs.dead:
+            lines.append(f"A{i}: 导致死亡(已重置)")
+            obs = game.reset_level()
+            continue
+        lines.append(f"A{i}: {_diff_summary(prev.grid, obs.grid, detail=False)}")
+        if obs.done or obs.level != prev.level:
+            lines.append(f"A{i} 直接导致过关!")
+            break
+    return obs, "\n".join(lines) or "(无按键动作可探测)"
+
+
+class _Volatile:
+    """跨步计数器探测(harness 跨步判据的轻量版)。
+
+    每步都自动变化的格子(步数条/时间条)会把 diff 污染成噪声 —— r11l 列0
+    竖条实测让模型把注意力全耗在假信号上。判据: 观测≥4次转移后, 变化率
+    ≥80% 的格子进掩码, diff 摘要里剔除。
+    """
+
+    def __init__(self):
+        self.counts: Counter = Counter()
+        self.total = 0
+
+    def update(self, prev: list[list[int]], cur: list[list[int]]) -> None:
+        self.total += 1
+        for y in range(len(cur)):
+            for x in range(len(cur[0])):
+                if prev[y][x] != cur[y][x]:
+                    self.counts[(y, x)] += 1
+
+    @property
+    def mask(self) -> frozenset:
+        if self.total < 4:
+            return frozenset()
+        return frozenset(c for c, n in self.counts.items() if n / self.total >= 0.8)
 
 
 def _parse_plan(d: dict, avail: tuple[int, ...]) -> list[Action]:
@@ -120,6 +207,8 @@ def play_game_llm(
     level, level_start = obs.level, game.steps
     llm_calls = 0
     feedback = ""   # 上一轮"预期 vs 实际"的对账, 喂回下一轮
+    vol = _Volatile()
+    obs, probe_table = _probe_actions(game, obs)
 
     while game.steps < max_actions and time.monotonic() < deadline and not obs.done:
         if obs.dead:
@@ -131,6 +220,7 @@ def play_game_llm(
             log(f"  [{game.game_id}] level {level}->{obs.level} @ step {game.steps}")
             level, level_start = obs.level, game.steps
             recent.append(f"(过关! 现在是 level {obs.level})")
+            obs, probe_table = _probe_actions(game, obs)  # 新关重探(机制常换)
 
         # --- 问 LLM 要计划 ---
         plan: list[Action] = []
@@ -140,7 +230,10 @@ def play_game_llm(
                 f"level {obs.level}/{obs.win_levels}, 已用 {game.steps}/{max_actions} 步, "
                 f"可用动作 {list(obs.actions or (1,2,3,4,5,6))}\n\n"
                 f"当前画面:\n{_grid_summary(obs.grid)}\n\n"
-                f"最近转移:\n" + ("\n".join(recent) or "(无)") + "\n\n"
+                f"本关按键效果表(开局各试一次):\n{probe_table}\n\n"
+                + (f"(已自动忽略每步都自变的{len(vol.mask)}个格子, 疑似步数条/计时器)\n\n"
+                   if vol.mask else "")
+                + f"最近转移:\n" + ("\n".join(recent) or "(无)") + "\n\n"
                 f"你的规则笔记:\n{notes}\n" + (f"\n上轮对账: {feedback}\n" if feedback else "")
             )
             try:
@@ -166,7 +259,8 @@ def play_game_llm(
                 break
             prev = obs
             obs = game.act(a)
-            diff = _diff_summary(prev.grid, obs.grid)
+            vol.update(prev.grid, obs.grid)
+            diff = _diff_summary(prev.grid, obs.grid, ignore=vol.mask)
             recent.append(f"step{game.steps}: {a} -> {diff}")
             if diff != "画面无变化":
                 any_change = True

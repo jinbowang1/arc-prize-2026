@@ -27,7 +27,10 @@ class LLMClient:
     """OpenAI-compatible chat 客户端(vLLM serve / 任何兼容网关)。"""
 
     def __init__(self, base_url: str, model: str, api_key: str = "EMPTY",
-                 timeout: float = 300.0, max_tokens: int = 2048, temperature: float = 0.2):
+                 timeout: float = 300.0, max_tokens: int = 6000, temperature: float = 0.2):
+        # ⚠️max_tokens 是"思考+正文"的总预算: 推理型模型(deepseek 等)上下文
+        # 一长思考就变长, 1600 实测被思考吃光 -> content 为空 -> 轮轮解析失败。
+        # 默认给足 6000, 别省这个钱(动作比 token 贵)。
         self.base_url = base_url.rstrip("/")
         self.model = model
         self.api_key = api_key
@@ -61,7 +64,12 @@ class LLMClient:
                 u = data.get("usage") or {}
                 self.stats.prompt_tokens += u.get("prompt_tokens", 0)
                 self.stats.completion_tokens += u.get("completion_tokens", 0)
-                return data["choices"][0]["message"]["content"]
+                msg = data["choices"][0]["message"]
+                content = msg.get("content") or ""
+                if not content.strip():
+                    # 思考吃光预算时 content 为空; 思考尾部常已含答案, 捞一把
+                    content = (msg.get("reasoning_content") or "")[-2000:]
+                return content
             except Exception as e:  # noqa: BLE001
                 last = e
                 self.stats.errors += 1
