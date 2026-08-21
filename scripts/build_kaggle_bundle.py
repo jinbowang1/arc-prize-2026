@@ -88,6 +88,7 @@ def build() -> None:
     (kl / "kernel-metadata.json").write_text(json.dumps({
         "id": f"{USERNAME}/arc3-jinbo-llm-smoke",
         "title": "arc3-jinbo-llm-smoke",
+        "machine_shape": "NvidiaRtxPro6000",
         "code_file": "arc3-jinbo-llm-smoke.ipynb",
         "language": "python",
         "kernel_type": "notebook",
