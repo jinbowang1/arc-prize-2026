@@ -79,6 +79,28 @@ def build() -> None:
         "competition_sources": ["arc-prize-2026-arc-agi-3"],
     }, indent=1))
 
+    # --- kernel_gpu: 完整版提交 notebook(GPU + Qwen3.8 + REPL agent) ---
+    kg = DIST / "kernel_gpu"
+    if kg.exists():
+        shutil.rmtree(kg)
+    kg.mkdir(parents=True)
+    shutil.copy(ROOT / "kaggle_agent" / "notebook" / "arc3-jinbo-submission-gpu.ipynb", kg)
+    (kg / "kernel-metadata.json").write_text(json.dumps({
+        "id": f"{USERNAME}/arc3-jinbo-submission-gpu",
+        "title": "arc3-jinbo-submission-gpu",
+        "machine_shape": "NvidiaRtxPro6000",
+        "code_file": "arc3-jinbo-submission-gpu.ipynb",
+        "language": "python",
+        "kernel_type": "notebook",
+        "is_private": True,
+        "enable_gpu": True,
+        "enable_internet": False,
+        "dataset_sources": [f"{USERNAME}/{DATASET_SLUG}",
+                            "driessmit1/arc3-vllm-h100-wheelhouse-v3"],
+        "model_sources": ["michaelpoluektov/qwen3-8-27b-fp8/transformers/default/1"],
+        "competition_sources": ["arc-prize-2026-arc-agi-3"],
+    }, indent=1))
+
     # --- kernel_llm: GPU 冒烟 notebook(开发用, 非提交物) ---
     kl = DIST / "kernel_llm"
     if kl.exists():
