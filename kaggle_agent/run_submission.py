@@ -122,7 +122,8 @@ def main(
             dl = time.monotonic() + per
             if llm is not None and agent == "repl":
                 from .repl_agent import play_game_repl
-                res = play_game_repl(g, llm, max_actions=max_actions, deadline=dl)
+                res = play_game_repl(g, llm, max_actions=max_actions, deadline=dl,
+                                     transcript_path=str(out / f"transcript_{gid.split('-')[0]}.jsonl"))
             elif llm is not None:
                 from .llm_agent import play_game_llm
                 res = play_game_llm(g, llm, max_actions=max_actions, deadline=dl)

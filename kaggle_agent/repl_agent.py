@@ -54,7 +54,8 @@ SYSTEM_PROMPT = """你在玩一个 64x64 网格解谜游戏(颜色索引 0-15), 
   在全部 history 上逐格重放验证, 返回每条错格数。**全 0 才算规则成立。**
 
 工作流程(按顺序):
-1. 探索: 花预算的 20%-40% 做实验摸动作效果(太少看不懂规则, 太多烧掉分数), 用 patch/diff 看清每次改了什么;
+1. 探索: 先用**少量**实验(几个 act)摸动作效果, 用 patch/diff 看清每次改了什么;
+   看不懂再逐步加码 —— 实验是手段不是任务, 随时准备直接去赢;
 2. 验证: 把猜出的规则写成 predict 函数, 用 verify_wm 验证 —— **没有通过 verify_wm 的规则不许用来规划**(经验: 不验证的世界模型比没有世界模型还糟);
 3. 简化: 规则验证通过后, 试着把它改写得更简单(合并分支/去掉特例), 再验一次 —— 更简单且同样全对的规则泛化更好;
 4. 规划: 在验证过的规则上写代码推演出过关序列, 再用最少的 act 执行;
@@ -137,7 +138,17 @@ def play_game_repl(
     deadline: float,
     max_rounds: int = 30,
     log=print,
+    transcript_path: str | None = None,
 ) -> GameResult:
+    """transcript_path: 每轮(模型输出, 执行结果)落 jsonl —— 今晚两次都是靠
+    transcript 破的案(空回复伪装成模型不行/提示词回归), 评测不许裸跑。"""
+    import json as _json
+
+    def _rec(assistant: str, result: str) -> None:
+        if transcript_path:
+            with open(transcript_path, "a") as f:
+                f.write(_json.dumps({"assistant": assistant, "result": result},
+                                    ensure_ascii=False) + "\n")
     res = GameResult(game_id=game.game_id)
     t0 = time.monotonic()
     obs = game.reset()
@@ -247,6 +258,7 @@ def play_game_repl(
         status = (f"\n\n[round {rnd+1}/{max_rounds}] level {state['obs'].level}/{res.win_levels}, "
                   f"已用 {game.steps}/{max_actions} 动作。notes={str(ns['notes'])[:1200]}")
         exchanges.append(((out or "(无输出)") + outcome + status, raw[-2500:]))
+        _rec(raw, (out or "") + outcome)
 
     res.levels_completed = state["obs"].level
     res.steps = game.steps
