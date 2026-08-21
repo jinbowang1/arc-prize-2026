@@ -73,17 +73,35 @@ class LevelUp(Exception):
 
 
 def _extract_code(text: str) -> str | None:
+    """抠出要执行的代码块。
+
+    🚨Qwen3.8 实测会把画面数据用裸 ``` 引用块贴回来(贴的是数据不是代码),
+    "见围栏就执行"会把 `500f005` 这种像素行喂给 exec → SyntaxError 白烧一轮。
+    判据改为**编译通过才算代码**: 带 python 标签的优先, 其次裸块, 都必须
+    compile() 得过; 多个合法块取最后一个(模型习惯先探讨后给最终版)。
+    """
     if "```" not in text:
         return None
-    for part in text.split("```")[1:]:
+    tagged, plain = [], []
+    for part in text.split("```")[1::2]:  # 奇数段=围栏内
         body = part
+        is_tagged = False
         if body.startswith("python"):
-            body = body[6:]
-        elif body.startswith("py"):
-            body = body[2:]
+            body, is_tagged = body[6:], True
+        elif body.startswith("py\n"):
+            body, is_tagged = body[3:], True
         body = body.strip("\n")
-        if body.strip():
-            return body
+        if not body.strip():
+            continue
+        try:
+            compile(body, "<candidate>", "exec")
+        except SyntaxError:
+            continue
+        (tagged if is_tagged else plain).append(body)
+    if tagged:
+        return tagged[-1]
+    if plain:
+        return plain[-1]
     return None
 
 
