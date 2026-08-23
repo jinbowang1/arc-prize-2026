@@ -68,7 +68,10 @@ C4 = '''# dsh + vLLM 工具调用冒烟: 让它用 bash 工具产出文件 —�
 import shutil
 home = Path("/kaggle/tmp/dsh-home"); home.mkdir(parents=True, exist_ok=True)
 ws = Path("/kaggle/tmp/smoke-ws"); shutil.rmtree(ws, ignore_errors=True); ws.mkdir(parents=True)
-env = dict(os.environ, DSH_HOME=str(home), DEEPSEEK_API_KEY="local")
+env = dict(os.environ, DSH_HOME=str(home), DEEPSEEK_API_KEY="local",
+           # Kaggle 容器本身是一次性沙箱; dsh 的 Landlock/bubblewrap 在这不可用,
+           # headless 的 sandbox-policy 读这个环境变量放开 bash
+           DSH_PERMISSION_MODE="danger-full-access")
 patch = bundle / "kaggle_agent/dsh/vllm.patch.yml"
 r = subprocess.run(
     [str(NODE), str(DSH_BIN), "--profile", "headless", "--patch", str(patch),
@@ -122,7 +125,7 @@ for game in ["r11l", "ft09", "ls20"]:
         d = subprocess.run(
             [str(NODE), str(DSH_BIN), "--profile", "headless", "--patch", str(patch), task_md],
             cwd=ws_g, env=env, capture_output=True, text=True, timeout=480)
-        tail = d.stdout[-400:]
+        tail = d.stdout[-400:] + "\n[stderr] " + d.stderr[-300:]
     except subprocess.TimeoutExpired as te:
         tail = f"(8分钟墙钟到, 掐掉) {str(te.stdout or '')[-200:]}"
     import urllib.request
