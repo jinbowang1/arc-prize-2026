@@ -125,7 +125,7 @@ for game in ["r11l", "ft09", "ls20"]:
         d = subprocess.run(
             [str(NODE), str(DSH_BIN), "--profile", "headless", "--patch", str(patch), task_md],
             cwd=ws_g, env=env, capture_output=True, text=True, timeout=480)
-        tail = d.stdout[-400:] + "\n[stderr] " + d.stderr[-300:]
+        tail = d.stdout[-400:] + " ||stderr|| " + d.stderr[-300:]
     except subprocess.TimeoutExpired as te:
         tail = f"(8分钟墙钟到, 掐掉) {str(te.stdout or '')[-200:]}"
     import urllib.request
