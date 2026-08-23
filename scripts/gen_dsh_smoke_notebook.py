@@ -52,12 +52,33 @@ subprocess.check_call(f"{NODE} {DSH_BIN} --version", shell=True)
 print("dsh 解包+可执行 OK", flush=True)'''
 
 C3 = '''from kaggle_agent.serve_vllm import start_vllm
+# 断根关思考: 模型看到游戏画面后思考爆长, 把整个回复配额烧光(账本 finish=max-tokens
+# 正文空)。vLLM 0.19 不认 --chat-template-kwargs, 但认 --chat-template 文件 ——
+# 拷模板把 enable_thinking 的默认值改成 false
+extra_vllm = []
+tc = json.loads((model_dir / "tokenizer_config.json").read_text())
+tpl = tc.get("chat_template") or ""
+if "enable_thinking" in tpl:
+    hits = 0
+    for a, b in (("enable_thinking = true", "enable_thinking = false"),
+                 ("enable_thinking is not defined", "false"),
+                 ("default(true)", "default(false)")):
+        if a in tpl:
+            tpl = tpl.replace(a, b); hits += 1
+    print("模板关思考替换命中:", hits)
+    if hits:
+        tf = WORKING / "chat_template_nothink.jinja"
+        tf.write_text(tpl)
+        extra_vllm = ["--chat-template", str(tf)]
+else:
+    print("模板里没有 enable_thinking, 原样跑")
 # 先试全局关思考(Qwen3 chat template kwarg); vLLM 版本不认这个参数就带思考跑
 proc = None
 for parser in ("qwen3_coder", "qwen3_xml", "hermes"):
     try:
         proc = start_vllm(str(model_dir), port=8000, max_model_len=32768, tool_calling=True,
-                          tool_parser=parser, log_path=str(WORKING / "vllm.log"), timeout_s=600)
+                          tool_parser=parser, extra_args=extra_vllm,
+                          log_path=str(WORKING / "vllm.log"), timeout_s=600)
         print(f"vLLM up (tool parser={parser} + qwen3 reasoning parser)")
         break
     except Exception as e:
