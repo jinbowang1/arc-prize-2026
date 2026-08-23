@@ -28,13 +28,20 @@
 4. **提示词一句话能毁掉一切**: "探索预算 20-40%"A/B 实锤是毒药, 已回退
 5. **换模型 = 换书写习惯 = 新失效面**: Qwen 把数据贴进裸围栏, compile() 门禁修掉
 
-## 当前状态 (08-21 收盘)
+## 当前状态 (08-23 收盘)
 
-- ✅ 提交管线全通(dataset v5 / GPU notebook v3 彩排两轮验收)
-- ✅ 第一发已交(explorer, ERROR, 换回三个只有实战才暴露的坑)
-- ⏰ **明早 8:00 交 GPU v3**: Qwen3.8-27B-FP8 + REPL agent
-  `kaggle competitions submit arc-prize-2026-arc-agi-3 -k jinbowang1/arc3-jinbo-submission-gpu -v 3 -f submission.parquet -m "..."`
-- 约束: 27B 一轮思考 ~1.5min, 真赛场每局约 6-10 轮 → 白烧一轮=分数杀手
+- 提交账: 第一发 explorer ERROR / 第二发 repl+qwen v3 **0.00** /
+  **第三发 08-23 已交**(kernel v5: 复读断路器+官方采样参数+关思考+种类手册, PENDING)
+- 关思考提速已上线: 27B 一轮从 60-90s 降到 ~10s, 每局调用 4-6 次 → ~30 次
+- 🚨 复读定案(23c900a): 关思考+temp0.2 近贪婪 → r11l 23 轮逐字复读全灭;
+  修=Qwen 官方 non-thinking 采样(0.7/0.8/presence 1.0)+复读断路器, GPU 彩排验证 84 轮零复读
+- 🚨 A/B 判决(08-23, probes/20260823/): "行动要成段"指引**不合入**——
+  条件性鼓励("方向明确后")在模型没读懂规则的局上从不触发, 反而抑制探索
+  (r11l act 11→4, ls20 20→13); ⚠️同版本代码 ls20 彩排用满 100 动作 vs A/B 只走 20 步
+  = **单局单 seed 方差大, 以后 A/B 至少 2 局×2 臂看方向一致才算数**
+- 下一病灶: 行动密度走**协议层**不走提示词劝说——探索本身成段
+  (probe_clicks 一键点一批连通块中心, 把 N 轮开口压成 1 轮), 或 explorer 喷洒
+  攒 history + REPL 只管归纳的混合范式
 
 ## 路线图
 

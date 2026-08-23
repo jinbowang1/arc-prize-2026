@@ -1,0 +1,42 @@
+[
+ {
+  "arm": "old",
+  "game": "r11l",
+  "levels": 0,
+  "steps": 11,
+  "rounds": 30,
+  "act_calls": 11,
+  "llm_calls": 30,
+  "seconds": 273.0
+ },
+ {
+  "arm": "old",
+  "game": "ls20",
+  "levels": 0,
+  "steps": 20,
+  "rounds": 30,
+  "act_calls": 10,
+  "llm_calls": 30,
+  "seconds": 273.3
+ },
+ {
+  "arm": "new",
+  "game": "r11l",
+  "levels": 0,
+  "steps": 4,
+  "rounds": 30,
+  "act_calls": 4,
+  "llm_calls": 30,
+  "seconds": 205.6
+ },
+ {
+  "arm": "new",
+  "game": "ls20",
+  "levels": 0,
+  "steps": 13,
+  "rounds": 30,
+  "act_calls": 16,
+  "llm_calls": 30,
+  "seconds": 215.5
+ }
+]
