@@ -1,12 +1,15 @@
 # 赛场: dsh 的模型层指向 notebook 内 vLLM(OpenAI 兼容, served-model-name=local)
+# maxTokens 必须显式给: dsh 默认 256000 会被 vLLM 按 max_model_len=32768 拒掉
 - id: llm-deepseek
   name: '@deepseek-ai/dsh-llm-deepseek'
   config:
     baseURL: http://127.0.0.1:8000/v1
+    maxTokens: 8000
     models:
       - id: local
         name: local vLLM
         contextWindow: 32768
+        maxTokens: 8000
 - id: agent-default-model
   name: '@deepseek-ai/dsh-agent-default-model'
   config:

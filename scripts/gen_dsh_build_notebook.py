@@ -18,12 +18,12 @@ def run(cmd, **kw):
     print("+", cmd, flush=True)
     subprocess.check_call(cmd, shell=True, **kw)
 
-NODE = "node-v22.12.0-linux-x64"
-run(f"wget -q https://nodejs.org/dist/v22.12.0/{NODE}.tar.xz")
+NODE = "node-v22.19.0-linux-x64"
+run(f"wget -q https://nodejs.org/dist/v22.19.0/{NODE}.tar.xz")
 run(f"tar xf {NODE}.tar.xz && rm {NODE}.tar.xz && mv {NODE} node")
 os.environ["PATH"] = f"{W}/node/bin:" + os.environ["PATH"]
 run("node --version")
-run("npm install -g --force pnpm@10")  # 不走 corepack: shim 会与全局安装打架
+run("npm install -g --force pnpm@11.7.0")  # 仓库 packageManager 同款; 不走 corepack
 run("pnpm --version")'''
 
 C2 = r'''run("git clone --depth 1 -b fix/tool-call-empty-string-deltas "
@@ -32,6 +32,7 @@ os.chdir(W / "dsh-src")
 env = dict(os.environ, DSH_LEFTHOOK_ALLOW_HOOKS_PATH_OVERRIDE="1", CI="1")
 subprocess.check_call("pnpm install --frozen-lockfile", shell=True, env=env)
 subprocess.check_call("pnpm run build", shell=True, env=env)
+assert (W / "dsh-src/apps/cli/lib/bin.js").exists(), "build 没产出 apps/cli/lib/bin.js"
 print("build done", flush=True)'''
 
 C3 = r'''os.chdir(W)
