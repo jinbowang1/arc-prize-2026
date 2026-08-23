@@ -88,6 +88,8 @@ SYSTEM_PROMPT = """你在玩一个 64x64 网格解谜游戏(颜色索引 0-15), 
 - components(g): 连通块列表 [(size, color, y0, x0, y1, x1), ...]
 - diff(g1, g2): 两画面不同的格子 [(y, x, 旧值, 新值), ...]
 - patch(g, y0, x0, y1, x1): 把子区域渲染成字符串(每格一个十六进制色号)
+- obj_diff(g1, g2): 对象级 diff —— 按颜色汇总"消失/出现"并标注疑似整体移动。
+  每次 act 后会自动打印一份; 判断"什么东西动到了哪"用它, 别逐格肉眼比。
 - notes: 一个 dict, 你的持久笔记本(跨轮保留), 把归纳出的规则、待验证假设记在里面
 
 - verify_wm(predict): 把你写的世界模型 predict(before_grid, action_str)->after_grid
@@ -193,6 +195,34 @@ def _counter_cells(history, min_n=5, rate=0.8, window=60):
         if k >= rate * n and ys[-1] - ys[0] <= len(ys) + 2:
             out |= cells
     return out
+
+
+def _obj_diff(b, a, exclude=frozenset()):
+    """对象级 diff: 按颜色汇总"消失/出现"并提示疑似移动。格子级 diff 看不出
+    "色3十字从A搬到了B"这种事实(r11l L1 真解=把图案收进菱形区, 模型盯格子
+    级 diff 六轮没看出来), 移动/推箱/传送类游戏都需要这个视角。"""
+    d = [c for c in _diff(b, a) if (c[0], c[1]) not in exclude]
+    if not d:
+        return "(无变化)"
+    from collections import defaultdict
+    gone, came = defaultdict(list), defaultdict(list)
+    for y, x, o, n_ in d:
+        gone[int(o)].append((y, x))
+        came[int(n_)].append((y, x))
+    def bbox(cells):
+        ys = [c[0] for c in cells]; xs = [c[1] for c in cells]
+        return f"行{min(ys)}-{max(ys)}列{min(xs)}-{max(xs)}"
+    lines = [f"共{len(d)}格变化:"]
+    for c in sorted(set(gone) | set(came)):
+        g_, c_ = gone.get(c, []), came.get(c, [])
+        seg = []
+        if g_:
+            seg.append(f"-{len(g_)}格@{bbox(g_)}")
+        if c_:
+            seg.append(f"+{len(c_)}格@{bbox(c_)}")
+        note = " (疑似整体移动!)" if g_ and c_ and abs(len(g_) - len(c_)) <= 2 and len(g_) >= 4 else ""
+        lines.append(f"  色{c}: {' '.join(seg)}{note}")
+    return "\n".join(lines)
 
 
 def _components(g):
@@ -301,7 +331,10 @@ def play_game_repl(
         _sync()
         if cur.done or cur.level != prev.level:
             raise LevelUp()
-        return len(_diff(prev.grid, cur.grid))
+        d = _diff(prev.grid, cur.grid)
+        if len(d) >= 4:  # 自动对象级摘要: 移动/传送在格子级 diff 里看不见
+            print(f"[{action}] " + _obj_diff(prev.grid, cur.grid, ns.get("_ctr", frozenset())))
+        return len(d)
 
     def verify_wm(predict):
         """世界模型验证器(Tycho 纪律): 把你写的 predict(before_grid, action_str)
@@ -405,6 +438,7 @@ def play_game_repl(
 
     ns: dict = {
         "act": act, "history": [], "components": _components, "diff": _diff,
+        "obj_diff": _obj_diff,
         "patch": _patch, "notes": {}, "verify_wm": verify_wm,
         "probe_keys": probe_keys, "probe_clicks": probe_clicks,
         "remember": remember, "save_tool": save_tool,
@@ -533,6 +567,7 @@ def play_game_repl(
                      " act()/probe_clicks() 拿新证据 —— 拿不准就挑一个最可疑的目标试。")
             idle_rounds = 0
         ctr = _counter_cells(ns["history"])
+        ns["_ctr"] = ctr  # act() 的自动对象摘要用它剔除计数器噪声
         ctr_note = ""
         if ctr:
             sample = sorted(ctr)[:10]
