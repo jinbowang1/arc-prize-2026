@@ -354,6 +354,10 @@ def play_game_repl(
                   + (f"\n\n工具库已加载: {loaded_tools}" if loaded_tools else ""))
     _rec(system=SYSTEM_PROMPT, opening=first_user)
 
+    # 复读断路器: 关思考+低温下 Qwen3 会逐字复读上一轮(08-23 彩排 r11l 23 轮
+    # 全灭实锤)。重复的纯观察代码不再执行, 注入干预并临时提温打散循环。
+    last_code: str | None = None
+    boost_temp = False
     for rnd in range(max_rounds):
         if time.monotonic() >= deadline or game.steps >= max_actions or state["obs"].done:
             break
@@ -362,11 +366,24 @@ def play_game_repl(
         for u, a in exchanges:
             msgs += [{"role": "assistant", "content": a}, {"role": "user", "content": u}]
         try:
-            raw = llm.chat(msgs)
+            raw = llm.chat(msgs, **({"temperature": 1.0} if boost_temp else {}))
         except Exception as e:  # noqa: BLE001
             log(f"  [{game.game_id}] LLM 失效: {e!r}")
             break
         code = _extract_code(raw)
+        if code and code == last_code and "act(" not in code:
+            boost_temp = True
+            status = (f"[round {rnd+1}/{max_rounds}] level {state['obs'].level}/{res.win_levels}, "
+                      f"已用 {game.steps}/{max_actions} 动作")
+            fed = ("⚠️ 这段代码和上一轮完全相同, 已执行过, 不再重复执行。"
+                   "画面没有变化, 光看是看不出新信息的; 本轮必须写不同的代码, "
+                   "并至少包含一个此前没试过的 act() 动作。\n" + status)
+            exchanges.append((fed, raw[-1500:]))
+            _rec(round=rnd + 1, assistant=raw, result="(重复代码, 未执行)", fed_back=fed)
+            continue
+        if code:
+            boost_temp = False
+            last_code = code
         if not code:
             status = (f"[round {rnd+1}/{max_rounds}] level {state['obs'].level}/{res.win_levels}, "
                       f"已用 {game.steps}/{max_actions} 动作")
