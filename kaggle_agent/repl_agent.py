@@ -153,18 +153,41 @@ def _extract_code(text: str) -> str | None:
 
 
 def _counter_cells(history, min_n=5, rate=0.8, window=60):
-    """跨转移统计出的计数器格(步数条/计时器): 在 ≥rate 的转移里都在变的格子。
-    r11l 列0步数条实录: 模型把"点击只改1格(计数器+1)"当真实反馈分析了几十轮
-    —— 这类格子的变化与动作内容无关, 必须揭示给模型并从探测摘要里剔除。"""
+    """跨转移统计出的计数器格(步数条/计时器), 两种形态都要抓:
+    ①同一格反复变(cd82 落笔计数器) —— 格级判据;
+    ②一根条逐格推进(r11l 列0步数条: 每步变的是"下一格", 单格变化率永远很低,
+      格级判据抓不住 —— harness 08-12 同款教训) —— 行/列聚合判据:
+      某行/列在 ≥rate 的转移里都有变化, 且该行/列累计变化格集中在宽≤2的窄带。
+    这类格子的变化与动作内容无关, 必须揭示给模型并从探测摘要里剔除。"""
     hs = history[-window:]
     if len(hs) < min_n:
         return set()
     from collections import Counter as C
-    cnt = C()
+    cell_cnt, row_hit, col_hit = C(), C(), C()
+    row_cells, col_cells = {}, {}
     for _, b, a in hs:
-        for y, x, _, _ in _diff(b, a):
-            cnt[(y, x)] += 1
-    return {c for c, k in cnt.items() if k >= rate * len(hs)}
+        d = _diff(b, a)
+        for y, x, _, _ in d:
+            cell_cnt[(y, x)] += 1
+            row_cells.setdefault(y, set()).add((y, x))
+            col_cells.setdefault(x, set()).add((y, x))
+        for y in {c[0] for c in d}:
+            row_hit[y] += 1
+        for x in {c[1] for c in d}:
+            col_hit[x] += 1
+    n = len(hs)
+    out = {c for c, k in cell_cnt.items() if k >= rate * n}
+    for y, k in row_hit.items():
+        cells = row_cells[y]
+        xs = sorted(x for _, x in cells)
+        if k >= rate * n and xs[-1] - xs[0] <= len(xs) + 2:  # 连续窄带, 非散布全行
+            out |= cells
+    for x, k in col_hit.items():
+        cells = col_cells[x]
+        ys = sorted(y for y, _ in cells)
+        if k >= rate * n and ys[-1] - ys[0] <= len(ys) + 2:
+            out |= cells
+    return out
 
 
 def _components(g):
@@ -401,12 +424,26 @@ def play_game_repl(
                   steps_used=game.steps, steps_budget=max_actions)
 
     _sync()
+    # 开局自动探测(v4"开局零调用"): 观察的钱由代码出, 效果表直接进第一轮输入,
+    # 免得模型花 5-10 轮开口自己摸(08-23 r11l 实录: 摸索期吃掉全部轮数)。
+    auto_probe = ""
+    try:
+        actions0 = set(obs.actions or (1, 2, 3, 4, 5, 6))
+        if 6 in actions0 and len(actions0) == 1:
+            auto_probe = "开局自动探测(每个连通块代表点各点一次):\n" + probe_clicks(budget=6)
+        elif 6 not in actions0:
+            auto_probe = "开局自动探测(每个按键各按一次):\n" + probe_keys()
+    except (LevelUp, BudgetExhausted):
+        pass  # 探测中过关/耗尽: 罕见但都是好事/终局, 直接进主循环处理
+    except Exception:  # noqa: BLE001
+        auto_probe = ""
     # exchanges 存 (喂回的user消息, 模型的assistant输出); 组装时保持
     # system, first_user, a1, u1, a2, u2... 的严格交替 —— 最新结果只出现一次
     exchanges: deque[tuple[str, str]] = deque(maxlen=KEEP_EXCHANGES)
     first_user = (f"开局: level {obs.level}/{obs.win_levels}, 预算 {max_actions} 动作, "
                   f"可用动作 {list(obs.actions or (1,2,3,4,5,6))}\n\n"
                   f"完整画面:\n{_full_frame(obs.grid)}\n\n{_grid_summary(obs.grid)}"
+                  + (f"\n\n{auto_probe}" if auto_probe else "")
                   + (f"\n\n你的跨游戏记事本(此前游戏记下的):\n{past_notes}" if past_notes else "")
                   + (f"\n\n工具库已加载: {loaded_tools}" if loaded_tools else ""))
     _rec(system=SYSTEM_PROMPT, opening=first_user)
