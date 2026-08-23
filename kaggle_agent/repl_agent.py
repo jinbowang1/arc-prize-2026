@@ -152,6 +152,21 @@ def _extract_code(text: str) -> str | None:
     return None
 
 
+def _counter_cells(history, min_n=5, rate=0.8, window=60):
+    """跨转移统计出的计数器格(步数条/计时器): 在 ≥rate 的转移里都在变的格子。
+    r11l 列0步数条实录: 模型把"点击只改1格(计数器+1)"当真实反馈分析了几十轮
+    —— 这类格子的变化与动作内容无关, 必须揭示给模型并从探测摘要里剔除。"""
+    hs = history[-window:]
+    if len(hs) < min_n:
+        return set()
+    from collections import Counter as C
+    cnt = C()
+    for _, b, a in hs:
+        for y, x, _, _ in _diff(b, a):
+            cnt[(y, x)] += 1
+    return {c for c, k in cnt.items() if k >= rate * len(hs)}
+
+
 def _components(g):
     from collections import Counter as C, deque as D
     h, w = len(g), len(g[0])
@@ -318,15 +333,16 @@ def play_game_repl(
                                    for xx in range(x0, x1 + 1) if g0[yy][xx] == c_))
                 targets.append((cy, cx))
         lines = []
+        ctr = _counter_cells(ns["history"])
         for y, x in list(targets)[:budget]:
             before = state["obs"].grid
             r = act(6, x=x, y=y)
             if r == -1:
                 lines.append(f"click({y},{x}): 导致死亡(已重置回本关起点)")
                 continue
-            d = _diff(before, state["obs"].grid)
+            d = [c for c in _diff(before, state["obs"].grid) if (c[0], c[1]) not in ctr]
             if not d:
-                lines.append(f"click({y},{x}): 无变化")
+                lines.append(f"click({y},{x}): 无变化(计数器除外) = 无效点击")
             else:
                 ys = [c[0] for c in d]; xs = [c[1] for c in d]
                 pair = {}
@@ -473,8 +489,14 @@ def play_game_repl(
                      "你已经看过了, 再分析不会产生新信息。本轮必须执行至少一个新的"
                      " act()/probe_clicks() 拿新证据 —— 拿不准就挑一个最可疑的目标试。")
             idle_rounds = 0
+        ctr = _counter_cells(ns["history"])
+        ctr_note = ""
+        if ctr:
+            sample = sorted(ctr)[:10]
+            ctr_note = (f"\n(计数器格共{len(ctr)}个, 如{sample}: 每步自动变化, 与动作内容"
+                        f"无关 —— diff 里出现它们不代表点击有效, 分析时剔除)")
         status = (f"\n\n[round {rnd+1}/{max_rounds}] level {state['obs'].level}/{res.win_levels}, "
-                  f"已用 {game.steps}/{max_actions} 动作。notes={str(ns['notes'])[:1200]}")
+                  f"已用 {game.steps}/{max_actions} 动作。notes={str(ns['notes'])[:1200]}{ctr_note}")
         fed = (out or "(无输出)") + outcome + nudge + status
         exchanges.append((fed, raw[-2500:]))
         _rec(round=rnd + 1, assistant=raw, result=(out or "") + outcome, fed_back=fed)
