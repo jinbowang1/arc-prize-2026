@@ -134,6 +134,18 @@ for game in ["r11l", "ft09", "ls20"]:
                seconds=round(time.time() - t0, 1))
     print(rec, flush=True)
     (WORKING / f"dsh_{game}.log").write_text(tail)
+    # 会话账本诊断: dsh 中间轮次全在 session.jsonl.zstd 里, 解出尾部才知道模型每轮干了啥
+    try:
+        import zstandard as _zstd, glob as _g
+        logs = sorted(_g.glob(str(home / "sessions/**/session*.jsonl.zstd"), recursive=True),
+                      key=os.path.getmtime)
+        if logs:
+            with open(logs[-1], "rb") as fh:
+                data = _zstd.ZstdDecompressor().stream_reader(fh).read()
+            (WORKING / f"session_{game}_tail.txt").write_text(data[-12000:].decode("utf-8", "replace"))
+            print(f"[{game}] 账本尾已存, 总长{len(data)}")
+    except Exception as e:
+        print(f"[{game}] 账本解压失败:", repr(e))
     results.append(rec)
     gs.terminate()
 (WORKING / "dsh_smoke_results.json").write_text(json.dumps(results, ensure_ascii=False, indent=1))
