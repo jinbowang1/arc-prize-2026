@@ -23,11 +23,15 @@ def start_vllm(
     port: int = 8000,
     max_model_len: int = 16384,
     gpu_mem: float = 0.90,
+    tool_calling: bool = False,
     extra_args: list[str] | None = None,
     timeout_s: float = 1800.0,
     log_path: str = "vllm.log",
 ) -> subprocess.Popen:
-    """启动 vllm serve 子进程, 阻塞到 /v1/models 就绪(权重加载可能要十几分钟)。"""
+    """启动 vllm serve 子进程, 阻塞到 /v1/models 就绪(权重加载可能要十几分钟)。
+
+    tool_calling: dsh 这类靠原生 function calling 的 agent 需要 vLLM 开启
+    工具调用解析(Qwen3 系用 hermes parser); REPL 范式(模型只回代码块)不用开。"""
     cmd = [
         sys.executable, "-m", "vllm.entrypoints.openai.api_server",
         "--model", model_dir,
@@ -35,7 +39,10 @@ def start_vllm(
         "--port", str(port),
         "--max-model-len", str(max_model_len),
         "--gpu-memory-utilization", str(gpu_mem),
-    ] + (extra_args or [])
+    ]
+    if tool_calling:
+        cmd += ["--enable-auto-tool-choice", "--tool-call-parser", "hermes"]
+    cmd += extra_args or []
     log = open(log_path, "w")  # noqa: SIM115  (进程生命周期同 notebook, 不关)
     proc = subprocess.Popen(cmd, stdout=log, stderr=subprocess.STDOUT)
 

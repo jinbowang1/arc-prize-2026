@@ -101,6 +101,23 @@ def build() -> None:
         "competition_sources": ["arc-prize-2026-arc-agi-3"],
     }, indent=1))
 
+    # --- kernel_dsh_build: dsh 离线 bundle 构建(联网 CPU, 开发用) ---
+    kb = DIST / "kernel_dsh_build"
+    if kb.exists():
+        shutil.rmtree(kb)
+    kb.mkdir(parents=True)
+    shutil.copy(ROOT / "kaggle_agent" / "notebook" / "arc3-dsh-build.ipynb", kb)
+    (kb / "kernel-metadata.json").write_text(json.dumps({
+        "id": f"{USERNAME}/arc3-dsh-build",
+        "title": "arc3-dsh-build",
+        "code_file": "arc3-dsh-build.ipynb",
+        "language": "python",
+        "kernel_type": "notebook",
+        "is_private": True,
+        "enable_gpu": False,
+        "enable_internet": True,
+    }, indent=1))
+
     # --- kernel_llm: GPU 冒烟 notebook(开发用, 非提交物) ---
     kl = DIST / "kernel_llm"
     if kl.exists():
@@ -119,7 +136,8 @@ def build() -> None:
         "enable_internet": False,
         "dataset_sources": [f"{USERNAME}/{DATASET_SLUG}",
                             "driessmit1/arc3-vllm-h100-wheelhouse-v3"],
-        # A/B 的主语是提交臂本尊, 模型必须与提交 kernel 同款
+        # dsh 离线 bundle 直接挂构建 kernel 的 output, 不用倒手 dataset
+        "kernel_sources": [f"{USERNAME}/arc3-dsh-build"],
         "model_sources": ["michaelpoluektov/qwen3-8-27b-fp8/transformers/default/1"],
         "competition_sources": ["arc-prize-2026-arc-agi-3"],
     }, indent=1))
