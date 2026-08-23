@@ -66,6 +66,11 @@ if "enable_thinking" in tpl:
         if a in tpl:
             tpl = tpl.replace(a, b); hits += 1
     print("模板关思考替换命中:", hits)
+    if not hits:  # 三种猜法都没中: 把真实写法打出来, 下一版照抄
+        i = tpl.find("enable_thinking")
+        while i >= 0:
+            print("模板片段:", repr(tpl[max(0, i-120):i+160]))
+            i = tpl.find("enable_thinking", i + 1)
     if hits:
         tf = WORKING / "chat_template_nothink.jinja"
         tf.write_text(tpl)
