@@ -27,16 +27,21 @@ class LLMClient:
     """OpenAI-compatible chat 客户端(vLLM serve / 任何兼容网关)。"""
 
     def __init__(self, base_url: str, model: str, api_key: str = "EMPTY",
-                 timeout: float = 300.0, max_tokens: int = 6000, temperature: float = 0.2):
+                 timeout: float = 300.0, max_tokens: int = 6000, temperature: float = 0.2,
+                 extra: dict | None = None):
         # ⚠️max_tokens 是"思考+正文"的总预算: 推理型模型(deepseek 等)上下文
         # 一长思考就变长, 1600 实测被思考吃光 -> content 为空 -> 轮轮解析失败。
         # 默认给足 6000, 别省这个钱(动作比 token 贵)。
+        # extra: 原样并进请求体的附加字段。用途=关思考提速(真赛场每局只摊到
+        # 3-4 次开口, 思考 60-90s/次是最大的时间支出), 例如 vLLM+Qwen3 系:
+        #   {"chat_template_kwargs": {"enable_thinking": false}}
         self.base_url = base_url.rstrip("/")
         self.model = model
         self.api_key = api_key
         self.timeout = timeout
         self.max_tokens = max_tokens
         self.temperature = temperature
+        self.extra = extra or {}
         self.stats = LLMStats()
 
     def chat(self, messages: list[dict], **kw) -> str:
@@ -46,6 +51,7 @@ class LLMClient:
             "messages": messages,
             "max_tokens": kw.get("max_tokens", self.max_tokens),
             "temperature": kw.get("temperature", self.temperature),
+            **self.extra,
         }
         req = urllib.request.Request(
             f"{self.base_url}/v1/chat/completions",

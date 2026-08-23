@@ -34,6 +34,41 @@ EXEC_TIMEOUT_S = 30
 MAX_OUTPUT_CHARS = 3000
 KEEP_EXCHANGES = 6
 
+# 全貌注入(08-23 用户定的方向): 模型此前连自己在打比赛都不知道,
+# 预算决策("过第1关最值钱/别恋战")没法做。
+META = """【你在打比赛】约上百个游戏流水作业, 每个游戏只分到几分钟和有限动作数。
+计分: 每过一关按 (人类步数/你的步数)² 得分, 只有过掉的关才得分; 没过关时
+花掉的步数一分不扣——所以宁可多花步数也要过关, 千万别为省步数错过关。
+第 1 关是教学关, 最容易也最值钱。一条路久攻不下就果断换思路, 恋战就是亏。"""
+
+# 种类手册上场版(源头=notes/game-genre-field-guide.md, 八游戏一手攻关蒸馏;
+# 改这里要同步改那边)。
+FIELD_GUIDE = """【背景知识】你玩的是人类设计的小型解谜游戏: 一定能通关、不会太难。
+老玩家经验如下, 先对号入座判断种类再按打法行动; 种类只是猜测, 以实际反馈为准。
+
+通用规律(前人实测):
+- 目标几乎总在画面上明示: 动作改得动的区域是你的"答案区", 改不动却有内容
+  的区域是"题面"。过关常常就是把答案区弄成题面的样子。
+- 有些格子每步自己变(步数条/计时器), 与你的动作无关, 别当机制。
+- 效果和过关信号都可能滞后一拍: "按了没反应"先再按一下看。
+- 点击的有效目标是物体(连通块), 别扫坐标。
+- 图形匹配一般不看朝向(旋转镜像不算), 但颜色算。
+- 单个动作全都"无效"时, 试两两组合(可能要"选中+放置"成对用)。
+
+常见种类与打法:
+A 复制图案: 题面+答案区并排 → 弄清"笔"是什么(大笔/小笔/换色/选零件+放置),
+  从题面反推笔画; 注意后涂盖先涂。
+B 导航开锁: 方向键控制一个角色, 锁上显示要求 → 踩机关把自己变成要求的形状
+  颜色, 绕开会破坏状态的格子, 走进锁; 注意能量条。
+C 推箱子: 可动块+插槽 → 只能推不能拉, 别推进死角。
+D 点灯开关: 点一格翻一片 → 先摸清翻转模式, 想好该点的集合再动手。
+E 词典翻译: 成对样例+待填区 → 从样例归纳映射, 循环键换候选填进去, 全对自动
+  过关; 匹配不看朝向。
+F 画符施法: 小画布+图案提示+角色+出口 → 画对图案是放技能, 过关要角色走进
+  出口, 画布本身不是目标。
+G 连锁消除: 点关键位置引发大连锁 → 优先点中心/缺口/对称点。
+都不像: 找答案区和题面, 每个动作试一次记效果, 把"与题面的差距"做小。"""
+
 SYSTEM_PROMPT = """你在玩一个 64x64 网格解谜游戏(颜色索引 0-15), 目标是尽快让 level 上升直到通关。
 没有说明书, 规则要自己从实验里归纳。你通过写 Python 代码来观察、分析和行动。
 
@@ -52,16 +87,25 @@ SYSTEM_PROMPT = """你在玩一个 64x64 网格解谜游戏(颜色索引 0-15), 
 
 - verify_wm(predict): 把你写的世界模型 predict(before_grid, action_str)->after_grid
   在全部 history 上逐格重放验证, 返回每条错格数。**全 0 才算规则成立。**
+- probe_keys(): 每个可用按键各按一次(真的花预算!), 返回每键改动区域的摘要 ——
+  开局想快速摸清按键效果时用它, 比自己逐个试省代码。
+- remember(text): 记进跨游戏记事本(下个游戏开局能看到); 过关后把"这游戏是
+  什么种类、怎么过的、有什么坑"记一条, 后面的游戏靠它加速。
+- save_tool(name, source): 把一个通用函数的源码存入跨游戏工具库(下个游戏开局
+  自动加载); 只存验证过、跟具体游戏无关的工具。
 
 工作流程(按顺序):
-1. 探索: 先用**少量**实验(几个 act)摸动作效果, 用 patch/diff 看清每次改了什么;
-   看不懂再逐步加码 —— 实验是手段不是任务, 随时准备直接去赢;
+0. 对号入座: 对照下方"背景知识"判断这是哪类游戏(说出证据), 按该类打法行动;
+1. 探索: 先用**少量**实验(几个 act 或一次 probe_keys)摸动作效果, 用 patch/diff
+   看清每次改了什么; 看不懂再逐步加码 —— 实验是手段不是任务, 随时准备直接去赢;
 2. 验证: 把猜出的规则写成 predict 函数, 用 verify_wm 验证 —— **没有通过 verify_wm 的规则不许用来规划**(经验: 不验证的世界模型比没有世界模型还糟);
 3. 简化: 规则验证通过后, 试着把它改写得更简单(合并分支/去掉特例), 再验一次 —— 更简单且同样全对的规则泛化更好;
 4. 规划: 在验证过的规则上写代码推演出过关序列, 再用最少的 act 执行;
 5. 复杂关卡可以只对"关键子系统"建模(比如只预测被点击区域), 但验证不能省。
 你在代码里定义的函数和变量会跨轮保留 —— 把好用的分析工具、验证过的 predict 沉淀下来复用。
-print 出你想看的东西; 输出会截断到 3000 字符, 别打印整个 grid(用 patch 看局部)。"""
+print 出你想看的东西; 输出会截断到 3000 字符, 别打印整个 grid(用 patch 看局部)。
+
+""" + META + "\n\n" + FIELD_GUIDE
 
 
 class BudgetExhausted(Exception):
@@ -131,6 +175,19 @@ def _components(g):
     return out
 
 
+def _full_frame(g):
+    """整幅画面(行号在左, 每格一个十六进制色号)。
+
+    彩排实锤(08-22, gpu_v3_out/transcript): 不给全图, Qwen3.8 就自己烧 2-3 轮
+    打印它 —— 27B 一轮 ~64s, 真赛场每局只摊到 4-6 轮, 观察轮必须由我们代替。
+    ~4.3KB(≈1500 token) 换回 2-3 轮, 稳赚。
+    """
+    ruler = "    " + "".join(str(x % 10) for x in range(len(g[0])))
+    rows = [f"{y:2d}  " + "".join(format(c, "x") if 0 <= c < 16 else "?" for c in row)
+            for y, row in enumerate(g)]
+    return ruler + "\n" + "\n".join(rows)
+
+
 def _diff(g1, g2):
     return [(y, x, g1[y][x], g2[y][x]) for y in range(len(g2))
             for x in range(len(g2[0])) if g1[y][x] != g2[y][x]]
@@ -157,16 +214,23 @@ def play_game_repl(
     max_rounds: int = 30,
     log=print,
     transcript_path: str | None = None,
+    home: str | None = None,
 ) -> GameResult:
     """transcript_path: 每轮(模型输出, 执行结果)落 jsonl —— 今晚两次都是靠
-    transcript 破的案(空回复伪装成模型不行/提示词回归), 评测不许裸跑。"""
-    import json as _json
+    transcript 破的案(空回复伪装成模型不行/提示词回归), 评测不许裸跑。
 
-    def _rec(assistant: str, result: str) -> None:
+    home: 跨游戏持久目录(记事本 notes.md + 工具库 tools/*.py)。110 个隐藏游戏
+    是流水打的, 打到后面, 记事本和工具库就是模型自己写的攻略——这是把
+    "记忆复盘/工具积累"(手工攻关赢下六局的两大支柱)塞进沙箱的最小做法。"""
+    import json as _json
+    from pathlib import Path
+
+    def _rec(**fields) -> None:
+        """对话记录逐轮落盘。08-22 用户定的规矩: 模型看到的(提示词/喂回)和说出的
+        (完整输出)都要记, 否则没法区分"提示词问题"还是"agent 问题"。"""
         if transcript_path:
             with open(transcript_path, "a") as f:
-                f.write(_json.dumps({"assistant": assistant, "result": result},
-                                    ensure_ascii=False) + "\n")
+                f.write(_json.dumps(fields, ensure_ascii=False) + "\n")
     res = GameResult(game_id=game.game_id)
     t0 = time.monotonic()
     obs = game.reset()
@@ -210,10 +274,69 @@ def play_game_repl(
         print(f"verify_wm: {ok}/{len(report)} 条转移逐格全对")
         return report
 
+    def probe_keys():
+        """每个可用按键各按一次(真机计分!), 打印并返回每键改动摘要。"""
+        keys = [a for a in (state["obs"].actions or (1, 2, 3, 4, 5)) if int(a) != 6]
+        lines = []
+        for k in keys:
+            before = state["obs"].grid
+            r = act(k)
+            if r == -1:
+                lines.append(f"A{k}: 导致死亡(已重置回本关起点)")
+                continue
+            d = _diff(before, state["obs"].grid)
+            if not d:
+                lines.append(f"A{k}: 无变化")
+            else:
+                ys = [c[0] for c in d]; xs = [c[1] for c in d]
+                pair = {}
+                for _, _, o_, n_ in d:
+                    pair[(o_, n_)] = pair.get((o_, n_), 0) + 1
+                top = sorted(pair.items(), key=lambda t: -t[1])[:3]
+                chg = " ".join(f"{o_}→{n_}×{c}" for (o_, n_), c in top)
+                lines.append(f"A{k}: 改{len(d)}格 行{min(ys)}-{max(ys)}列{min(xs)}-{max(xs)} 主要{chg}")
+        out = "\n".join(lines)
+        print(out)
+        return out
+
+    home_dir = Path(home) if home else None
+    tools_dir = home_dir / "tools" if home_dir else None
+    if tools_dir:
+        tools_dir.mkdir(parents=True, exist_ok=True)
+
+    def remember(text):
+        """记进跨游戏记事本。"""
+        if home_dir:
+            with open(home_dir / "notes.md", "a") as f:
+                f.write(f"[{game.game_id}] {str(text).strip()}\n")
+        print("已记入记事本")
+
+    def save_tool(name, source):
+        """通用函数源码入库, 下个游戏开局自动加载。先编译再执行, 坏代码不入库。"""
+        code = compile(source, f"<tool:{name}>", "exec")
+        exec(code, ns)  # noqa: S102
+        if tools_dir:
+            (tools_dir / f"{name}.py").write_text(source)
+        print(f"工具 {name} 已保存")
+
     ns: dict = {
         "act": act, "history": [], "components": _components, "diff": _diff,
         "patch": _patch, "notes": {}, "verify_wm": verify_wm,
+        "probe_keys": probe_keys, "remember": remember, "save_tool": save_tool,
     }
+
+    # 装载前面游戏留下的工具与笔记
+    loaded_tools: list[str] = []
+    if tools_dir:
+        for f in sorted(tools_dir.glob("*.py")):
+            try:
+                exec(compile(f.read_text(), str(f), "exec"), ns)  # noqa: S102
+                loaded_tools.append(f.stem)
+            except Exception:  # noqa: BLE001
+                pass  # 坏工具跳过, 不拖垮开局
+    past_notes = ""
+    if home_dir and (home_dir / "notes.md").exists():
+        past_notes = (home_dir / "notes.md").read_text()[-2000:]
 
     def _sync():
         o = state["obs"]
@@ -225,7 +348,11 @@ def play_game_repl(
     # system, first_user, a1, u1, a2, u2... 的严格交替 —— 最新结果只出现一次
     exchanges: deque[tuple[str, str]] = deque(maxlen=KEEP_EXCHANGES)
     first_user = (f"开局: level {obs.level}/{obs.win_levels}, 预算 {max_actions} 动作, "
-                  f"可用动作 {list(obs.actions or (1,2,3,4,5,6))}\n\n{_grid_summary(obs.grid)}")
+                  f"可用动作 {list(obs.actions or (1,2,3,4,5,6))}\n\n"
+                  f"完整画面:\n{_full_frame(obs.grid)}\n\n{_grid_summary(obs.grid)}"
+                  + (f"\n\n你的跨游戏记事本(此前游戏记下的):\n{past_notes}" if past_notes else "")
+                  + (f"\n\n工具库已加载: {loaded_tools}" if loaded_tools else ""))
+    _rec(system=SYSTEM_PROMPT, opening=first_user)
 
     for rnd in range(max_rounds):
         if time.monotonic() >= deadline or game.steps >= max_actions or state["obs"].done:
@@ -243,8 +370,9 @@ def play_game_repl(
         if not code:
             status = (f"[round {rnd+1}/{max_rounds}] level {state['obs'].level}/{res.win_levels}, "
                       f"已用 {game.steps}/{max_actions} 动作")
-            exchanges.append(("(没有找到 ```python 代码块。请只输出一个代码块。)\n" + status,
-                              raw[-1500:]))
+            fed = "(没有找到 ```python 代码块。请只输出一个代码块。)\n" + status
+            exchanges.append((fed, raw[-1500:]))
+            _rec(round=rnd + 1, assistant=raw, result="", fed_back=fed)
             continue
 
         buf = io.StringIO()
@@ -258,7 +386,8 @@ def play_game_repl(
             o = state["obs"]
             res.per_level_steps.append(game.steps - state["level_start"])
             state["level_start"] = game.steps
-            outcome = f"\n🎉 过关! 现在 level {o.level}/{o.win_levels}" + (" 全部通关!" if o.done else "")
+            outcome = (f"\n🎉 过关! 现在 level {o.level}/{o.win_levels}" + (" 全部通关!" if o.done else "")
+                       + ("" if o.done else f"\n新关卡完整画面:\n{_full_frame(o.grid)}"))
             log(f"  [{game.game_id}] level->{o.level} @ step {game.steps}")
         except BudgetExhausted:
             outcome = "\n(预算耗尽)"
@@ -275,8 +404,9 @@ def play_game_repl(
             out = out[:MAX_OUTPUT_CHARS] + f"\n...(截断, 共{len(out)}字符)"
         status = (f"\n\n[round {rnd+1}/{max_rounds}] level {state['obs'].level}/{res.win_levels}, "
                   f"已用 {game.steps}/{max_actions} 动作。notes={str(ns['notes'])[:1200]}")
-        exchanges.append(((out or "(无输出)") + outcome + status, raw[-2500:]))
-        _rec(raw, (out or "") + outcome)
+        fed = (out or "(无输出)") + outcome + status
+        exchanges.append((fed, raw[-2500:]))
+        _rec(round=rnd + 1, assistant=raw, result=(out or "") + outcome, fed_back=fed)
 
     res.levels_completed = state["obs"].level
     res.steps = game.steps

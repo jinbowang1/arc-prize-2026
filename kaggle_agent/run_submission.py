@@ -69,11 +69,15 @@ def _build_llm():
     if not base:
         return None
     from .llm import LLMClient
+    extra = None
+    if os.environ.get("A3_LLM_EXTRA"):  # JSON, 原样并进请求体(如关思考开关)
+        extra = json.loads(os.environ["A3_LLM_EXTRA"])
     return LLMClient(
         base_url=base,
         model=os.environ.get("A3_LLM_MODEL", "default"),
         api_key=os.environ.get("A3_LLM_KEY", "EMPTY"),
         max_tokens=int(os.environ.get("A3_LLM_MAX_TOKENS", "6000")),
+        extra=extra,
     )
 
 
@@ -123,7 +127,21 @@ def main(
             if llm is not None and agent == "repl":
                 from .repl_agent import play_game_repl
                 res = play_game_repl(g, llm, max_actions=max_actions, deadline=dl,
-                                     transcript_path=str(out / f"transcript_{gid.split('-')[0]}.jsonl"))
+                                     transcript_path=str(out / f"transcript_{gid.split('-')[0]}.jsonl"),
+                                     home=str(out / "agent_home"))
+                # 兜底: REPL 提前收工(LLM 崩/轮数用尽/空转)而墙钟和动作预算还在,
+                # 让 explorer 续场捡分 —— 只会加分不会减分: 它只花 REPL 反正
+                # 用不掉的预算, 未过的关多烧动作不扣分, 蒙过一关就是纯赚。
+                if (res.state != "WIN" and g.steps < max_actions
+                        and time.monotonic() < dl - 20):
+                    log_left = dl - time.monotonic()
+                    print(f"  [{gid}] REPL 收工仍剩 {log_left:.0f}s, explorer 续场兜底")
+                    res2 = play_game(g, max_actions=max_actions, deadline=dl)
+                    res.levels_completed = max(res.levels_completed, res2.levels_completed)
+                    res.steps = res2.steps
+                    res.state = res2.state
+                    res.per_level_steps = res.per_level_steps + res2.per_level_steps
+                    res.seconds = round(res.seconds + res2.seconds, 1)
             elif llm is not None:
                 from .llm_agent import play_game_llm
                 res = play_game_llm(g, llm, max_actions=max_actions, deadline=dl)
