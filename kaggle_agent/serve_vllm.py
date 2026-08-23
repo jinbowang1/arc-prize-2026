@@ -24,6 +24,7 @@ def start_vllm(
     max_model_len: int = 16384,
     gpu_mem: float = 0.90,
     tool_calling: bool = False,
+    tool_parser: str = "qwen3_coder",
     extra_args: list[str] | None = None,
     timeout_s: float = 1800.0,
     log_path: str = "vllm.log",
@@ -41,9 +42,10 @@ def start_vllm(
         "--gpu-memory-utilization", str(gpu_mem),
     ]
     if tool_calling:
-        # reasoning parser 缺席时 Qwen 的 <think> 文本会混进 content, 下游
-        # (dsh)拿到裸思考、一个工具都不调(赛场冒烟 v8 实锤)
-        cmd += ["--enable-auto-tool-choice", "--tool-call-parser", "hermes",
+        # reasoning parser 缺席时 Qwen 的 <think> 文本会混进 content(冒烟v8);
+        # Qwen3.8 的工具调用是 XML 参数风格, hermes(JSON) 解析不出(冒烟v11),
+        # 要用 qwen3_coder 解析器
+        cmd += ["--enable-auto-tool-choice", "--tool-call-parser", tool_parser,
                 "--reasoning-parser", "qwen3"]
     cmd += extra_args or []
     log = open(log_path, "w")  # noqa: SIM115  (进程生命周期同 notebook, 不关)

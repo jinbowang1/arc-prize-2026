@@ -53,17 +53,16 @@ print("dsh 解包+可执行 OK", flush=True)'''
 
 C3 = '''from kaggle_agent.serve_vllm import start_vllm
 # 先试全局关思考(Qwen3 chat template kwarg); vLLM 版本不认这个参数就带思考跑
-try:
-    proc = start_vllm(str(model_dir), port=8000, max_model_len=32768, tool_calling=True,
-                      log_path=str(WORKING / "vllm.log"), timeout_s=600)
-    print("vLLM up (tool-calling + qwen3 reasoning parser)")
-except Exception as e:
-    # reasoning parser 名不被这版 vLLM 认时退回无 parser(思考会混进正文, 仅保底)
-    print("带 reasoning parser 起失败, 降级:", repr(e))
-    proc = start_vllm(str(model_dir), port=8000, max_model_len=32768,
-                      extra_args=["--enable-auto-tool-choice", "--tool-call-parser", "hermes"],
-                      log_path=str(WORKING / "vllm.log"))
-    print("vLLM up (tool-calling, 无 reasoning parser)")'''
+proc = None
+for parser in ("qwen3_coder", "qwen3_xml", "hermes"):
+    try:
+        proc = start_vllm(str(model_dir), port=8000, max_model_len=32768, tool_calling=True,
+                          tool_parser=parser, log_path=str(WORKING / "vllm.log"), timeout_s=600)
+        print(f"vLLM up (tool parser={parser} + qwen3 reasoning parser)")
+        break
+    except Exception as e:
+        print(f"parser={parser} 起失败:", repr(e))
+assert proc, "vLLM 三种 tool parser 都起不来"'''
 
 C4 = '''# dsh + vLLM 工具调用冒烟: 让它用 bash 工具产出文件 —— function calling 全链验证
 import shutil
@@ -80,6 +79,32 @@ print("stdout尾:", r.stdout[-500:])
 print("stderr尾:", r.stderr[-300:])
 ok = (ws / "result.txt").exists()
 print("工具调用冒烟:", "PASS" if ok else "FAIL(看上方输出定责)")'''
+
+C4B = '''# 诊断: vLLM 原始响应 + dsh 会话账本
+import urllib.request
+req = urllib.request.Request("http://127.0.0.1:8000/v1/chat/completions",
+    data=json.dumps({"model": "local", "max_tokens": 2000,
+        "messages": [{"role": "user", "content": "用 run_bash 工具执行 echo hi"}],
+        "tools": [{"type": "function", "function": {"name": "run_bash",
+            "description": "run a bash command",
+            "parameters": {"type": "object", "properties": {"cmd": {"type": "string"}},
+                           "required": ["cmd"]}}}]}).encode(),
+    headers={"Content-Type": "application/json"})
+raw = json.loads(urllib.request.urlopen(req, timeout=120).read())
+msg = raw["choices"][0]["message"]
+print("content:", repr((msg.get("content") or "")[:200]))
+print("reasoning:", repr((msg.get("reasoning_content") or "")[:200]))
+print("tool_calls:", json.dumps(msg.get("tool_calls"))[:300])
+print("finish:", raw["choices"][0].get("finish_reason"))
+# dsh 会话账本尾部
+import glob as _g
+logs = sorted(_g.glob(str(home / "sessions/**/session*.jsonl*"), recursive=True))
+print("session logs:", logs[-2:])
+for f in logs[-1:]:
+    if f.endswith(".zstd"):
+        subprocess.run(f"zstd -dc {f} | tail -c 2500", shell=True)
+    else:
+        print(open(f).read()[-2500:])'''
 
 C5 = '''# 3 局对照: game_server + dsh, 每局 8 分钟墙钟
 results = []
@@ -127,7 +152,7 @@ nb = {
     "cells": [
         cell("# dsh 赛场冒烟 — vLLM(Qwen3.8 tool-calling) + dsh 离线 bundle + 3 局对照\n\n"
              "开发用 notebook, 不是提交物。", "markdown"),
-        cell(C1), cell(C2), cell(C3), cell(C4), cell(C5),
+        cell(C1), cell(C2), cell(C3), cell(C4), cell(C4B), cell(C5),
     ],
 }
 out = ROOT / "kaggle_agent" / "notebook" / "arc3-jinbo-llm-smoke.ipynb"
