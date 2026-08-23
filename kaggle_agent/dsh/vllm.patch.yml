@@ -5,6 +5,8 @@
   config:
     baseURL: http://127.0.0.1:8000/v1
     maxTokens: 8000
+    # vLLM 上的 Qwen 只认 xhigh/medium/low, dsh 默认 high 会被拒
+    reasoningEffort: low
     models:
       - id: local
         name: local vLLM

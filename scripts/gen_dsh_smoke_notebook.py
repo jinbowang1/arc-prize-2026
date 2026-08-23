@@ -55,14 +55,15 @@ C3 = '''from kaggle_agent.serve_vllm import start_vllm
 # 先试全局关思考(Qwen3 chat template kwarg); vLLM 版本不认这个参数就带思考跑
 try:
     proc = start_vllm(str(model_dir), port=8000, max_model_len=32768, tool_calling=True,
-                      extra_args=["--chat-template-kwargs", json.dumps({"enable_thinking": False})],
-                      log_path=str(WORKING / "vllm.log"), timeout_s=300)
-    print("vLLM up (关思考+tool-calling)")
+                      log_path=str(WORKING / "vllm.log"), timeout_s=600)
+    print("vLLM up (tool-calling + qwen3 reasoning parser)")
 except Exception as e:
-    print("带 chat-template-kwargs 起失败, 降级重试:", repr(e))
-    proc = start_vllm(str(model_dir), port=8000, max_model_len=32768, tool_calling=True,
+    # reasoning parser 名不被这版 vLLM 认时退回无 parser(思考会混进正文, 仅保底)
+    print("带 reasoning parser 起失败, 降级:", repr(e))
+    proc = start_vllm(str(model_dir), port=8000, max_model_len=32768,
+                      extra_args=["--enable-auto-tool-choice", "--tool-call-parser", "hermes"],
                       log_path=str(WORKING / "vllm.log"))
-    print("vLLM up (tool-calling, 带思考)")'''
+    print("vLLM up (tool-calling, 无 reasoning parser)")'''
 
 C4 = '''# dsh + vLLM 工具调用冒烟: 让它用 bash 工具产出文件 —— function calling 全链验证
 import shutil

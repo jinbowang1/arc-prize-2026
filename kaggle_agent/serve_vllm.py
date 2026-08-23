@@ -41,7 +41,10 @@ def start_vllm(
         "--gpu-memory-utilization", str(gpu_mem),
     ]
     if tool_calling:
-        cmd += ["--enable-auto-tool-choice", "--tool-call-parser", "hermes"]
+        # reasoning parser 缺席时 Qwen 的 <think> 文本会混进 content, 下游
+        # (dsh)拿到裸思考、一个工具都不调(赛场冒烟 v8 实锤)
+        cmd += ["--enable-auto-tool-choice", "--tool-call-parser", "hermes",
+                "--reasoning-parser", "qwen3"]
     cmd += extra_args or []
     log = open(log_path, "w")  # noqa: SIM115  (进程生命周期同 notebook, 不关)
     proc = subprocess.Popen(cmd, stdout=log, stderr=subprocess.STDOUT)
