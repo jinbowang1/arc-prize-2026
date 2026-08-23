@@ -399,6 +399,7 @@ def play_game_repl(
     # 全灭实锤)。重复的纯观察代码不再执行, 注入干预并临时提温打散循环。
     last_code: str | None = None
     boost_temp = False
+    idle_rounds, idle_steps_mark = 0, game.steps
     for rnd in range(max_rounds):
         if time.monotonic() >= deadline or game.steps >= max_actions or state["obs"].done:
             break
@@ -460,9 +461,21 @@ def play_game_repl(
         out = buf.getvalue()
         if len(out) > MAX_OUTPUT_CHARS:
             out = out[:MAX_OUTPUT_CHARS] + f"\n...(截断, 共{len(out)}字符)"
+        # 无行动断路器: 谨慎型模型(DeepSeek)会陷入"探一次→无限反刍", 26 轮纯分析
+        # 零行动(08-23 r11l 实录)。提示词劝说已被 A/B 否掉, 只有硬干预有效。
+        if game.steps == idle_steps_mark:
+            idle_rounds += 1
+        else:
+            idle_rounds, idle_steps_mark = 0, game.steps
+        nudge = ""
+        if idle_rounds >= 3:
+            nudge = ("\n⚠️ 你已连续 3 轮只分析、没有执行任何真实动作。history 里的数据"
+                     "你已经看过了, 再分析不会产生新信息。本轮必须执行至少一个新的"
+                     " act()/probe_clicks() 拿新证据 —— 拿不准就挑一个最可疑的目标试。")
+            idle_rounds = 0
         status = (f"\n\n[round {rnd+1}/{max_rounds}] level {state['obs'].level}/{res.win_levels}, "
                   f"已用 {game.steps}/{max_actions} 动作。notes={str(ns['notes'])[:1200]}")
-        fed = (out or "(无输出)") + outcome + status
+        fed = (out or "(无输出)") + outcome + nudge + status
         exchanges.append((fed, raw[-2500:]))
         _rec(round=rnd + 1, assistant=raw, result=(out or "") + outcome, fed_back=fed)
 

@@ -126,7 +126,10 @@ def main(
             dl = time.monotonic() + per
             if llm is not None and agent == "repl":
                 from .repl_agent import play_game_repl
+                # 关思考后每轮只要几秒, 30 轮撑不满墙钟(实测 125s 用完 600s 预算
+                # 剩 475s 全靠 explorer 乱点) —— 轮数上限要跟时间预算走
                 res = play_game_repl(g, llm, max_actions=max_actions, deadline=dl,
+                                     max_rounds=int(os.environ.get("A3_MAX_ROUNDS", "30")),
                                      transcript_path=str(out / f"transcript_{gid.split('-')[0]}.jsonl"),
                                      home=str(out / "agent_home"))
                 # 兜底: REPL 提前收工(LLM 崩/轮数用尽/空转)而墙钟和动作预算还在,
