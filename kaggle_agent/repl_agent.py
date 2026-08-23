@@ -496,6 +496,7 @@ def play_game_repl(
                 exec(code, ns)  # noqa: S102  (REPL 协议本体)
         except LevelUp:
             o = state["obs"]
+            ns.pop("_cc0", None)  # 新关卡重记颜色账本基线
             res.per_level_steps.append(game.steps - state["level_start"])
             state["level_start"] = game.steps
             outcome = (f"\n🎉 过关! 现在 level {o.level}/{o.win_levels}" + (" 全部通关!" if o.done else "")
@@ -532,6 +533,18 @@ def play_game_repl(
             sample = sorted(ctr)[:10]
             ctr_note = (f"\n(计数器格共{len(ctr)}个, 如{sample}: 每步自动变化, 与动作内容"
                         f"无关 —— diff 里出现它们不代表点击有效, 分析时剔除)")
+        # 颜色计数账本: 数量型/关系型过关条件(色A数=色B数、某色清零)在位置视角
+        # 里看不见, 在数量账本里一眼可见(r11l L1 真值=色1数与色15数的关系)
+        from collections import Counter as _C
+        cur_cc = _C(v for row in state["obs"].grid for v in row)
+        if "_cc0" not in ns:
+            ns["_cc0"] = dict(cur_cc)
+        parts = []
+        for c in sorted(set(cur_cc) | set(ns["_cc0"])):
+            n0, n1 = ns["_cc0"].get(c, 0), cur_cc.get(c, 0)
+            if max(n0, n1) < 1500:  # 背景/大边框不进账本
+                parts.append(f"色{c} {n0}→{n1}" if n0 != n1 else f"色{c} {n1}")
+        ctr_note += "\n颜色计数(开局→当前, 背景省略): " + ", ".join(parts)
         status = (f"\n\n[round {rnd+1}/{max_rounds}] level {state['obs'].level}/{res.win_levels}, "
                   f"已用 {game.steps}/{max_actions} 动作。notes={str(ns['notes'])[:1200]}{ctr_note}")
         fed = (out or "(无输出)") + outcome + nudge + status
