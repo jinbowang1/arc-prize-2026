@@ -119,7 +119,8 @@ def build() -> None:
         "enable_internet": False,
         "dataset_sources": [f"{USERNAME}/{DATASET_SLUG}",
                             "driessmit1/arc3-vllm-h100-wheelhouse-v3"],
-        "model_sources": ["michaelpoluektov/qwen3-6-35b-a3b-fp8/transformers/default/1"],
+        # A/B 的主语是提交臂本尊, 模型必须与提交 kernel 同款
+        "model_sources": ["michaelpoluektov/qwen3-8-27b-fp8/transformers/default/1"],
         "competition_sources": ["arc-prize-2026-arc-agi-3"],
     }, indent=1))
 
