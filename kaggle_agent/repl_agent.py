@@ -89,6 +89,9 @@ SYSTEM_PROMPT = """你在玩一个 64x64 网格解谜游戏(颜色索引 0-15), 
   在全部 history 上逐格重放验证, 返回每条错格数。**全 0 才算规则成立。**
 - probe_keys(): 每个可用按键各按一次(真的花预算!), 返回每键改动区域的摘要 ——
   开局想快速摸清按键效果时用它, 比自己逐个试省代码。
+- probe_clicks(targets=None, budget=12): 对一批目标各点一次(真的花预算!),
+  返回每次点击的改动摘要; 缺省自动挑各连通块的代表点。点击型游戏开局
+  想摸清"哪里可以点、点了会怎样"时用它, 一轮就能探完一批。
 - remember(text): 记进跨游戏记事本(下个游戏开局能看到); 过关后把"这游戏是
   什么种类、怎么过的、有什么坑"记一条, 后面的游戏靠它加速。
 - save_tool(name, source): 把一个通用函数的源码存入跨游戏工具库(下个游戏开局
@@ -299,6 +302,43 @@ def play_game_repl(
         print(out)
         return out
 
+    def probe_clicks(targets=None, budget=12):
+        """对一批目标各点一次(真机计分!), 打印并返回每次点击的改动摘要。
+        targets: [(y,x),...]; 缺省自动取各连通块的代表点(块内格子, 大块优先,
+        跨半屏的边框/背景类块除外)。一轮开口探完一批, 比逐轮单点省调用。"""
+        g0 = state["obs"].grid
+        if targets is None:
+            targets = []
+            for n_, c_, y0, x0, y1, x1 in _components(g0):
+                if n_ > 1200:
+                    continue
+                cy, cx = (y0 + y1) // 2, (x0 + x1) // 2
+                if g0[cy][cx] != c_:  # 环形/空心块的 bbox 中心可能是背景
+                    cy, cx = next(((yy, xx) for yy in range(y0, y1 + 1)
+                                   for xx in range(x0, x1 + 1) if g0[yy][xx] == c_))
+                targets.append((cy, cx))
+        lines = []
+        for y, x in list(targets)[:budget]:
+            before = state["obs"].grid
+            r = act(6, x=x, y=y)
+            if r == -1:
+                lines.append(f"click({y},{x}): 导致死亡(已重置回本关起点)")
+                continue
+            d = _diff(before, state["obs"].grid)
+            if not d:
+                lines.append(f"click({y},{x}): 无变化")
+            else:
+                ys = [c[0] for c in d]; xs = [c[1] for c in d]
+                pair = {}
+                for _, _, o_, n_ in d:
+                    pair[(o_, n_)] = pair.get((o_, n_), 0) + 1
+                top = sorted(pair.items(), key=lambda t: -t[1])[:3]
+                chg = " ".join(f"{o_}→{n_}×{c}" for (o_, n_), c in top)
+                lines.append(f"click({y},{x}): 改{len(d)}格 行{min(ys)}-{max(ys)}列{min(xs)}-{max(xs)} 主要{chg}")
+        out = "\n".join(lines)
+        print(out)
+        return out
+
     home_dir = Path(home) if home else None
     tools_dir = home_dir / "tools" if home_dir else None
     if tools_dir:
@@ -322,7 +362,8 @@ def play_game_repl(
     ns: dict = {
         "act": act, "history": [], "components": _components, "diff": _diff,
         "patch": _patch, "notes": {}, "verify_wm": verify_wm,
-        "probe_keys": probe_keys, "remember": remember, "save_tool": save_tool,
+        "probe_keys": probe_keys, "probe_clicks": probe_clicks,
+        "remember": remember, "save_tool": save_tool,
     }
 
     # 装载前面游戏留下的工具与笔记
