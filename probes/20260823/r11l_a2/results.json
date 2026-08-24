@@ -1,0 +1,93 @@
+{
+  "mode": "offline",
+  "agent": "repl",
+  "llm_stats": {
+    "calls": 100,
+    "prompt_tokens": 831596,
+    "completion_tokens": 38636,
+    "seconds": 306.91827187733725,
+    "errors": 0
+  },
+  "card_id": "385c6e84-fb60-490b-ac00-634933fabbff",
+  "games": [
+    {
+      "game_id": "r11l",
+      "levels_completed": 0,
+      "win_levels": 6,
+      "steps": 150,
+      "state": "NOT_FINISHED",
+      "per_level_steps": [],
+      "seconds": 307.5
+    }
+  ],
+  "total_levels": 0,
+  "wall_seconds": 307.6,
+  "scorecard": {
+    "tags": [
+      "jinbo-explorer-v1"
+    ],
+    "card_id": "385c6e84-fb60-490b-ac00-634933fabbff",
+    "score": 0.0,
+    "environments": [
+      {
+        "id": "r11l-495a7899",
+        "runs": [
+          {
+            "guid": "78b4a73f-2511-4d56-b00c-9579a2c1f753",
+            "score": 0.0,
+            "levels_completed": 0,
+            "actions": 152,
+            "resets": 3,
+            "state": "GAME_OVER",
+            "completed": false,
+            "level_scores": [
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "level_actions": [
+              152,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "level_baseline_actions": [
+              22,
+              33,
+              51,
+              26,
+              52,
+              49
+            ]
+          }
+        ],
+        "score": 0.0,
+        "actions": 152,
+        "levels_completed": 0,
+        "completed": false,
+        "level_count": 6,
+        "resets": 3
+      }
+    ],
+    "tags_scores": [
+      {
+        "id": "click",
+        "score": 0.0,
+        "levels_completed": 0,
+        "actions": 152,
+        "number_of_levels": 6,
+        "number_of_environments": 1
+      }
+    ],
+    "total_environments_completed": 0,
+    "total_environments": 1,
+    "total_levels_completed": 0,
+    "total_levels": 6,
+    "total_actions": 152
+  }
+}
