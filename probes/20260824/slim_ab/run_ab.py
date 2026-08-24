@@ -10,7 +10,8 @@ DSH = Path(os.path.expanduser("~/Desktop/project/deepseek-harness/apps/cli/lib/b
 PATCH_CTRL = ROOT / "kaggle_agent/dsh" / os.environ.get("AB_PATCH_CTRL", "aiplat.patch.yml")
 PATCH_SLIM = ROOT / "kaggle_agent/dsh" / os.environ.get("AB_PATCH_SLIM", "aiplat.patch.yml")
 STATE_SLIM = os.environ.get("AB_STATE_SLIM", "1")  # slim 组是否用 /state 瘦身
-TASK = (ROOT / "kaggle_agent/dsh/TASK_FULL.md").read_text()
+TASK_CTRL = (ROOT / "kaggle_agent/dsh" / os.environ.get("AB_TASK_CTRL", "TASK_FULL.md")).read_text()
+TASK_SLIM = (ROOT / "kaggle_agent/dsh" / os.environ.get("AB_TASK_SLIM", "TASK_FULL.md")).read_text()
 OUT = Path(__file__).parent / os.environ.get("AB_OUT", ".")
 OUT.mkdir(exist_ok=True)
 WALL = int(os.environ.get("AB_WALL", "1800"))
@@ -34,7 +35,7 @@ for game, arm, sd, port in ARMS:
     env = dict(os.environ, DSH_HOME=str(home), DSH_PERMISSION_MODE="danger-full-access")
     patch = PATCH_SLIM if arm == "slim" else PATCH_CTRL
     d = subprocess.Popen(["node", str(DSH), "--profile", "headless", "--patch", str(patch),
-                          TASK.replace("18999", str(port))],
+                          (TASK_SLIM if arm == "slim" else TASK_CTRL).replace("18999", str(port))],
                          cwd=ws, env=env,
                          stdout=open(OUT / f"dsh_{game}_{arm}{sd}.log", "w"), stderr=subprocess.STDOUT)
     procs.append(("dsh", game, arm, port, d))
