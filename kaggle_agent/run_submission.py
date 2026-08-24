@@ -121,13 +121,7 @@ def main(
     card_id = arcade.open_scorecard(tags=["jinbo-explorer-v1"])
     print(f"concurrency={concurrency}")
 
-    def play_one(n: int, gid: str, per: float, port: int) -> dict:
-        env = arcade.make(gid, scorecard_id=card_id)
-        if env is None:
-            print(f"[{gid}] make 返回 None, 跳过")
-            return {"game_id": gid, "levels_completed": 0, "win_levels": 0,
-                    "steps": 0, "state": "MAKE_NONE", "per_level_steps": [], "seconds": 0.0}
-        _prime_offline_scorecard(arcade, card_id, gid, env)
+    def play_one(n: int, gid: str, per: float, port: int, env) -> dict:
         # 单游戏隔离: 一个坏游戏(环境文件残缺/网关抽风)不许拖垮整场提交
         try:
             g = ApiGame(env, gid)
@@ -180,8 +174,20 @@ def main(
             per = seconds_per_game
             if hard_deadline is not None:
                 per = min(per, max(30.0, (hard_deadline - time.monotonic()) / (len(groups) - gi)))
-            futs = [pool.submit(play_one, gi * concurrency + k, gid, per, base_port + k)
-                    for k, gid in enumerate(group)]
+            # make/建卡在主线程串行(公开踩坑: 并行 make 会多开 scorecard 计 0 分;
+            # 单卡+线程本无此病, 串行化把线程安全风险也消掉)
+            envs = []
+            for gid in group:
+                env = arcade.make(gid, scorecard_id=card_id)
+                if env is None:
+                    print(f"[{gid}] make 返回 None, 跳过")
+                    results.append({"game_id": gid, "levels_completed": 0, "win_levels": 0,
+                                    "steps": 0, "state": "MAKE_NONE", "per_level_steps": [], "seconds": 0.0})
+                    continue
+                _prime_offline_scorecard(arcade, card_id, gid, env)
+                envs.append((gid, env))
+            futs = [pool.submit(play_one, gi * concurrency + k, gid, per, base_port + k, env)
+                    for k, (gid, env) in enumerate(envs)]
             results.extend(f.result() for f in futs)
 
     summary: dict = {
