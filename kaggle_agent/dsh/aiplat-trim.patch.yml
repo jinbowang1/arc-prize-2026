@@ -1,25 +1,20 @@
-# 赛场: dsh 的模型层指向 notebook 内 vLLM(OpenAI 兼容, served-model-name=local)
-# maxTokens 必须显式给: dsh 默认 256000 会被 vLLM 按 max_model_len=32768 拒掉
+# 精简版: aiplat 通道 + 裁掉与打游戏无关的工具(subagent全家/workflow/ralph/goal/todo/web/skill/
+# plan-mode/str-replace-editor), persona 改为解谜任务。保留: bash/read/write/edit/glob/grep/jobs。
 - id: llm-deepseek
   name: '@deepseek-ai/dsh-llm-deepseek'
   config:
-    baseURL: http://127.0.0.1:8000/v1
-    maxTokens: 4000
-    # vLLM 上的 Qwen 只认 xhigh/medium/low, dsh 默认 high 会被拒
-    reasoningEffort: low
+    baseURL: http://llm-model-hub-apis.sf-express.com/v1
+    thinking: disabled
+    reasoningEffort: 'off'
     models:
-      - id: local
-        name: local vLLM
-        contextWindow: 32768
-        maxTokens: 4000
+      - id: aliyun/deepseek-v4-flash-0731
+        name: DeepSeek-V4-Flash (aiplat)
+        contextWindow: 131072
 - id: agent-default-model
   name: '@deepseek-ai/dsh-agent-default-model'
   config:
     provider: deepseek-official
-    model: local
-
-# 工具裁剪(08-24 用户拍板): 与打游戏无关的工具直接禁掉 —— 禁了就不出现在 system prompt
-# 也不可调用(r11l 空转元凶=subagent 教唆段)。保留 bash/read/write/edit/glob/grep/jobs/read_image。
+    model: aliyun/deepseek-v4-flash-0731
 - id: system-prompt
   config:
     persona: >-

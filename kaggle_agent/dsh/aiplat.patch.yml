@@ -1,0 +1,17 @@
+# 本地 A/B 实验: llm-deepseek 指向公司 aiplat hub(OpenAI兼容), 模型 aliyun/deepseek-v4-flash-0731
+# key 走环境变量 DEEPSEEK_API_KEY(公司生产JWT, 不落仓库); thinking disabled 已在 hub 上验证有效
+- id: llm-deepseek
+  name: '@deepseek-ai/dsh-llm-deepseek'
+  config:
+    baseURL: http://llm-model-hub-apis.sf-express.com/v1
+    thinking: disabled
+    reasoningEffort: 'off'
+    models:
+      - id: aliyun/deepseek-v4-flash-0731
+        name: DeepSeek-V4-Flash (aiplat)
+        contextWindow: 131072
+- id: agent-default-model
+  name: '@deepseek-ai/dsh-agent-default-model'
+  config:
+    provider: deepseek-official
+    model: aliyun/deepseek-v4-flash-0731

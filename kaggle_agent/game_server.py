@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import threading
 import time
 from collections import Counter
@@ -62,10 +63,13 @@ class GameServer:
             "level": o.level, "win_levels": o.win_levels,
             "steps_used": self.game.steps, "steps_budget": self.max_actions,
             "done": o.done, "state": o.state,
-            "frame": _full_frame(o.grid),
             "summary": _grid_summary(o.grid),
             "color_account": _account(o.grid, self.base_cc),
         }
+        # A/B 实验开关(A3_STATE_SLIM=1): /state 不带整幅 64x64 文字版(约占 75% token,
+        # Tufa: 整格子 dump 稀释注意力), 原始数字模型自己调 /grid 取。默认带(=对照组行为)。
+        if os.environ.get("A3_STATE_SLIM", "0") != "1":
+            d["frame"] = _full_frame(o.grid)
         if ctr:
             d["counter_cells_hint"] = (f"计数器格{len(ctr)}个(如{sorted(ctr)[:8]}): 每步自动变化,"
                                        " 与动作内容无关, 分析时剔除")
