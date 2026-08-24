@@ -1,4 +1,4 @@
-"""提交主控: 建 Arcade + 单 scorecard, 逐游戏跑 explorer, 汇总落盘。
+"""提交主控: 建 Arcade + 单 scorecard, 分组并发跑 agent(explore/repl/llm/dsh), 汇总落盘。
 
 双模式同一条代码路径:
 - COMPETITION: KAGGLE_IS_COMPETITION_RERUN=1 且 ARC_BASE_URL 已设 ->
@@ -15,6 +15,7 @@ import argparse
 import json
 import os
 import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 # 🚨两个 env 必须在 import arc_agi 之前钉死:
@@ -89,13 +90,22 @@ def main(
     total_seconds: float | None = None,
     out_dir: str = ".",
     agent: str | None = None,
+    concurrency: int | None = None,
 ) -> dict:
     t0 = time.monotonic()
+    # 并发: 同时打 N 局。vLLM 批处理下 N 路各自速度几乎不掉, 每局摊到的开口次数
+    # 近似 ×N(冠军 Duck 就是 asyncio.gather 全部游戏一起打)。一个进程一张卡, 每局
+    # 一个 env, 线程各玩各的。
+    concurrency = max(1, int(concurrency or os.environ.get("A3_CONCURRENCY", "1")))
     hard_deadline = t0 + total_seconds if total_seconds else None
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
 
     agent = agent or os.environ.get("A3_AGENT", "explore")
+    dsh_cfg = None
+    if agent == "dsh":
+        from .dsh_agent import dsh_config
+        dsh_cfg = dsh_config()  # 配置缺了就在这里炸, 不许静默降级成别的 agent
     llm = _build_llm() if agent in ("llm", "repl") else None
     if agent in ("llm", "repl") and llm is None:
         print(f"⚠️ A3_AGENT={agent} 但 A3_LLM_BASE_URL 未设, 降级为 explore")
@@ -109,22 +119,24 @@ def main(
     print(f"mode={'COMPETITION' if _COMPETITION else 'OFFLINE'} agent={agent} games={len(game_ids)}")
 
     card_id = arcade.open_scorecard(tags=["jinbo-explorer-v1"])
-    results = []
-    for n, gid in enumerate(game_ids):
-        # 剩余时间均分给剩余游戏, 不让前面的游戏吃光墙钟
-        per = seconds_per_game
-        if hard_deadline is not None:
-            per = min(per, max(30.0, (hard_deadline - time.monotonic()) / (len(game_ids) - n)))
+    print(f"concurrency={concurrency}")
+
+    def play_one(n: int, gid: str, per: float, port: int) -> dict:
         env = arcade.make(gid, scorecard_id=card_id)
         if env is None:
             print(f"[{gid}] make 返回 None, 跳过")
-            continue
+            return {"game_id": gid, "levels_completed": 0, "win_levels": 0,
+                    "steps": 0, "state": "MAKE_NONE", "per_level_steps": [], "seconds": 0.0}
         _prime_offline_scorecard(arcade, card_id, gid, env)
         # 单游戏隔离: 一个坏游戏(环境文件残缺/网关抽风)不许拖垮整场提交
         try:
             g = ApiGame(env, gid)
             dl = time.monotonic() + per
-            if llm is not None and agent == "repl":
+            if agent == "dsh":
+                from .dsh_agent import play_game_dsh
+                res = play_game_dsh(g, max_actions=max_actions, deadline=dl, port=port,
+                                    out_dir=out, cfg=dsh_cfg)
+            elif llm is not None and agent == "repl":
                 from .repl_agent import play_game_repl
                 # 关思考后每轮只要几秒, 30 轮撑不满墙钟(实测 125s 用完 600s 预算
                 # 剩 475s 全靠 explorer 乱点) —— 轮数上限要跟时间预算走
@@ -132,13 +144,12 @@ def main(
                                      max_rounds=int(os.environ.get("A3_MAX_ROUNDS", "30")),
                                      transcript_path=str(out / f"transcript_{gid.split('-')[0]}.jsonl"),
                                      home=str(out / "agent_home"))
-                # 兜底: REPL 提前收工(LLM 崩/轮数用尽/空转)而墙钟和动作预算还在,
-                # 让 explorer 续场捡分 —— 只会加分不会减分: 它只花 REPL 反正
-                # 用不掉的预算, 未过的关多烧动作不扣分, 蒙过一关就是纯赚。
+                # REPL 提前收工(LLM 崩/轮数用尽/空转)而墙钟和动作预算还在,
+                # 让 explorer 续场捡分(v4 提交版行为, 原样保留)
                 if (res.state != "WIN" and g.steps < max_actions
                         and time.monotonic() < dl - 20):
                     log_left = dl - time.monotonic()
-                    print(f"  [{gid}] REPL 收工仍剩 {log_left:.0f}s, explorer 续场兜底")
+                    print(f"  [{gid}] REPL 收工仍剩 {log_left:.0f}s, explorer 续场")
                     res2 = play_game(g, max_actions=max_actions, deadline=dl)
                     res.levels_completed = max(res.levels_completed, res2.levels_completed)
                     res.steps = res2.steps
@@ -152,14 +163,26 @@ def main(
                 res = play_game(g, max_actions=max_actions, deadline=dl)
         except Exception as e:  # noqa: BLE001
             print(f"[{gid}] ERROR: {e!r}")
-            results.append({"game_id": gid, "levels_completed": 0, "win_levels": 0,
-                            "steps": 0, "state": f"ERROR: {e!r}", "per_level_steps": [], "seconds": 0.0})
-            continue
-        results.append(res.to_dict())
+            return {"game_id": gid, "levels_completed": 0, "win_levels": 0,
+                    "steps": 0, "state": f"ERROR: {e!r}", "per_level_steps": [], "seconds": 0.0}
         print(
             f"[{gid}] levels {res.levels_completed}/{res.win_levels} "
-            f"steps={res.steps} state={res.state} {res.seconds}s"
+            f"steps={res.steps} state={res.state} {res.seconds}s", flush=True
         )
+        return res.to_dict()
+
+    results = []
+    base_port = int(os.environ.get("A3_GS_PORT", "18999"))
+    groups = [game_ids[i:i + concurrency] for i in range(0, len(game_ids), concurrency)]
+    with ThreadPoolExecutor(max_workers=concurrency) as pool:
+        for gi, group in enumerate(groups):
+            # 剩余时间均分给剩余"组"(一组同时跑, 墙钟只花一份), 不让前面的组吃光墙钟
+            per = seconds_per_game
+            if hard_deadline is not None:
+                per = min(per, max(30.0, (hard_deadline - time.monotonic()) / (len(groups) - gi)))
+            futs = [pool.submit(play_one, gi * concurrency + k, gid, per, base_port + k)
+                    for k, gid in enumerate(group)]
+            results.extend(f.result() for f in futs)
 
     summary: dict = {
         "mode": "competition" if _COMPETITION else "offline",
@@ -191,6 +214,8 @@ if __name__ == "__main__":
     ap.add_argument("--max-actions", type=int, default=1200)
     ap.add_argument("--total-seconds", type=float, default=None)
     ap.add_argument("--out-dir", default=".")
+    ap.add_argument("--concurrency", type=int, default=None)
+    ap.add_argument("--agent", default=None)
     a = ap.parse_args()
     main(
         env_dir=a.env_dir,
@@ -199,4 +224,6 @@ if __name__ == "__main__":
         max_actions=a.max_actions,
         total_seconds=a.total_seconds,
         out_dir=a.out_dir,
+        agent=a.agent,
+        concurrency=a.concurrency,
     )

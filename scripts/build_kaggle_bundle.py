@@ -101,6 +101,29 @@ def build() -> None:
         "competition_sources": ["arc-prize-2026-arc-agi-3"],
     }, indent=1))
 
+    # --- kernel_dsh: dsh 并发版提交 notebook(独立 kernel, v4 REPL 版原样保留做对照) ---
+    kd = DIST / "kernel_dsh"
+    if kd.exists():
+        shutil.rmtree(kd)
+    kd.mkdir(parents=True)
+    shutil.copy(ROOT / "kaggle_agent" / "notebook" / "arc3-jinbo-submission-dsh.ipynb", kd)
+    (kd / "kernel-metadata.json").write_text(json.dumps({
+        "id": f"{USERNAME}/arc3-jinbo-submission-dsh",
+        "title": "arc3-jinbo-submission-dsh",
+        "machine_shape": "NvidiaRtxPro6000",
+        "code_file": "arc3-jinbo-submission-dsh.ipynb",
+        "language": "python",
+        "kernel_type": "notebook",
+        "is_private": True,
+        "enable_gpu": True,
+        "enable_internet": False,
+        "dataset_sources": [f"{USERNAME}/{DATASET_SLUG}",
+                            "driessmit1/arc3-vllm-h100-wheelhouse-v3"],
+        "kernel_sources": [f"{USERNAME}/arc3-dsh-build"],
+        "model_sources": ["michaelpoluektov/qwen3-8-27b-fp8/transformers/default/1"],
+        "competition_sources": ["arc-prize-2026-arc-agi-3"],
+    }, indent=1))
+
     # --- kernel_dsh_build: dsh 离线 bundle 构建(联网 CPU, 开发用) ---
     kb = DIST / "kernel_dsh_build"
     if kb.exists():
