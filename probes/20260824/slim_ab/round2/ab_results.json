@@ -1,0 +1,26 @@
+[
+ {
+  "game": "r11l",
+  "arm": "ctrl",
+  "level": 0,
+  "steps": 14
+ },
+ {
+  "game": "r11l",
+  "arm": "slim",
+  "level": 0,
+  "steps": 8
+ },
+ {
+  "game": "ls20",
+  "arm": "ctrl",
+  "level": 0,
+  "steps": 25
+ },
+ {
+  "game": "ls20",
+  "arm": "slim",
+  "level": 0,
+  "steps": 26
+ }
+]

@@ -1,0 +1,212 @@
+[
+ {
+  "game": "ft09",
+  "arm": "slim",
+  "seed": 0,
+  "level": 1,
+  "steps": 142
+ },
+ {
+  "game": "ft09",
+  "arm": "slim",
+  "seed": 1,
+  "level": 1,
+  "steps": 200
+ },
+ {
+  "game": "ft09",
+  "arm": "slim",
+  "seed": 2,
+  "level": 0,
+  "steps": 189
+ },
+ {
+  "game": "r11l",
+  "arm": "slim",
+  "seed": 0,
+  "level": 0,
+  "steps": 200
+ },
+ {
+  "game": "r11l",
+  "arm": "slim",
+  "seed": 1,
+  "level": 1,
+  "steps": 135
+ },
+ {
+  "game": "r11l",
+  "arm": "slim",
+  "seed": 2,
+  "level": 1,
+  "steps": 27
+ },
+ {
+  "game": "ls20",
+  "arm": "slim",
+  "seed": 0,
+  "level": 0,
+  "steps": 42
+ },
+ {
+  "game": "ls20",
+  "arm": "slim",
+  "seed": 1,
+  "level": 0,
+  "steps": 200
+ },
+ {
+  "game": "ls20",
+  "arm": "slim",
+  "seed": 2,
+  "level": 0,
+  "steps": 65
+ },
+ {
+  "game": "sp80",
+  "arm": "slim",
+  "seed": 0,
+  "level": 0,
+  "steps": 82
+ },
+ {
+  "game": "sp80",
+  "arm": "slim",
+  "seed": 1,
+  "level": 0,
+  "steps": 200
+ },
+ {
+  "game": "sp80",
+  "arm": "slim",
+  "seed": 2,
+  "level": 0,
+  "steps": 77
+ },
+ {
+  "game": "tn36",
+  "arm": "slim",
+  "seed": 0,
+  "level": 0,
+  "steps": 200
+ },
+ {
+  "game": "tn36",
+  "arm": "slim",
+  "seed": 1,
+  "level": 0,
+  "steps": 9
+ },
+ {
+  "game": "tn36",
+  "arm": "slim",
+  "seed": 2,
+  "level": 0,
+  "steps": 143
+ },
+ {
+  "game": "tu93",
+  "arm": "slim",
+  "seed": 0,
+  "level": 0,
+  "steps": 170
+ },
+ {
+  "game": "tu93",
+  "arm": "slim",
+  "seed": 1,
+  "level": 0,
+  "steps": 18
+ },
+ {
+  "game": "tu93",
+  "arm": "slim",
+  "seed": 2,
+  "level": 0,
+  "steps": 34
+ },
+ {
+  "game": "wa30",
+  "arm": "slim",
+  "seed": 0,
+  "level": 0,
+  "steps": 13
+ },
+ {
+  "game": "wa30",
+  "arm": "slim",
+  "seed": 1,
+  "level": 0,
+  "steps": 95
+ },
+ {
+  "game": "wa30",
+  "arm": "slim",
+  "seed": 2,
+  "level": 0,
+  "steps": 33
+ },
+ {
+  "game": "sb26",
+  "arm": "slim",
+  "seed": 0,
+  "level": 1,
+  "steps": 109
+ },
+ {
+  "game": "sb26",
+  "arm": "slim",
+  "seed": 1,
+  "level": 0,
+  "steps": 36
+ },
+ {
+  "game": "sb26",
+  "arm": "slim",
+  "seed": 2,
+  "level": 1,
+  "steps": 78
+ },
+ {
+  "game": "lp85",
+  "arm": "slim",
+  "seed": 0,
+  "level": 1,
+  "steps": 135
+ },
+ {
+  "game": "lp85",
+  "arm": "slim",
+  "seed": 1,
+  "level": 0,
+  "steps": 151
+ },
+ {
+  "game": "lp85",
+  "arm": "slim",
+  "seed": 2,
+  "level": 1,
+  "steps": 200
+ },
+ {
+  "game": "ar25",
+  "arm": "slim",
+  "seed": 0,
+  "level": 1,
+  "steps": 200
+ },
+ {
+  "game": "ar25",
+  "arm": "slim",
+  "seed": 1,
+  "level": 0,
+  "steps": 103
+ },
+ {
+  "game": "ar25",
+  "arm": "slim",
+  "seed": 2,
+  "level": 0,
+  "steps": 42
+ }
+]

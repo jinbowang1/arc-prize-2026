@@ -1,0 +1,26 @@
+[
+ {
+  "game": "ft09",
+  "arm": "ctrl",
+  "level": 3,
+  "steps": 134
+ },
+ {
+  "game": "ft09",
+  "arm": "slim",
+  "level": 1,
+  "steps": 35
+ },
+ {
+  "game": "r11l",
+  "arm": "ctrl",
+  "level": 0,
+  "steps": 20
+ },
+ {
+  "game": "r11l",
+  "arm": "slim",
+  "level": 0,
+  "steps": 22
+ }
+]
