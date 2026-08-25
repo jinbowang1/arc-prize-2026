@@ -31,3 +31,10 @@ harness_runs/
 # Kaggle 本地运行产物
 out/
 recordings/
+# Duck 本地运行目录里的源码快照/pickle/视频: 体积大且可再生
+probes/**/duck_runs/*/src/
+probes/**/duck_runs/*/*.pkl
+probes/**/duck_runs/*/movies/
+probes/**/duck_runs/*/solver_analysis/
+probes/**/home_*/profiles/
+probes/**/home_*/.anonymous-user-id

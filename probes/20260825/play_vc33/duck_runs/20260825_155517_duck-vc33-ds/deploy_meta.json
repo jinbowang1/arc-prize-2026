@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "target_class": "taaf.deploy_inline.InlineTarget",
+  "target_config": {
+    "max_runtime_s": 3000.0
+  },
+  "handle_class": "taaf.deploy_inline.InlineHandle",
+  "job_id": null,
+  "benchmark_label": "duck-vc33-ds",
+  "started_at": "2026-08-25T15:55:18.630340",
+  "host": "SF01450825MACZN",
+  "pid": 59574
+}

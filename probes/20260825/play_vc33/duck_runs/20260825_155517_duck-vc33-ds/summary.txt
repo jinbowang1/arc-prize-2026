@@ -1,0 +1,17 @@
+benchmark: duck-vc33-ds
+solver:    inference
+games:     1
+passes:    1
+runs:      1 (won: 0)
+started:   2026-08-25 15:55:18
+ended:     2026-08-25 16:35:19
+duration:  40m 0s
+mean score:    2.73
+median score:  2.73
+total actions: 22
+total tokens:  74597
+generated tokens/sec: 31.07 (job wallclock)
+total wallclock: 2400.9s
+
+per-game (mean across passes):
+  vc33-5430563c: score=2.73, levels=1.0/7, actions=22, tokens=74597

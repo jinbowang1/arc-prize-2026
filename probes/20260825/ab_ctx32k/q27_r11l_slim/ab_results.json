@@ -1,0 +1,23 @@
+[
+ {
+  "game": "r11l",
+  "arm": "slim",
+  "seed": 0,
+  "level": 0,
+  "steps": 0
+ },
+ {
+  "game": "r11l",
+  "arm": "slim",
+  "seed": 1,
+  "level": 0,
+  "steps": 0
+ },
+ {
+  "game": "r11l",
+  "arm": "slim",
+  "seed": 2,
+  "level": 0,
+  "steps": 0
+ }
+]

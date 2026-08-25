@@ -1,0 +1,58 @@
+# 实验层·实验组(contextWindow 32k)(08-25 三层框架第一层): deepseek-v4-flash, 与提交物同款裁剪; 与 08-24 aiplat-trim 的区别=显式 maxTokens 8000 + 429 长退避
+# 精简版: aiplat 通道 + 裁掉与打游戏无关的工具(subagent全家/workflow/ralph/goal/todo/web/skill/
+# plan-mode/str-replace-editor), persona 改为解谜任务。保留: bash/read/write/edit/glob/grep/jobs。
+- id: llm-deepseek
+  name: '@deepseek-ai/dsh-llm-deepseek'
+  config:
+    baseURL: http://llm-model-hub-apis.sf-express.com/v1
+    # 阿里通道 max_tokens 上限 65536(dsh 默认 256000 直接 400); 关思考后一轮输出几百 token, 8000 够
+    maxTokens: 8000
+    # hub 对 qwen 是按每分钟 token 限流(两路 3.6s/轮 ×4万token 223s 即 429); dsh 默认退避上限 10s 扛不过 60s 窗口
+    retryPolicy:
+      mode: always
+      backoff:
+        initialDelayMs: 5000
+        maxDelayMs: 60000
+    thinking: disabled
+    reasoningEffort: 'off'
+    models:
+      - id: aliyun/deepseek-v4-flash-0731
+        name: DeepSeek-V4-Flash (aiplat)
+        contextWindow: 32768
+        maxTokens: 8000
+- id: agent-default-model
+  name: '@deepseek-ai/dsh-agent-default-model'
+  config:
+    provider: deepseek-official
+    model: aliyun/deepseek-v4-flash-0731
+- id: system-prompt
+  config:
+    persona: >-
+      You are a puzzle-game playing agent powered by the {{model}} model.
+      Your working directory is {{cwd}}. Your ONLY objective is the game task
+      given by the user; interact with the game via its local HTTP API using
+      bash curl, and use python scripts for grid analysis when helpful.
+- id: tool-subagent
+  disabled: true
+- id: tool-subagent-fork
+  disabled: true
+- id: tool-subagent-control
+  disabled: true
+- id: tool-subagent-list-agents
+  disabled: true
+- id: tool-workflow
+  disabled: true
+- id: tool-ralph
+  disabled: true
+- id: tool-goal
+  disabled: true
+- id: tool-todo
+  disabled: true
+- id: tool-web
+  disabled: true
+- id: tool-skill
+  disabled: true
+- id: plan-mode
+  disabled: true
+- id: tool-str-replace-editor
+  disabled: true

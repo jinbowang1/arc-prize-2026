@@ -1,0 +1,44 @@
+[
+ {
+  "game": "r11l",
+  "arm": "ctrl",
+  "seed": 0,
+  "level": 0,
+  "steps": 117
+ },
+ {
+  "game": "r11l",
+  "arm": "slim",
+  "seed": 0,
+  "level": 0,
+  "steps": 56
+ },
+ {
+  "game": "ft09",
+  "arm": "ctrl",
+  "seed": 0,
+  "level": 0,
+  "steps": 178
+ },
+ {
+  "game": "ft09",
+  "arm": "slim",
+  "seed": 0,
+  "level": 0,
+  "steps": 58
+ },
+ {
+  "game": "ls20",
+  "arm": "ctrl",
+  "seed": 0,
+  "level": 0,
+  "steps": 200
+ },
+ {
+  "game": "ls20",
+  "arm": "slim",
+  "seed": 0,
+  "level": 0,
+  "steps": 43
+ }
+]

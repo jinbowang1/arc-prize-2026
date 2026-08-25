@@ -1,0 +1,23 @@
+[
+ {
+  "game": "ls20",
+  "arm": "slim",
+  "seed": 0,
+  "level": 0,
+  "steps": 200
+ },
+ {
+  "game": "ls20",
+  "arm": "slim",
+  "seed": 1,
+  "level": 0,
+  "steps": 199
+ },
+ {
+  "game": "ls20",
+  "arm": "slim",
+  "seed": 2,
+  "level": 0,
+  "steps": 14
+ }
+]

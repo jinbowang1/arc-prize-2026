@@ -1,0 +1,27 @@
+# 本地对照(08-25 用户定): llm-deepseek 指向公司 aiplat hub, 模型 aliyun/qwen3.6-35b-a3b
+# 用它代替 deepseek-v4-flash 做本地陪练(更接近赛场 Qwen3.8-27B; QPM 1000 可高并发)
+# key 走环境变量 DEEPSEEK_API_KEY(不落仓库); hub 直测: thinking disabled 有效(不关一题烧335思考token), 工具调用正常
+- id: llm-deepseek
+  name: '@deepseek-ai/dsh-llm-deepseek'
+  config:
+    baseURL: http://llm-model-hub-apis.sf-express.com/v1
+    # 阿里通道 max_tokens 上限 65536(dsh 默认 256000 直接 400); 关思考后一轮输出几百 token, 8000 够
+    maxTokens: 8000
+    # hub 对 qwen 是按每分钟 token 限流(两路 3.6s/轮 ×4万token 223s 即 429); dsh 默认退避上限 10s 扛不过 60s 窗口
+    retryPolicy:
+      mode: always
+      backoff:
+        initialDelayMs: 5000
+        maxDelayMs: 60000
+    thinking: disabled
+    reasoningEffort: 'off'
+    models:
+      - id: aliyun/qwen3.6-35b-a3b
+        name: Qwen3.6-35B-A3B (aiplat)
+        contextWindow: 131072
+        maxTokens: 8000
+- id: agent-default-model
+  name: '@deepseek-ai/dsh-agent-default-model'
+  config:
+    provider: deepseek-official
+    model: aliyun/qwen3.6-35b-a3b

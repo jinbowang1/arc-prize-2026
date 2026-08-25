@@ -1,0 +1,43 @@
+[
+ {
+  "game": "r11l",
+  "arm": "ctrl",
+  "seed": 0,
+  "level": 1,
+  "steps": 108
+ },
+ {
+  "game": "r11l",
+  "arm": "slim",
+  "seed": 0,
+  "level": 1,
+  "steps": 141
+ },
+ {
+  "game": "ft09",
+  "arm": "ctrl",
+  "seed": 0,
+  "level": 0,
+  "steps": 149
+ },
+ {
+  "game": "ft09",
+  "arm": "slim",
+  "seed": 0,
+  "level": 0,
+  "steps": 108
+ },
+ {
+  "game": "ls20",
+  "arm": "ctrl",
+  "seed": 0,
+  "error": "URLError(ConnectionRefusedError(61, 'Connection refused'))"
+ },
+ {
+  "game": "ls20",
+  "arm": "slim",
+  "seed": 0,
+  "level": 0,
+  "steps": 46
+ }
+]

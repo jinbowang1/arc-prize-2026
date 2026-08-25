@@ -1,0 +1,23 @@
+diff --git a/ARC3-Inference/inference/utils/openai_compat.py b/ARC3-Inference/inference/utils/openai_compat.py
+index 157e113..a20d64a 100644
+--- a/ARC3-Inference/inference/utils/openai_compat.py
++++ b/ARC3-Inference/inference/utils/openai_compat.py
+@@ -1,6 +1,7 @@
+ """Helpers for provider-specific OpenAI-compatible requests."""
+ from __future__ import annotations
+ 
++import os
+ from typing import Any
+ 
+ 
+@@ -62,6 +63,10 @@ def build_chat_payload(
+             payload["tool_choice"] = tool_choice
+ 
+     normalized = normalize_provider(provider)
++    # 本地对照(08-25): hub 上的 DeepSeek/Qwen 默认思考, OpenAI 兼容模式没有关思考的通道;
++    # 设 HUB_THINKING_DISABLED=1 则带 DeepSeek/阿里通道都认的 thinking 字段
++    if os.environ.get("HUB_THINKING_DISABLED", "") == "1":
++        payload["thinking"] = {"type": "disabled"}
+     if normalized == "vllm":
+         if top_k > 0:
+             payload["top_k"] = top_k
