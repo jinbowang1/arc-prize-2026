@@ -1,0 +1,59 @@
+commit: 7652836056c59e044f093e3c13ed7438c814169e
+
+diff --git a/ARC3-Inference/inference/agent/prompts.py b/ARC3-Inference/inference/agent/prompts.py
+index 2e59574..ab9e83d 100644
+--- a/ARC3-Inference/inference/agent/prompts.py
++++ b/ARC3-Inference/inference/agent/prompts.py
+@@ -19,6 +19,9 @@ GAME_OVERVIEW_ADDENDUM = (
+     f"- Color legend: {ARC_COLOR_LEGEND}.\n"
+ )
+ 
++import os as _os
++FIELD_GUIDE_ADDENDUM = (open(_os.environ["DUCK_FIELD_GUIDE"]).read() if _os.environ.get("DUCK_FIELD_GUIDE") else "")
++
+ VISUAL_GAME_ADDENDUM = (
+     "\n\nVisual-game guidance:\n"
+     "- Treat each board as a scene with objects, blockers, targets, adjacency, containment, motion, and symmetry.\n"
+diff --git a/ARC3-Inference/inference/agent/tool_agent.py b/ARC3-Inference/inference/agent/tool_agent.py
+index 59655e9..b6b9ecd 100644
+--- a/ARC3-Inference/inference/agent/tool_agent.py
++++ b/ARC3-Inference/inference/agent/tool_agent.py
+@@ -22,6 +22,7 @@ from inference.agent.prompts import (
+     MULTIMODAL_CONTEXT_ADDENDUM,
+     TOOL_CALL_FORMAT_GUIDANCE,
+     VISUAL_GAME_ADDENDUM,
++    FIELD_GUIDE_ADDENDUM,
+ )
+ 
+ from inference.agent.vision_context import (
+@@ -354,6 +355,7 @@ def _build_system_prompt(*, tool_output_tokens: int) -> str:
+     if current_grid_image_enabled():
+         prompt += MULTIMODAL_CONTEXT_ADDENDUM
+     prompt += VISUAL_GAME_ADDENDUM
++    prompt += FIELD_GUIDE_ADDENDUM
+     prompt += PYTHON_ADDENDUM
+     prompt += COMPACT_TOOL_SESSION_ADDENDUM.format(tool_output_tokens=tool_output_tokens)
+     return prompt
+diff --git a/ARC3-Inference/inference/utils/openai_compat.py b/ARC3-Inference/inference/utils/openai_compat.py
+index 157e113..a20d64a 100644
+--- a/ARC3-Inference/inference/utils/openai_compat.py
++++ b/ARC3-Inference/inference/utils/openai_compat.py
+@@ -1,6 +1,7 @@
+ """Helpers for provider-specific OpenAI-compatible requests."""
+ from __future__ import annotations
+ 
++import os
+ from typing import Any
+ 
+ 
+@@ -62,6 +63,10 @@ def build_chat_payload(
+             payload["tool_choice"] = tool_choice
+ 
+     normalized = normalize_provider(provider)
++    # 本地对照(08-25): hub 上的 DeepSeek/Qwen 默认思考, OpenAI 兼容模式没有关思考的通道;
++    # 设 HUB_THINKING_DISABLED=1 则带 DeepSeek/阿里通道都认的 thinking 字段
++    if os.environ.get("HUB_THINKING_DISABLED", "") == "1":
++        payload["thinking"] = {"type": "disabled"}
+     if normalized == "vllm":
+         if top_k > 0:
+             payload["top_k"] = top_k

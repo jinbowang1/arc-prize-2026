@@ -1,0 +1,17 @@
+benchmark: duck-vc33-seeds
+solver:    inference
+games:     1
+passes:    2
+runs:      2 (won: 0)
+started:   2026-08-25 19:05:12
+ended:     2026-08-25 19:45:12
+duration:  40m 0s
+mean score:    3.01
+median score:  3.01
+total actions: 301
+total tokens:  453845
+generated tokens/sec: 189.10 (job wallclock)
+total wallclock: 4800.1s
+
+per-game (mean across passes):
+  vc33-5430563c: score=3.01, levels=2.0/7, actions=150, tokens=226922

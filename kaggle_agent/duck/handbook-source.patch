@@ -1,0 +1,31 @@
+diff -ru src/ARC3-Inference/inference/agent/prompts.py ../taaf_hb/src/ARC3-Inference/inference/agent/prompts.py
+--- src/ARC3-Inference/inference/agent/prompts.py	2026-08-25 19:07:15
++++ ../taaf_hb/src/ARC3-Inference/inference/agent/prompts.py	2026-08-25 19:09:06
+@@ -19,6 +19,8 @@
+     f"- Color legend: {ARC_COLOR_LEGEND}.\n"
+ )
+ 
++FIELD_GUIDE_ADDENDUM = "\n\nField guide (patterns seen across many ARC-AGI-3 games; treat as hypotheses to confirm, never as facts):\n- These are small human-designed puzzle games: always solvable, level 1 is a tutorial, and each later level usually adds exactly one new mechanic on top of the previous ones. Reuse what you learned, but re-check it on the new board.\n- First ask \"what is this level asking me to do\", only then \"what does each action do\". A common goal shape: make the region you CAN change look like the region you CANNOT change (answer area vs. pattern/template). Cells no action ever changes are the template.\n- Common families and how to play them:\n  A) Copy the pattern: a template and an answer area side by side. Find out what the \"brush\" is (big brush / small brush / color change / pick-a-part-and-place); later paint covers earlier paint. A small patterned 3x3 block is often a blueprint for how its own neighbourhood must be filled.\n  B) Navigate and unlock: pressing arrow keys moves one ~5x5 block as a whole -- that block is you. A small panel in a corner shows your current shape/color; a room's display shows the target shape. Step on map gadgets (rotators / shape changers / color changers) to become the target shape AND color, then walk into that room. Walking costs energy (an energy bar); running out teleports you back to the start, so do not wander: learn each key's effect, plan the whole route, then walk it, avoiding cells that would change your shape/color after you have it.\n  C) Push the box: a movable block and a slot. You can push, not pull; do not push it into a corner.\n  D) Lights-out: clicking one cell flips a region. Learn the flip pattern first, then decide the set of cells to click before clicking.\n  E) Dictionary translation: paired examples plus a fill-in area. Induce the mapping from the examples, cycle through candidates with the cycle key, and the level completes by itself when everything matches.\n  F) Draw a spell: a small canvas, a hint pattern, a character and an exit. Drawing the right pattern casts a skill; you win by walking the character into the exit, not by drawing.\n  G) Chain reaction / collect: click a key position to trigger a big cascade, or gather scattered pieces into slots; prefer centres, gaps and symmetry points.\n  H) Extend-and-retract pipes: coloured 3-wide segments joined end to end; a box per colour has a shorten and a lengthen cell (3 cells per press); a small box rotates a segment and everything after it. The goal is to park the tip (the small dot near the end) exactly on a diamond marker. Growth is blocked by walls (a blocked press is wasted), later segments ride along when an earlier one changes, segments of the same colour share one box, and all targets must be satisfied at the same time.\n  I) Tanks and boats: black = water, thin light lines = pipes, small square buttons come in pairs flanking a pipe and pour water between the two tanks at its ends (total water is conserved); a boat floats on the water. A plug inside a pipe is a gate: when the water on both sides is level with it, clicking it moves the boat to the neighbouring tank (the move plays as an animation over the next few frames). Win by bringing each boat to the row of its same-coloured gate.\n- Counters: a row or column near an edge that changes every step regardless of what you do is a step counter, not a mechanic; ignore it when comparing frames.\n- If something does not change on the very next frame, do not conclude it did nothing: some effects (gates, animations, level transitions) show up a step or two later.\n- Some effects happen only under a precondition (right shape, water level, order of clicks). If an action does nothing, ask what precondition is missing instead of repeating it.\n"
++
+ VISUAL_GAME_ADDENDUM = (
+     "\n\nVisual-game guidance:\n"
+     "- Treat each board as a scene with objects, blockers, targets, adjacency, containment, motion, and symmetry.\n"
+diff -ru src/ARC3-Inference/inference/agent/tool_agent.py ../taaf_hb/src/ARC3-Inference/inference/agent/tool_agent.py
+--- src/ARC3-Inference/inference/agent/tool_agent.py	2026-08-25 19:07:15
++++ ../taaf_hb/src/ARC3-Inference/inference/agent/tool_agent.py	2026-08-25 19:09:06
+@@ -22,6 +22,7 @@
+     MULTIMODAL_CONTEXT_ADDENDUM,
+     TOOL_CALL_FORMAT_GUIDANCE,
+     VISUAL_GAME_ADDENDUM,
++    FIELD_GUIDE_ADDENDUM,
+ )
+ 
+ from inference.agent.vision_context import (
+@@ -354,6 +355,7 @@
+     if current_grid_image_enabled():
+         prompt += MULTIMODAL_CONTEXT_ADDENDUM
+     prompt += VISUAL_GAME_ADDENDUM
++    prompt += FIELD_GUIDE_ADDENDUM
+     prompt += PYTHON_ADDENDUM
+     prompt += COMPACT_TOOL_SESSION_ADDENDUM.format(tool_output_tokens=tool_output_tokens)
+     return prompt

@@ -1,0 +1,19 @@
+benchmark: guide-ab-guide
+solver:    inference
+games:     3
+passes:    2
+runs:      6 (won: 0)
+started:   2026-08-25 19:09:34
+ended:     2026-08-25 19:39:59
+duration:  30m 24s
+mean score:    3.78
+median score:  0.71
+total actions: 258
+total tokens:  906486
+generated tokens/sec: 496.72 (job wallclock)
+total wallclock: 10864.3s
+
+per-game (mean across passes):
+  ft09-0d8bbf25: score=10.64, levels=2.0/6, actions=40, tokens=112629
+  ls20-9607627b: score=0.71, levels=0.5/7, actions=47, tokens=171038
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=42, tokens=169575

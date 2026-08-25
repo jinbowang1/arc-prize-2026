@@ -1,0 +1,78 @@
+{
+  "agent": "inference",
+  "analyzer_timeout_seconds": 300.0,
+  "competition_arcade": {
+    "clone_runs": null,
+    "simulated": false
+  },
+  "concurrent_jobs": 6,
+  "concurrent_jobs_scope": "total",
+  "dataset": "",
+  "deployment": {
+    "kaggle": {
+      "accelerator": "NvidiaRtxPro6000",
+      "additional_dataset_sources": [],
+      "cpu_only": false,
+      "dataset_ref": null,
+      "dry_run": false,
+      "duck_public_harness": false,
+      "enable_internet": false,
+      "kernel_slug": "taaf-guide-ab-ctrl",
+      "kernel_title": "taaf-guide-ab-ctrl",
+      "make_share_version": false,
+      "public": false,
+      "run_as_submission": false
+    },
+    "slurm": {
+      "extra_sbatch_flags": [
+        "--account=default",
+        "--qos=normal"
+      ],
+      "gpu": "B200",
+      "gpu_count": 1,
+      "image": null,
+      "local_server_api_key_file": null,
+      "local_server_base_port": null,
+      "local_server_config": null,
+      "local_server_count": 0,
+      "local_server_repo_dir": null,
+      "local_server_tensor_parallel_size": null,
+      "nodelist": null,
+      "partition": "gpu",
+      "start_local_server": false,
+      "time": "07:00:00"
+    },
+    "source_repos": [
+      "../tufa-arc-agi-framework"
+    ],
+    "target": "inline",
+    "wait": true
+  },
+  "effective_concurrent_jobs": 6,
+  "environments_dir": "/Users/01450825/Desktop/project/arc-agi-3/environment_files",
+  "exclude_tags": [],
+  "experiments_dir": "/Users/01450825/Desktop/project/arc-agi-3/probes/20260825/duck_guide_ab",
+  "game_count": 3,
+  "game_run_count": 6,
+  "games": [
+    "ft09-0d8bbf25",
+    "r11l-495a7899",
+    "ls20-9607627b"
+  ],
+  "generated_at": "2026-08-25T11:09:34.576958Z",
+  "include_tags": [],
+  "max_actions": null,
+  "max_experiment_runtime_hours": null,
+  "max_experiment_runtime_minutes": null,
+  "max_runtime_minutes_per_game": 30.0,
+  "max_runtime_minutes_per_game_source": "explicit",
+  "model": "aliyun/deepseek-v4-flash-0731",
+  "n_passes": 2,
+  "pass_schedule": [
+    0,
+    1
+  ],
+  "runner": "taaf",
+  "version": 2,
+  "wave_count": 1
+}

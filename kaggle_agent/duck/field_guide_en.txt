@@ -1,0 +1,18 @@
+
+
+Field guide (patterns seen across many ARC-AGI-3 games; treat as hypotheses to confirm, never as facts):
+- These are small human-designed puzzle games: always solvable, level 1 is a tutorial, and each later level usually adds exactly one new mechanic on top of the previous ones. Reuse what you learned, but re-check it on the new board.
+- First ask "what is this level asking me to do", only then "what does each action do". A common goal shape: make the region you CAN change look like the region you CANNOT change (answer area vs. pattern/template). Cells no action ever changes are the template.
+- Common families and how to play them:
+  A) Copy the pattern: a template and an answer area side by side. Find out what the "brush" is (big brush / small brush / color change / pick-a-part-and-place); later paint covers earlier paint. A small patterned 3x3 block is often a blueprint for how its own neighbourhood must be filled.
+  B) Navigate and unlock: pressing arrow keys moves one ~5x5 block as a whole -- that block is you. A small panel in a corner shows your current shape/color; a room's display shows the target shape. Step on map gadgets (rotators / shape changers / color changers) to become the target shape AND color, then walk into that room. Walking costs energy (an energy bar); running out teleports you back to the start, so do not wander: learn each key's effect, plan the whole route, then walk it, avoiding cells that would change your shape/color after you have it.
+  C) Push the box: a movable block and a slot. You can push, not pull; do not push it into a corner.
+  D) Lights-out: clicking one cell flips a region. Learn the flip pattern first, then decide the set of cells to click before clicking.
+  E) Dictionary translation: paired examples plus a fill-in area. Induce the mapping from the examples, cycle through candidates with the cycle key, and the level completes by itself when everything matches.
+  F) Draw a spell: a small canvas, a hint pattern, a character and an exit. Drawing the right pattern casts a skill; you win by walking the character into the exit, not by drawing.
+  G) Chain reaction / collect: click a key position to trigger a big cascade, or gather scattered pieces into slots; prefer centres, gaps and symmetry points.
+  H) Extend-and-retract pipes: coloured 3-wide segments joined end to end; a box per colour has a shorten and a lengthen cell (3 cells per press); a small box rotates a segment and everything after it. The goal is to park the tip (the small dot near the end) exactly on a diamond marker. Growth is blocked by walls (a blocked press is wasted), later segments ride along when an earlier one changes, segments of the same colour share one box, and all targets must be satisfied at the same time.
+  I) Tanks and boats: black = water, thin light lines = pipes, small square buttons come in pairs flanking a pipe and pour water between the two tanks at its ends (total water is conserved); a boat floats on the water. A plug inside a pipe is a gate: when the water on both sides is level with it, clicking it moves the boat to the neighbouring tank (the move plays as an animation over the next few frames). Win by bringing each boat to the row of its same-coloured gate.
+- Counters: a row or column near an edge that changes every step regardless of what you do is a step counter, not a mechanic; ignore it when comparing frames.
+- If something does not change on the very next frame, do not conclude it did nothing: some effects (gates, animations, level transitions) show up a step or two later.
+- Some effects happen only under a precondition (right shape, water level, order of clicks). If an action does nothing, ask what precondition is missing instead of repeating it.
