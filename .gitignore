@@ -38,3 +38,18 @@ probes/**/duck_runs/*/movies/
 probes/**/duck_runs/*/solver_analysis/
 probes/**/home_*/profiles/
 probes/**/home_*/.anonymous-user-id
+
+# 08-26 起: Duck 本地/Kaggle 运行目录只入库 transcripts + benchmark/summary/run_config, 其余可再生或体积大
+probes/**/src/
+probes/**/*.pkl
+probes/**/movies/
+probes/**/solver_analysis/
+probes/**/artifacts/
+probes/**/prompts/
+probes/**/home_*/
+probes/**/diagnostics.html
+probes/**/kaggle_tx_*/
+probes/**/*_failed*/
+probes/**/kaggle_handbook_out/
+probes/**/sb26_official/
+probes/**/sb26_handbook/

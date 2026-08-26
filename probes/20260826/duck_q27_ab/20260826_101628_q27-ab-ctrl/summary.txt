@@ -1,0 +1,18 @@
+benchmark: q27-ab-ctrl
+solver:    inference
+games:     2
+passes:    3
+runs:      6 (won: 0)
+started:   2026-08-26 10:16:28
+ended:     2026-08-26 11:46:46
+duration:  1h 30m 18s
+mean score:    1.79
+median score:  2.59
+total actions: 299
+total tokens:  260001
+generated tokens/sec: 47.98 (job wallclock)
+total wallclock: 21717.6s
+
+per-game (mean across passes):
+  r11l-495a7899: score=0.80, levels=0.3/6, actions=52, tokens=37373
+  sb26-7fbdac44: score=2.78, levels=1.0/8, actions=47, tokens=49293

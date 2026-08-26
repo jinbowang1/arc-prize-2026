@@ -1,0 +1,3056 @@
+{
+  "label": "q27-img-first",
+  "n_passes": 3,
+  "solver_label": "inference",
+  "start_time": "2026-08-26T16:52:17.947298",
+  "end_time": "2026-08-26T18:22:37.204850",
+  "game_weights": null,
+  "periodic_save_interval_s": 600.0,
+  "game_runs": [
+    {
+      "game_id": "sb26-7fbdac44",
+      "number_of_levels": 8,
+      "base_actions_per_level": [
+        18,
+        28,
+        18,
+        19,
+        31,
+        23,
+        58,
+        18
+      ],
+      "hint": null,
+      "state": "gave_up",
+      "history": [
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 19,
+              "y": 58
+            }
+          },
+          "generated_tokens": 1325,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 27.260979457991198
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 29
+            }
+          },
+          "generated_tokens": 696,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 73.15866883296985
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 27,
+              "y": 58
+            }
+          },
+          "generated_tokens": 780,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 83.53664645797107
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 28,
+              "y": 29
+            }
+          },
+          "generated_tokens": 245,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 99.31884341593832
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 35,
+              "y": 58
+            }
+          },
+          "generated_tokens": 173,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 113.1059769160347
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 29
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 113.11446624994278
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 43,
+              "y": 58
+            }
+          },
+          "generated_tokens": 153,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 146.12920129101258
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 40,
+              "y": 29
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 146.13788291602395
+        },
+        {
+          "action": {
+            "id": "ACTION5",
+            "data": {}
+          },
+          "generated_tokens": 144,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 161.4669464159524
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 29
+            }
+          },
+          "generated_tokens": 428,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 190.8646580829518
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 27,
+              "y": 58
+            }
+          },
+          "generated_tokens": 403,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 235.2331527080387
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 35,
+              "y": 58
+            }
+          },
+          "generated_tokens": 261,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 243.20117079094052
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 29
+            }
+          },
+          "generated_tokens": 856,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 258.0453433749499
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 29
+            }
+          },
+          "generated_tokens": 938,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 275.2491610409925
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 28,
+              "y": 29
+            }
+          },
+          "generated_tokens": 200,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 325.5128425830044
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 27,
+              "y": 58
+            }
+          },
+          "generated_tokens": 97,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 331.145653415937
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 40,
+              "y": 29
+            }
+          },
+          "generated_tokens": 380,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 350.39355387503747
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 29
+            }
+          },
+          "generated_tokens": 147,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 356.56702704099007
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 46,
+              "y": 29
+            }
+          },
+          "generated_tokens": 139,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 494.6618750409689
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 27,
+              "y": 58
+            }
+          },
+          "generated_tokens": 117,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 525.5171115410049
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 46,
+              "y": 29
+            }
+          },
+          "generated_tokens": 217,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 532.3883902910165
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 40,
+              "y": 29
+            }
+          },
+          "generated_tokens": 433,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 553.5667319579516
+        },
+        {
+          "action": {
+            "id": "ACTION5",
+            "data": {}
+          },
+          "generated_tokens": 318,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 587.2145050410181
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 22
+            }
+          },
+          "generated_tokens": 1505,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 624.2331842079293
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 31,
+              "y": 58
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 624.2539596250281
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 31,
+              "y": 58
+            }
+          },
+          "generated_tokens": 316,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 671.9223001659848
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 22
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 671.944066499942
+        },
+        {
+          "action": {
+            "id": "ACTION5",
+            "data": {}
+          },
+          "generated_tokens": 701,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 709.3931163749658
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 22
+            }
+          },
+          "generated_tokens": 696,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 734.374018625007
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 31,
+              "y": 58
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 734.3995463330066
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 22
+            }
+          },
+          "generated_tokens": 379,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 745.7649378329515
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 17,
+              "y": 58
+            }
+          },
+          "generated_tokens": 980,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 759.6877712080022
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 28,
+              "y": 22
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 759.7135574999265
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 10,
+              "y": 58
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 759.7401000410318
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 40,
+              "y": 22
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 759.7657625830034
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 45,
+              "y": 58
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 759.793611458037
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 36
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 759.8211949999677
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 24,
+              "y": 58
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 759.8503521659877
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 28,
+              "y": 36
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 759.8782397080213
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 52,
+              "y": 58
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 759.9093260830268
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 36
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 759.9402263750089
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 38,
+              "y": 58
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 759.9717188329669
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 40,
+              "y": 36
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 760.0040413329843
+        },
+        {
+          "action": {
+            "id": "ACTION5",
+            "data": {}
+          },
+          "generated_tokens": 82,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 764.6868940829299
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 32,
+              "y": 31
+            }
+          },
+          "generated_tokens": 510,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 777.8426905409433
+        },
+        {
+          "action": {
+            "id": "ACTION5",
+            "data": {}
+          },
+          "generated_tokens": 259,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 800.7471402910305
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 52,
+              "y": 58
+            }
+          },
+          "generated_tokens": 2009,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 981.3342437079409
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 35,
+              "y": 31
+            }
+          },
+          "generated_tokens": 444,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1017.1334934999468
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 17,
+              "y": 17
+            }
+          },
+          "generated_tokens": 382,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1039.5724336249987
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 14,
+              "y": 58
+            }
+          },
+          "generated_tokens": 103,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1044.6122704999289
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 58,
+              "y": 53
+            }
+          },
+          "generated_tokens": 304,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1050.3336925000185
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 35,
+              "y": 28
+            }
+          },
+          "generated_tokens": 3199,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1256.0142439579358
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 11,
+              "y": 59
+            }
+          },
+          "generated_tokens": 7182,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1464.574916374986
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 28,
+              "y": 37
+            }
+          },
+          "generated_tokens": 1313,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1498.1955757079413
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 22
+            }
+          },
+          "generated_tokens": 1356,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1523.4390487499768
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 28,
+              "y": 22
+            }
+          },
+          "generated_tokens": 650,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1533.3834121249383
+        },
+        {
+          "action": {
+            "id": "ACTION5",
+            "data": {}
+          },
+          "generated_tokens": 1406,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1557.6683222079882
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 22
+            }
+          },
+          "generated_tokens": 3424,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1651.6256992500275
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 28,
+              "y": 36
+            }
+          },
+          "generated_tokens": 256,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1659.4818527499447
+        },
+        {
+          "action": {
+            "id": "ACTION5",
+            "data": {}
+          },
+          "generated_tokens": 378,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1725.573351582978
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 22
+            }
+          },
+          "generated_tokens": 737,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1750.0057952909265
+        }
+      ],
+      "record_intermediate_states": true,
+      "actions_per_level": [
+        23,
+        38,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "levels_completed": 1,
+      "final_score": 1.7013232514177696,
+      "solver_note": "tokens=39336",
+      "solver_analysis_html": "solver_analysis/sb26-7fbdac44_p0.html",
+      "final_generated_tokens": 0,
+      "final_uncached_input_tokens": 0,
+      "final_wallclock_seconds": 1803.6730847909348,
+      "started_at": "2026-08-26T16:52:17.967702"
+    },
+    {
+      "game_id": "r11l-495a7899",
+      "number_of_levels": 6,
+      "base_actions_per_level": [
+        22,
+        33,
+        51,
+        26,
+        52,
+        49
+      ],
+      "hint": null,
+      "state": "gave_up",
+      "history": [
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 17,
+              "y": 47
+            }
+          },
+          "generated_tokens": 2582,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 116.74914183293004
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 39,
+              "y": 21
+            }
+          },
+          "generated_tokens": 2907,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 394.45486158295535
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 27,
+              "y": 59
+            }
+          },
+          "generated_tokens": 1216,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 470.1049993749475
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 33,
+              "y": 40
+            }
+          },
+          "generated_tokens": 1621,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 646.6397244998952
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 39,
+              "y": 21
+            }
+          },
+          "generated_tokens": 273,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 661.6986713749357
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 36,
+              "y": 30
+            }
+          },
+          "generated_tokens": 633,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 719.0646496249828
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 33,
+              "y": 40
+            }
+          },
+          "generated_tokens": 1987,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 823.9409576669568
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 39,
+              "y": 21
+            }
+          },
+          "generated_tokens": 935,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 838.6606962499209
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 24,
+              "y": 12
+            }
+          },
+          "generated_tokens": 1675,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 869.9142531249672
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 27,
+              "y": 14
+            }
+          },
+          "generated_tokens": 609,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 889.1617720419308
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 8,
+              "y": 21
+            }
+          },
+          "generated_tokens": 781,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 910.6798637919128
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 45,
+              "y": 35
+            }
+          },
+          "generated_tokens": 857,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 932.8111823749496
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 54,
+              "y": 48
+            }
+          },
+          "generated_tokens": 652,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 944.0527112919372
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 49,
+              "y": 41
+            }
+          },
+          "generated_tokens": 773,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 958.8994757919572
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 47,
+              "y": 38
+            }
+          },
+          "generated_tokens": 2080,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1145.4255637499737
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 46,
+              "y": 36
+            }
+          },
+          "generated_tokens": 595,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1199.9362217499875
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 46,
+              "y": 36
+            }
+          },
+          "generated_tokens": 1064,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1278.6061589169549
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 40,
+              "y": 51
+            }
+          },
+          "generated_tokens": 3142,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1396.452094832901
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 43,
+              "y": 44
+            }
+          },
+          "generated_tokens": 1051,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1418.074167582905
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 45,
+              "y": 41
+            }
+          },
+          "generated_tokens": 1240,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1447.6564485419076
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 46,
+              "y": 39
+            }
+          },
+          "generated_tokens": 926,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1470.11600929196
+        }
+      ],
+      "record_intermediate_states": true,
+      "actions_per_level": [
+        8,
+        13,
+        0,
+        0,
+        0,
+        0
+      ],
+      "levels_completed": 1,
+      "final_score": 4.761904761904762,
+      "solver_note": "tokens=38804",
+      "solver_analysis_html": "solver_analysis/r11l-495a7899_p0.html",
+      "final_generated_tokens": 0,
+      "final_uncached_input_tokens": 0,
+      "final_wallclock_seconds": 1822.1784581668908,
+      "started_at": "2026-08-26T16:52:18.005141"
+    },
+    {
+      "game_id": "sb26-7fbdac44",
+      "number_of_levels": 8,
+      "base_actions_per_level": [
+        18,
+        28,
+        18,
+        19,
+        31,
+        23,
+        58,
+        18
+      ],
+      "hint": null,
+      "state": "gave_up",
+      "history": [
+        {
+          "action": {
+            "id": "ACTION5",
+            "data": {}
+          },
+          "generated_tokens": 1931,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1839.6637179169338
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 35,
+              "y": 58
+            }
+          },
+          "generated_tokens": 1896,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2103.897629917017
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 29
+            }
+          },
+          "generated_tokens": 361,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2110.135531042004
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 19,
+              "y": 58
+            }
+          },
+          "generated_tokens": 543,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2133.5061003329465
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 28,
+              "y": 29
+            }
+          },
+          "generated_tokens": 150,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2139.557505792007
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 43,
+              "y": 58
+            }
+          },
+          "generated_tokens": 173,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2145.6974454169394
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 29
+            }
+          },
+          "generated_tokens": 87,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2148.9262564999517
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 27,
+              "y": 58
+            }
+          },
+          "generated_tokens": 113,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2154.6797748749377
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 40,
+              "y": 29
+            }
+          },
+          "generated_tokens": 87,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2169.1378595000133
+        },
+        {
+          "action": {
+            "id": "ACTION5",
+            "data": {}
+          },
+          "generated_tokens": 279,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2182.8767185419565
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 31,
+              "y": 58
+            }
+          },
+          "generated_tokens": 2189,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2233.633898083004
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 22
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2233.6471228749724
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 17,
+              "y": 58
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2233.659208958037
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 28,
+              "y": 22
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2233.671311541926
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 10,
+              "y": 58
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2233.6862157919677
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 40,
+              "y": 22
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2233.6992895419244
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 45,
+              "y": 58
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2233.7131291669793
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 36
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2233.727555999998
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 24,
+              "y": 58
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2233.743599541951
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 28,
+              "y": 36
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2233.7604471249506
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 52,
+              "y": 58
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2233.77733920794
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 36
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2233.7939584580017
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 38,
+              "y": 58
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2233.8129199169343
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 40,
+              "y": 36
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2233.8324054579716
+        },
+        {
+          "action": {
+            "id": "ACTION5",
+            "data": {}
+          },
+          "generated_tokens": 704,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2308.1170282500098
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 46,
+              "y": 58
+            }
+          },
+          "generated_tokens": 1268,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2481.762367749936
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 22
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2481.7857745420188
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 32,
+              "y": 4
+            }
+          },
+          "generated_tokens": 702,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2647.48467562499
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 22
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2647.5086791670183
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 22
+            }
+          },
+          "generated_tokens": 180,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2679.577874374925
+        },
+        {
+          "action": {
+            "id": "ACTION5",
+            "data": {}
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2679.6019377079792
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 46,
+              "y": 4
+            }
+          },
+          "generated_tokens": 3718,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2898.136788291973
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 22
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2898.163269417011
+        },
+        {
+          "action": {
+            "id": "ACTION5",
+            "data": {}
+          },
+          "generated_tokens": 802,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2957.5431850419845
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 22
+            }
+          },
+          "generated_tokens": 1881,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 3006.8885704999557
+        },
+        {
+          "action": {
+            "id": "ACTION5",
+            "data": {}
+          },
+          "generated_tokens": 5552,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 3089.3190016249428
+        },
+        {
+          "action": {
+            "id": "ACTION5",
+            "data": {}
+          },
+          "generated_tokens": 1640,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 3125.546264957986
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 22
+            }
+          },
+          "generated_tokens": 1356,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 3145.5628013749374
+        },
+        {
+          "action": {
+            "id": "ACTION5",
+            "data": {}
+          },
+          "generated_tokens": 1956,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 3271.224564541946
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 22
+            }
+          },
+          "generated_tokens": 1369,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 3344.3502746250015
+        },
+        {
+          "action": {
+            "id": "ACTION5",
+            "data": {}
+          },
+          "generated_tokens": 4730,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 3441.876616082969
+        }
+      ],
+      "record_intermediate_states": true,
+      "actions_per_level": [
+        10,
+        31,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "levels_completed": 1,
+      "final_score": 2.7777777777777777,
+      "solver_note": "tokens=36738",
+      "solver_analysis_html": "solver_analysis/sb26-7fbdac44_p1.html",
+      "final_generated_tokens": 0,
+      "final_uncached_input_tokens": 0,
+      "final_wallclock_seconds": 3628.286563582951,
+      "started_at": "2026-08-26T16:52:18.007913"
+    },
+    {
+      "game_id": "r11l-495a7899",
+      "number_of_levels": 6,
+      "base_actions_per_level": [
+        22,
+        33,
+        51,
+        26,
+        52,
+        49
+      ],
+      "hint": null,
+      "state": "gave_up",
+      "history": [
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 39,
+              "y": 21
+            }
+          },
+          "generated_tokens": 2472,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1903.297864583088
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 27,
+              "y": 59
+            }
+          },
+          "generated_tokens": 1492,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1924.5185202499852
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 33,
+              "y": 40
+            }
+          },
+          "generated_tokens": 1697,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 1956.1182076660916
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 39,
+              "y": 21
+            }
+          },
+          "generated_tokens": 1885,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2003.3477517080028
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 39,
+              "y": 21
+            }
+          },
+          "generated_tokens": 4142,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2115.471940041054
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 36,
+              "y": 30
+            }
+          },
+          "generated_tokens": 935,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2271.522524541011
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 33,
+              "y": 40
+            }
+          },
+          "generated_tokens": 806,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2304.928696957999
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 33,
+              "y": 40
+            }
+          },
+          "generated_tokens": 981,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2321.168562375009
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 39,
+              "y": 21
+            }
+          },
+          "generated_tokens": 1674,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2351.6246920410777
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 49,
+              "y": 41
+            }
+          },
+          "generated_tokens": 2170,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2390.18367258308
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 24,
+              "y": 12
+            }
+          },
+          "generated_tokens": 8874,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2638.2789525830885
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 27,
+              "y": 14
+            }
+          },
+          "generated_tokens": 923,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2656.3223489160882
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 28,
+              "y": 14
+            }
+          },
+          "generated_tokens": 311,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2663.9261946250917
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 49,
+              "y": 41
+            }
+          },
+          "generated_tokens": 563,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2698.883986208006
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 49,
+              "y": 9
+            }
+          },
+          "generated_tokens": 1337,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2737.9839860000648
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 8,
+              "y": 21
+            }
+          },
+          "generated_tokens": 475,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2746.9116929160664
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 45,
+              "y": 35
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2746.92780891608
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 54,
+              "y": 48
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2746.943030250026
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 28,
+              "y": 14
+            }
+          },
+          "generated_tokens": 6729,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2858.831520833075
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 49,
+              "y": 41
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2858.8498415830545
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 49,
+              "y": 9
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2858.8673804160208
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 54,
+              "y": 48
+            }
+          },
+          "generated_tokens": 3698,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2954.840302416007
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 8,
+              "y": 21
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2954.8589285000926
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 49,
+              "y": 9
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 2954.87794741604
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 45,
+              "y": 35
+            }
+          },
+          "generated_tokens": 1777,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 3009.478077708045
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 49,
+              "y": 9
+            }
+          },
+          "generated_tokens": 6098,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 3091.90286779101
+        }
+      ],
+      "record_intermediate_states": true,
+      "actions_per_level": [
+        9,
+        17,
+        0,
+        0,
+        0,
+        0
+      ],
+      "levels_completed": 1,
+      "final_score": 4.761904761904762,
+      "solver_note": "tokens=66457",
+      "solver_analysis_html": "solver_analysis/r11l-495a7899_p1.html",
+      "final_generated_tokens": 0,
+      "final_uncached_input_tokens": 0,
+      "final_wallclock_seconds": 3772.874832874979,
+      "started_at": "2026-08-26T16:52:18.010933"
+    },
+    {
+      "game_id": "sb26-7fbdac44",
+      "number_of_levels": 8,
+      "base_actions_per_level": [
+        18,
+        28,
+        18,
+        19,
+        31,
+        23,
+        58,
+        18
+      ],
+      "hint": null,
+      "state": "cancelled",
+      "history": [
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 35,
+              "y": 58
+            }
+          },
+          "generated_tokens": 2107,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 3687.547138583963
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 29
+            }
+          },
+          "generated_tokens": 1210,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 3704.6710318749538
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 31,
+              "y": 58
+            }
+          },
+          "generated_tokens": 697,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 3712.9220672500087
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 28,
+              "y": 29
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 3712.92921208404
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 43,
+              "y": 58
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 3712.9346540420083
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 29
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 3712.940391625045
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 19,
+              "y": 58
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 3712.947045375011
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 40,
+              "y": 29
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 3712.954328541993
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 27,
+              "y": 58
+            }
+          },
+          "generated_tokens": 3101,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 3756.590355499997
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 28,
+              "y": 29
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 3756.6014455000404
+        },
+        {
+          "action": {
+            "id": "ACTION5",
+            "data": {}
+          },
+          "generated_tokens": 346,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 3771.6151313340524
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 27,
+              "y": 3
+            }
+          },
+          "generated_tokens": 893,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 3787.2040491249645
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 21,
+              "y": 58
+            }
+          },
+          "generated_tokens": 1668,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 3874.783597667003
+        },
+        {
+          "action": {
+            "id": "ACTION5",
+            "data": {}
+          },
+          "generated_tokens": 678,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4031.0846635840135
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 27,
+              "y": 3
+            }
+          },
+          "generated_tokens": 1228,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4065.798343417002
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 28,
+              "y": 29
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4065.8171046669595
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 41,
+              "y": 3
+            }
+          },
+          "generated_tokens": 290,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4098.771934624994
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 40,
+              "y": 29
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4098.789111249964
+        },
+        {
+          "action": {
+            "id": "ACTION5",
+            "data": {}
+          },
+          "generated_tokens": 338,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4106.9499372499995
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 30,
+              "y": 58
+            }
+          },
+          "generated_tokens": 2844,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4141.98327937501
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 22
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4142.002032833989
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 16,
+              "y": 58
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4142.019189291983
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 28,
+              "y": 22
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4142.036285500042
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 9,
+              "y": 58
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4142.055538958986
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 40,
+              "y": 22
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4142.075025042053
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 44,
+              "y": 58
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4142.095471292036
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 36
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4142.117018584046
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 23,
+              "y": 58
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4142.139334916952
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 28,
+              "y": 36
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4142.161790124956
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 51,
+              "y": 58
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4142.1849035420455
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 36
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4142.208713624976
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 37,
+              "y": 58
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4142.233462542063
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 40,
+              "y": 36
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4142.258180500008
+        },
+        {
+          "action": {
+            "id": "ACTION5",
+            "data": {}
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4142.2834201670485
+        },
+        {
+          "action": {
+            "id": "ACTION5",
+            "data": {}
+          },
+          "generated_tokens": 1151,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4257.468458833988
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 28,
+              "y": 36
+            }
+          },
+          "generated_tokens": 1815,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4330.05356387503
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 22
+            }
+          },
+          "generated_tokens": 115,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4467.218849792029
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 35,
+              "y": 23
+            }
+          },
+          "generated_tokens": 1112,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4592.337212124956
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 21
+            }
+          },
+          "generated_tokens": 244,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4598.798176542041
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 38,
+              "y": 3
+            }
+          },
+          "generated_tokens": 1526,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4629.994875916978
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 22
+            }
+          },
+          "generated_tokens": 1042,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4786.175136417034
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 38,
+              "y": 58
+            }
+          },
+          "generated_tokens": 293,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4806.360062250053
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 38,
+              "y": 58
+            }
+          },
+          "generated_tokens": 296,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 5036.527546709054
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 29,
+              "y": 9
+            }
+          },
+          "generated_tokens": 1904,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 5118.4837405839935
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 38,
+              "y": 3
+            }
+          },
+          "generated_tokens": 574,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 5158.161731624976
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 31,
+              "y": 22
+            }
+          },
+          "generated_tokens": 562,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 5176.4565039169975
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 31,
+              "y": 22
+            }
+          },
+          "generated_tokens": 617,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 5187.3054297090275
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 31,
+              "y": 22
+            }
+          },
+          "generated_tokens": 295,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 5191.98907029198
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 22
+            }
+          },
+          "generated_tokens": 770,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 5203.650081417058
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 21
+            }
+          },
+          "generated_tokens": 747,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 5217.387697334052
+        },
+        {
+          "action": {
+            "id": "ACTION5",
+            "data": {}
+          },
+          "generated_tokens": 409,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 5226.922987041995
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 39,
+              "y": 3
+            }
+          },
+          "generated_tokens": 987,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 5313.103781249956
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 22
+            }
+          },
+          "generated_tokens": 0,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 5313.148782584001
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 38,
+              "y": 58
+            }
+          },
+          "generated_tokens": 1318,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 5355.469950083992
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 22
+            }
+          },
+          "generated_tokens": 148,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 5360.869919375051
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 21
+            }
+          },
+          "generated_tokens": 755,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 5371.839657042059
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 38,
+              "y": 3
+            }
+          },
+          "generated_tokens": 754,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 5383.541045999969
+        },
+        {
+          "action": {
+            "id": "ACTION5",
+            "data": {}
+          },
+          "generated_tokens": 568,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 5392.805644041975
+        }
+      ],
+      "record_intermediate_states": true,
+      "actions_per_level": [
+        19,
+        39,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "levels_completed": 1,
+      "final_score": 2.493074792243767,
+      "solver_note": "tokens=33402",
+      "solver_analysis_html": "solver_analysis/sb26-7fbdac44_p2.html",
+      "final_generated_tokens": 0,
+      "final_uncached_input_tokens": 0,
+      "final_wallclock_seconds": 5399.781705499976,
+      "started_at": "2026-08-26T16:52:18.013512"
+    },
+    {
+      "game_id": "r11l-495a7899",
+      "number_of_levels": 6,
+      "base_actions_per_level": [
+        22,
+        33,
+        51,
+        26,
+        52,
+        49
+      ],
+      "hint": null,
+      "state": "cancelled",
+      "history": [
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 39,
+              "y": 21
+            }
+          },
+          "generated_tokens": 6160,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 3907.165948207956
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 33,
+              "y": 40
+            }
+          },
+          "generated_tokens": 2565,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 3986.6092317079892
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 39,
+              "y": 21
+            }
+          },
+          "generated_tokens": 6675,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4067.9118442080216
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 39,
+              "y": 21
+            }
+          },
+          "generated_tokens": 1150,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4097.560995665961
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 33,
+              "y": 40
+            }
+          },
+          "generated_tokens": 618,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4162.682653583004
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 45,
+              "y": 10
+            }
+          },
+          "generated_tokens": 1647,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4192.0850356660085
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 50,
+              "y": 5
+            }
+          },
+          "generated_tokens": 622,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4202.019854374928
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 39,
+              "y": 21
+            }
+          },
+          "generated_tokens": 701,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4216.137134874938
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 60,
+              "y": 1
+            }
+          },
+          "generated_tokens": 4461,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4303.937458915985
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 38,
+              "y": 24
+            }
+          },
+          "generated_tokens": 2350,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4372.69554566592
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 39,
+              "y": 21
+            }
+          },
+          "generated_tokens": 1018,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4400.7151961249765
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 39,
+              "y": 15
+            }
+          },
+          "generated_tokens": 615,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4411.866078707972
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 33,
+              "y": 40
+            }
+          },
+          "generated_tokens": 319,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4417.677402082947
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 39,
+              "y": 21
+            }
+          },
+          "generated_tokens": 495,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4426.12603658298
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 30,
+              "y": 49
+            }
+          },
+          "generated_tokens": 375,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4432.357039415976
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 39,
+              "y": 10
+            }
+          },
+          "generated_tokens": 1102,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4475.517730916035
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 45,
+              "y": 5
+            }
+          },
+          "generated_tokens": 235,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4508.108398083015
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 50,
+              "y": 1
+            }
+          },
+          "generated_tokens": 167,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4514.915032124962
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 39,
+              "y": 21
+            }
+          },
+          "generated_tokens": 985,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4579.083385790931
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 50,
+              "y": 5
+            }
+          },
+          "generated_tokens": 1981,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4639.5081606659805
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 35,
+              "y": 34
+            }
+          },
+          "generated_tokens": 892,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4656.5951853749575
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 30,
+              "y": 55
+            }
+          },
+          "generated_tokens": 1043,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4746.737759541022
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 27,
+              "y": 58
+            }
+          },
+          "generated_tokens": 802,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4773.325357540976
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 39,
+              "y": 21
+            }
+          },
+          "generated_tokens": 897,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4788.333837707993
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 39,
+              "y": 21
+            }
+          },
+          "generated_tokens": 405,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4831.43632149999
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 36,
+              "y": 30
+            }
+          },
+          "generated_tokens": 332,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4886.644370457972
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 39,
+              "y": 21
+            }
+          },
+          "generated_tokens": 715,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4903.252137250034
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 39,
+              "y": 21
+            }
+          },
+          "generated_tokens": 309,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 4950.363306083018
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 34,
+              "y": 45
+            }
+          },
+          "generated_tokens": 644,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 5017.354429375031
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 39,
+              "y": 21
+            }
+          },
+          "generated_tokens": 1078,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 5054.179497582954
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 39,
+              "y": 21
+            }
+          },
+          "generated_tokens": 1120,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 5089.601548624923
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 38,
+              "y": 23
+            }
+          },
+          "generated_tokens": 988,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 5106.419639415923
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 31,
+              "y": 50
+            }
+          },
+          "generated_tokens": 405,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 5124.9337700409815
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 30,
+              "y": 51
+            }
+          },
+          "generated_tokens": 610,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 5148.227075457922
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 35,
+              "y": 10
+            }
+          },
+          "generated_tokens": 1410,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 5332.636405583005
+        }
+      ],
+      "record_intermediate_states": true,
+      "actions_per_level": [
+        35,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "levels_completed": 0,
+      "final_score": 0.0,
+      "solver_note": "tokens=46127",
+      "solver_analysis_html": "solver_analysis/r11l-495a7899_p2.html",
+      "final_generated_tokens": 0,
+      "final_uncached_input_tokens": 0,
+      "final_wallclock_seconds": 5419.1383417909965,
+      "started_at": "2026-08-26T16:52:18.016693"
+    }
+  ]
+}

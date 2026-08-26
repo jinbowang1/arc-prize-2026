@@ -1,0 +1,146 @@
+/kaggle/input
+/kaggle/input/notebooks
+/kaggle/input/notebooks/jinbowang1
+/kaggle/input/notebooks/jinbowang1/arc3-duck-official
+/kaggle/input/notebooks/jinbowang1/arc3-duck-official/prompts
+/kaggle/input/notebooks/jinbowang1/arc3-duck-official/transcripts
+/kaggle/input/notebooks/jinbowang1/arc3-duck-official/artifacts
+/kaggle/input/notebooks/jinbowang1/arc3-duck-official/movies
+/kaggle/input/notebooks/jinbowang1/arc3-duck-official/solver_analysis
+/kaggle/input/notebooks/jinbowang1/arc3-duck-handbook
+/kaggle/input/notebooks/jinbowang1/arc3-duck-handbook/prompts
+/kaggle/input/notebooks/jinbowang1/arc3-duck-handbook/transcripts
+/kaggle/input/notebooks/jinbowang1/arc3-duck-handbook/artifacts
+/kaggle/input/notebooks/jinbowang1/arc3-duck-handbook/movies
+/kaggle/input/notebooks/jinbowang1/arc3-duck-handbook/solver_analysis
+
+
+#################### arc3-duck-official root= ['/kaggle/input/notebooks/jinbowang1/arc3-duck-official/']
+benchmark: duck-harness-kaggle
+solver:    duck-harness
+games:     25
+passes:    1
+runs:      25 (won: 0)
+started:   2026-08-25 11:18:10
+ended:     2026-08-25 13:30:40
+duration:  2h 12m 29s
+mean score:    2.08
+median score:  0.00
+total actions: 3243
+total tokens:  1603083
+generated tokens/sec: 201.65 (job wallclock)
+total wallclock: 198076.2s
+
+per-game (mean across passes):
+  ar25-0c556536: score=7.26, levels=2.0/8, actions=169, tokens=68402
+  bp35-0a0ad940: score=0.44, levels=1.0/9, actions=171, tokens=67389
+  cd82-fb555c5d: score=0.00, levels=0.0/6, actions=89, tokens=67377
+  cn04-2fe56bfb: score=0.00, levels=0.0/6, actions=263, tokens=66690
+  dc22-fdcac232: score=0.00, levels=0.0/6, actions=117, tokens=61851
+  ft09-0d8bbf25: score=0.00, levels=0.0/6, actions=67, tokens=67656
+  g50t-5849a774: score=0.00, levels=0.0/7, actions=50, tokens=45987
+  ka59-38d34dbb: score=0.00, levels=0.0/7, actions=94, tokens=67443
+  lf52-271a04aa: score=1.29, levels=1.0/10, actions=147, tokens=65995
+  lp85-305b61c3: score=2.78, levels=1.0/8, actions=70, tokens=65854
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=217, tokens=67091
+  m0r0-492f87ba: score=0.00, levels=0.0/6, actions=57, tokens=67301
+  r11l-495a7899: score=1.37, levels=1.0/6, actions=84, tokens=67706
+  re86-8af5384d: score=7.11, levels=2.0/8, actions=128, tokens=67343
+  s5i5-18d95033: score=0.00, levels=0.0/8, actions=122, tokens=67846
+  sb26-7fbdac44: score=27.78, levels=4.0/8, actions=139, tokens=67358
+  sc25-635fd71a: score=0.00, levels=0.0/6, actions=116, tokens=65049
+  sk48-d8078629: score=0.00, levels=0.0/8, actions=210, tokens=58813
+  sp80-589a99af: score=0.00, levels=0.0/6, actions=224, tokens=66861
+  su15-1944f8ab: score=1.28, levels=1.0/9, actions=62, tokens=50142
+  tn36-ef4dde99: score=0.00, levels=0.0/7, actions=115, tokens=64218
+  tr87-cd924810: score=0.00, levels=0.0/6, actions=176, tokens=62717
+  tu93-0768757b: score=0.06, levels=1.0/9, actions=138, tokens=52589
+  vc33-5430563c: score=2.52, levels=2.0/7, actions=84, tokens=65784
+  wa30-ee6fef47: score=0.00, levels=0.0/9, actions=134, tokens=67621
+
+含 'Field guide' 的文件数: 0
+== 主日志 vllm-openai-server.log 426638
+.1:52970 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=141) INFO:     127.0.0.1:37436 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=141) INFO 08-25 13:30:05 [loggers.py:259] Engine 000: Avg prompt throughput: 1904.8 tokens/s, Avg generation throughput: 150.7 tokens/s, Running: 25 reqs, Waiting: 0 reqs, GPU KV cache usage: 78.5%, Prefix cache hit rate: 24.7%, MM cache hit rate: 93.7%
+(APIServer pid=141) INFO:     127.0.0.1:51562 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=141) INFO:     127.0.0.1:50872 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=141) INFO 08-25 13:30:15 [loggers.py:259] Engine 000: Avg prompt throughput: 3396.6 tokens/s, Avg generation throughput: 241.0 tokens/s, Running: 3 reqs, Waiting: 0 reqs, GPU KV cache usage: 9.3%, Prefix cache hit rate: 24.7%, MM cache hit rate: 93.7%
+(APIServer pid=141) INFO:     127.0.0.1:50854 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=141) INFO 08-25 13:30:25 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 87.3 tokens/s, Running: 2 reqs, Waiting: 0 reqs, GPU KV cache usage: 6.7%, Prefix cache hit rate: 24.7%, MM cache hit rate: 93.7%
+(APIServer pid=141) INFO:     127.0.0.1:50850 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=141) INFO 08-25 13:30:35 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 43.9 tokens/s, Running: 1 reqs, Waiting: 0 reqs, GPU KV cache usage: 3.7%, Prefix cache hit rate: 24.7%, MM cache hit rate: 93.7%
+(APIServer pid=141) INFO 08-25 13:30:45 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 16.5 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 24.7%, MM cache hit rate: 93.7%
+(EngineCore pid=471) INFO 08-25 13:30:45 [core.py:1210] Shutdown initiated (timeout=0)
+(EngineCore pid=471) INFO 08-25 13:30:45 [core.py:1233] Shutdown complete
+(APIServer pid=141) INFO:     Shutting down
+[rank0]:[W825 13:30:45.769955467 ProcessGroupNCCL.cpp:1553] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+(APIServer pid=141) INFO:     Waiting for application shutdown.
+(APIServer pid=141) INFO:     Application shutdown complete.
+(APIServer pid=141) INFO:     Finished server process [141]
+
+
+#################### arc3-duck-handbook root= ['/kaggle/input/notebooks/jinbowang1/arc3-duck-handbook/']
+benchmark: duck-harness-kaggle
+solver:    duck-harness
+games:     25
+passes:    1
+runs:      25 (won: 0)
+started:   2026-08-25 11:21:36
+ended:     2026-08-25 13:34:19
+duration:  2h 12m 42s
+mean score:    1.25
+median score:  0.00
+total actions: 3902
+total tokens:  1679613
+generated tokens/sec: 210.94 (job wallclock)
+total wallclock: 198128.2s
+
+per-game (mean across passes):
+  ar25-0c556536: score=1.09, levels=1.0/8, actions=313, tokens=69369
+  bp35-0a0ad940: score=0.38, levels=1.0/9, actions=220, tokens=71582
+  cd82-fb555c5d: score=1.67, levels=1.0/6, actions=97, tokens=71688
+  cn04-2fe56bfb: score=0.00, levels=0.0/6, actions=209, tokens=72129
+  dc22-fdcac232: score=0.00, levels=0.0/6, actions=115, tokens=72225
+  ft09-0d8bbf25: score=0.00, levels=0.0/6, actions=77, tokens=72444
+  g50t-5849a774: score=0.00, levels=0.0/7, actions=56, tokens=72407
+  ka59-38d34dbb: score=1.32, levels=1.0/7, actions=120, tokens=72416
+  lf52-271a04aa: score=0.00, levels=0.0/10, actions=60, tokens=66484
+  lp85-305b61c3: score=2.78, levels=1.0/8, actions=22, tokens=72912
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=131, tokens=70058
+  m0r0-492f87ba: score=0.00, levels=0.0/6, actions=382, tokens=68465
+  r11l-495a7899: score=2.40, levels=1.0/6, actions=77, tokens=70897
+  re86-8af5384d: score=8.33, levels=2.0/8, actions=349, tokens=63457
+  s5i5-18d95033: score=0.00, levels=0.0/8, actions=58, tokens=70872
+  sb26-7fbdac44: score=2.78, levels=1.0/8, actions=133, tokens=72506
+  sc25-635fd71a: score=0.00, levels=0.0/6, actions=240, tokens=69587
+  sk48-d8078629: score=0.00, levels=0.0/8, actions=302, tokens=61744
+  sp80-589a99af: score=0.37, levels=1.0/6, actions=165, tokens=70389
+  su15-1944f8ab: score=2.22, levels=1.0/9, actions=90, tokens=72495
+  tn36-ef4dde99: score=0.00, levels=0.0/7, actions=210, tokens=71974
+  tr87-cd924810: score=0.00, levels=0.0/6, actions=77, tokens=11205
+  tu93-0768757b: score=0.05, levels=1.0/9, actions=129, tokens=58276
+  vc33-5430563c: score=7.81, levels=2.0/7, actions=55, tokens=62246
+  wa30-ee6fef47: score=0.00, levels=0.0/9, actions=215, tokens=71786
+
+含 'Field guide' 的文件数: 50
+== 主日志 vllm-openai-server.log 425063
+0.0.1:48822 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=141) INFO:     127.0.0.1:44458 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=141) INFO:     127.0.0.1:36870 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=141) INFO 08-25 13:33:39 [loggers.py:259] Engine 000: Avg prompt throughput: 1903.6 tokens/s, Avg generation throughput: 255.6 tokens/s, Running: 5 reqs, Waiting: 0 reqs, GPU KV cache usage: 15.3%, Prefix cache hit rate: 28.7%, MM cache hit rate: 93.2%
+(APIServer pid=141) INFO:     127.0.0.1:45028 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=141) INFO 08-25 13:33:49 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 137.0 tokens/s, Running: 4 reqs, Waiting: 0 reqs, GPU KV cache usage: 12.7%, Prefix cache hit rate: 28.7%, MM cache hit rate: 93.2%
+(APIServer pid=141) INFO:     127.0.0.1:60380 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=141) INFO:     127.0.0.1:39464 - "POST /v1/chat/completions HTTP/1.1" 200 OK
+(APIServer pid=141) INFO 08-25 13:33:59 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 97.8 tokens/s, Running: 1 reqs, Waiting: 0 reqs, GPU KV cache usage: 3.8%, Prefix cache hit rate: 28.7%, MM cache hit rate: 93.2%
+(APIServer pid=141) INFO 08-25 13:34:09 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 37.0 tokens/s, Running: 1 reqs, Waiting: 0 reqs, GPU KV cache usage: 3.8%, Prefix cache hit rate: 28.7%, MM cache hit rate: 93.2%
+(APIServer pid=141) INFO 08-25 13:34:19 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 37.0 tokens/s, Running: 1 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.0%, Prefix cache hit rate: 28.7%, MM cache hit rate: 93.2%
+(EngineCore pid=471) INFO 08-25 13:34:25 [core.py:1210] Shutdown initiated (timeout=0)
+(EngineCore pid=471) INFO 08-25 13:34:25 [core.py:1233] Shutdown complete
+(APIServer pid=141) INFO:     Shutting down
+[rank0]:[W825 13:34:25.746443528 ProcessGroupNCCL.cpp:1553] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+(APIServer pid=141) INFO:     Waiting for application shutdown.
+(APIServer pid=141) INFO:     Application shutdown complete.
+(APIServer pid=141) INFO:     Finished server process [141]
+
