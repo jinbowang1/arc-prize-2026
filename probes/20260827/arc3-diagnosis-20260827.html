@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ARC-AGI-3 第六发诊断 · 2026-08-27</title>
+<style>
+/* ══════════════════════════════════════════════════════════════
+   彩卡翻页汇报风 · 设计 token
+   改主题只动这一段，下面的组件全部跟着变
+   ══════════════════════════════════════════════════════════════ */
+:root{
+  /* 底色与文字：四级灰，从深到浅 */
+  --bg:#F6F7FD; --card:#FFF;
+  --ink:#1B1B33; --ink2:#4C5271; --dim:#8B93B0; --line:#E7E9F5;
+
+  /* 主色带：同类项一项一色，颜色本身承担识别功能，跨页靠它串联 */
+  --c1:#3B82F6; --c2:#06B6D4; --c3:#A855F7; --c4:#10B981; --c5:#F59E0B; --c6:#EC4899;
+  --c7:#84CC16; --c8:#EF4444;
+  --indigo:#6366F1; --violet:#A855F7;
+
+  /* 渐变：只给大标题、顶栏标题、人名标签这类点睛处 */
+  --grad:linear-gradient(135deg,#6366F1 0%,#A855F7 55%,#EC4899 100%);
+
+  --sans:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI",sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+
+  /* 两级阴影：--sh 普通卡片，--sh2 主视觉大卡 */
+  --sh:0 1px 2px rgba(27,27,51,.05),0 6px 20px rgba(99,102,241,.07);
+  --sh2:0 2px 4px rgba(27,27,51,.06),0 14px 36px rgba(99,102,241,.13);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--ink);font:14px/1.75 var(--sans)}
+/* 三团柔光，让浅底不至于太平 */
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(1100px 620px at 10% -10%,rgba(99,102,241,.14),transparent 60%),
+             radial-gradient(900px 540px at 92% 2%,rgba(236,72,153,.11),transparent 62%),
+             radial-gradient(880px 520px at 46% 108%,rgba(16,185,129,.10),transparent 60%)}
+::selection{background:var(--violet);color:#fff}
+:focus-visible{outline:2px solid var(--violet);outline-offset:2px}
+
+/* ══════════════════════════════════════════════════════════════
+   翻页壳：顶栏 50 + 舞台 + 底栏 42
+   每页是 1512×952 的固定设计稿，由 JS 等比缩放
+   —— 版式只需在这一个尺寸上调对，所有分辨率自动适配
+   ══════════════════════════════════════════════════════════════ */
+.nav{position:fixed;top:0;left:0;right:0;height:50px;z-index:10;display:flex;align-items:center;
+  gap:4px;padding:0 26px;background:rgba(255,255,255,.86);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);overflow-x:auto}
+.nav b{font-size:14.5px;font-weight:800;margin-right:18px;white-space:nowrap;
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.nav button{font:inherit;border:0;background:none;cursor:pointer;color:var(--ink2);font-size:12.5px;
+  padding:6px 12px;border-radius:9px;white-space:nowrap}
+.nav button:hover{background:#EEF0FC;color:var(--indigo)}
+.nav button[aria-current=true]{background:var(--grad);color:#fff;font-weight:600}
+
+.deck{position:fixed;inset:0;z-index:1;overflow:hidden}
+.page{position:absolute;top:0;left:0;width:1512px;height:952px;transform-origin:top left;
+  padding:26px 44px 20px;display:none;flex-direction:column;overflow:hidden}
+/* width 由 JS 按视口比例改写，1512 只是首屏渲染前的占位值；height 固定 952 */
+.page[data-on="1"]{display:flex;animation:fadein .18s ease}
+/* 动画里别写 transform —— 会覆盖 JS 设的缩放 */
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+
+.foot{position:fixed;bottom:0;left:0;right:0;height:42px;z-index:10;display:flex;align-items:center;
+  gap:16px;padding:0 26px;background:rgba(255,255,255,.7);backdrop-filter:blur(10px);
+  border-top:1px solid var(--line);font-family:var(--mono);font-size:11px;color:var(--dim)}
+.nb{border:0;background:#EEF0FC;color:var(--indigo);font:inherit;font-size:11px;cursor:pointer;
+  padding:5px 11px;border-radius:8px}
+.nb:hover{background:var(--indigo);color:#fff}
+.dots{display:flex;gap:5px;margin-left:auto}
+.dots i{width:7px;height:7px;border-radius:50%;background:#D6DAEE;cursor:pointer;display:block}
+.dots i[data-on="1"]{background:var(--indigo);width:20px;border-radius:4px}
+
+/* 页头三件套：kicker 标签 + 标题 + 右侧导语 */
+.shd{display:flex;align-items:baseline;gap:14px;margin-bottom:14px;flex:none}
+.kicker{font-family:var(--mono);font-size:10.5px;letter-spacing:2px;padding:4px 11px;border-radius:14px}
+h2{font-size:27px;font-weight:800;letter-spacing:-.6px;white-space:nowrap}
+.lede{font-size:13px;color:var(--dim);max-width:78ch;line-height:1.75;margin-left:auto;
+  padding-left:22px;border-left:1px solid var(--line)}
+.body{flex:1;min-height:0;display:flex;flex-direction:column}
+
+/* ══════════════ 组件 1 · 封面 + KPI 条 ══════════════ */
+.cover{justify-content:center;align-items:flex-start;padding:0 32px}
+.eyebrow{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:2px;color:#fff;
+  background:var(--grad);padding:6px 15px;border-radius:20px;margin-bottom:20px}
+h1{font-size:58px;font-weight:800;letter-spacing:-1.6px;line-height:1.3;margin-bottom:16px}
+h1 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{font-size:17px;color:var(--ink2);max-width:66ch;line-height:1.9}
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;margin-top:36px;width:100%}
+.kpi{background:var(--card);border-radius:16px;padding:16px 18px;box-shadow:var(--sh);border-top:4px solid}
+.kpi b{display:block;font-size:34px;font-weight:800;line-height:1.28;letter-spacing:-1.2px}
+.kpi span{font-size:12px;color:var(--dim)}
+
+/* ══════════════ 组件 2 · 色块墙（一行一个实体，横向列全部条目）══════════════ */
+.wall{background:var(--card);border-radius:18px;padding:12px 18px 10px;box-shadow:var(--sh2);
+  flex:1;min-height:0;display:flex;flex-direction:column}
+.wallg{display:grid;grid-template-columns:132px 1fr 92px;gap:0 12px;flex:1;min-height:0;
+  grid-auto-rows:minmax(0,1fr);overflow:hidden}
+.ww{display:flex;align-items:center;gap:7px;border-bottom:1px solid #F0F2FA;padding-right:4px;align-self:stretch}
+.ww i{font-style:normal;font-family:var(--mono);font-size:11px;color:#fff;padding:3px 8px;
+  border-radius:7px;background:var(--ink)}
+.wi{display:flex;align-items:center;flex-wrap:wrap;gap:5px;border-bottom:1px solid #F0F2FA;padding:6px 0}
+.job{font-size:12px;line-height:1.5;padding:3px 10px;border-radius:7px;color:#fff;white-space:nowrap;
+  font-weight:500;flex:none;box-shadow:0 1px 2px rgba(27,27,51,.1)}
+.job.off{background:#E4E7F1;color:#767D9B;font-weight:400;box-shadow:none}
+.wn{display:flex;align-items:center;justify-content:flex-end;gap:4px;align-self:stretch;
+  border-bottom:1px solid #F0F2FA;font-family:var(--mono);font-size:10px;color:var(--dim)}
+.wn b{color:var(--ink);font-size:13px}
+
+/* ══════════════ 组件 3 · 图例条 ══════════════ */
+.legend{display:flex;gap:11px;flex-wrap:wrap;margin-top:10px;padding-top:10px;
+  border-top:1px solid var(--line);font-size:11.5px;color:var(--dim);flex:none;align-items:center}
+.legend b{font-size:11px;color:#fff;padding:3px 9px;border-radius:7px;font-weight:600}
+.legend i{display:inline-block;width:20px;height:10px;border-radius:4px;margin-right:6px;
+  vertical-align:middle;background:var(--indigo)}
+.legend i.g{opacity:.5;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.7) 0 4px,transparent 4px 8px)}
+.legend i.t{width:3px;height:12px;border-radius:2px}
+
+/* ══════════════ 组件 4 · 一天时间轴 ══════════════ */
+.duty{background:var(--card);border-radius:18px;padding:18px 22px;box-shadow:var(--sh2);
+  flex:1;min-height:0;display:flex;flex-direction:column}
+.axis{display:grid;grid-template-columns:132px 1fr 268px;gap:0 14px;align-items:center;flex:1;min-height:0}
+.axis.h6{grid-template-rows:auto repeat(6,1fr)}
+.hours{display:grid;grid-template-columns:repeat(17,1fr);font-family:var(--mono);font-size:10px;
+  color:var(--dim);border-bottom:1px solid var(--line);padding-bottom:5px;margin-bottom:6px}
+.dname{font-size:13px;white-space:nowrap;display:flex;align-items:center;gap:7px}
+.dname i{font-style:normal;font-family:var(--mono);font-size:10px;color:#fff;padding:2px 7px;
+  border-radius:6px;min-width:30px;text-align:center}
+.rhy{font-size:11px;color:var(--ink2);line-height:1.5;word-break:break-word}
+.track{position:relative;height:calc(100% - 7px);min-height:19px;border-radius:7px;background:#F2F4FC;
+  background-image:repeating-linear-gradient(90deg,transparent 0,transparent calc(100%/17 - 1px),
+    rgba(139,147,176,.18) calc(100%/17 - 1px),rgba(139,147,176,.18) calc(100%/17))}
+.blk{position:absolute;top:14%;height:72%;border-radius:6px;box-shadow:0 1px 4px rgba(27,27,51,.14);
+  display:flex;align-items:center;justify-content:flex-start;padding:0 6px;font-size:10.5px;color:#fff;
+  white-space:nowrap;overflow:hidden;font-weight:600}
+.blk.ghost{justify-content:center;color:#1B1B33;font-weight:700;
+  background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.7) 0 5px,transparent 5px 10px);
+  text-shadow:0 1px 2px rgba(255,255,255,.95)}
+/* 窄块放不下字：块本身留白，说明挪到块右侧 */
+.blk.mini{overflow:visible;box-shadow:0 1px 4px rgba(27,27,51,.2),inset 0 0 0 2px rgba(255,255,255,.55)}
+.blk .lb{position:absolute;left:calc(100% + 6px);top:50%;transform:translateY(-50%);font-style:normal;
+  font-size:10.5px;font-weight:600;white-space:nowrap;text-shadow:0 1px 0 #fff}
+.tick{position:absolute;top:22%;height:56%;width:3px;border-radius:2px;margin-left:-1px}
+
+/* ══════════════ 组件 5 · N 卡网格（点卡下钻）══════════════ */
+.grid6{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr;gap:16px;flex:1;min-height:0}
+.ov{background:var(--card);border-radius:16px;padding:16px 18px;box-shadow:var(--sh);border-top:4px solid;
+  cursor:pointer;display:flex;flex-direction:column;overflow:hidden;transition:.16s}
+.ov:hover{box-shadow:var(--sh2);transform:translateY(-2px)}
+.ovh{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.enum{font-family:var(--mono);font-size:11px;font-weight:700;color:#fff;padding:3px 8px;border-radius:7px}
+.ovn{font-size:17px;font-weight:800;letter-spacing:-.3px}
+.ovs{margin-left:auto;font-family:var(--mono);font-size:10.5px;color:var(--dim)}
+.ovrole{font-size:13px;line-height:1.62;margin-bottom:12px;font-weight:500;padding-bottom:11px;
+  border-bottom:1px solid #F1F3FA}
+.ovlbl{font-size:10.5px;color:var(--dim);letter-spacing:1px;margin-bottom:6px}
+.ovduty{flex:1;min-height:0;display:flex;flex-direction:column;gap:4px;justify-content:space-evenly;
+  font-size:12.5px;color:var(--ink2)}
+.ovduty div{padding-left:15px;position:relative;line-height:1.55}
+.ovduty div::before{content:"";position:absolute;left:0;top:8px;width:5px;height:5px;border-radius:50%;
+  background:var(--d);opacity:.6}
+.ovwho{display:flex;flex:none;padding-top:10px;border-top:1px solid #F1F3FA;flex-wrap:wrap;gap:4px;align-items:center}
+.ovwho b{font-size:10.5px;color:var(--dim);font-weight:400;margin-right:3px}
+.ovwho span{font-family:var(--mono);font-size:10px;color:#fff;padding:1px 6px;border-radius:5px}
+
+/* ══════════════ 组件 6 · 左说明右流程 双栏详情 ══════════════ */
+.two{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.5fr);gap:16px;flex:1;min-height:0}
+.pane{background:var(--card);border-radius:16px;box-shadow:var(--sh);overflow:hidden;display:flex;flex-direction:column}
+.pd{padding:18px 20px;overflow-y:auto}
+.role{font-size:19px;font-weight:700;line-height:1.5;letter-spacing:-.3px;margin-bottom:14px}
+.duty4{display:grid;grid-template-columns:repeat(2,1fr);gap:6px 12px;margin-bottom:16px;padding-bottom:16px;
+  border-bottom:1px solid var(--line)}
+.duty4 div{font-size:12.5px;color:var(--ink2);padding-left:16px;position:relative;line-height:1.5}
+.duty4 div::before{content:"";position:absolute;left:0;top:7px;width:6px;height:6px;border-radius:2px;background:var(--d)}
+.sect{font-size:10.5px;color:var(--dim);letter-spacing:1.5px;margin-bottom:6px}
+.etag{font-size:13px;color:var(--ink2);line-height:1.85;margin-bottom:12px;background:#FAFBFE;
+  border-radius:10px;padding:11px 14px}
+.ewhy{font-size:12.5px;color:var(--ink2);line-height:1.82;margin-bottom:16px;padding-left:13px;
+  border-left:3px solid var(--d)}
+
+/* ══════════════ 组件 7 · 定义列表 + 药丸标签 ══════════════ */
+.dl{display:grid;grid-template-columns:76px 1fr;gap:13px 14px;font-size:12.5px;align-items:start;
+  border-top:1px solid var(--line);padding-top:15px}
+.dt{color:var(--dim);font-size:11.5px;padding-top:1px;font-weight:600}
+.dd{color:var(--ink2);line-height:1.75}
+.dd .c{display:inline-block;background:#FEF6E7;color:#B45309;padding:1px 8px;border-radius:7px;
+  margin:0 4px 4px 0;font-size:11.5px}
+.dd .c.h{background:#FEF0F0;color:var(--c8)}
+
+/* ══════════════ 组件 8 · 步骤表（四列，可标橙红）══════════════ */
+.phd{padding:13px 18px 0;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;color:var(--dim);flex:none}
+.steps{padding:6px 18px 12px;flex:none;display:grid;grid-template-columns:20px 66px 140px minmax(0,1fr);
+  gap:0 12px;font-size:12px;align-items:baseline}
+.steps>div{padding:5px 0;border-bottom:1px solid #F4F6FC}
+.steps .n{font-family:var(--mono);font-size:10.5px;color:#B6BDD6}
+.steps .s{font-weight:600;white-space:nowrap}
+.steps .c{font-family:var(--mono);font-size:10.5px;color:var(--indigo);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.steps .m{font-size:11px;color:var(--dim);line-height:1.55}
+.steps .w.s,.steps .w.c,.steps .w.m{color:#B45309}
+.steps .x.s,.steps .x.c,.steps .x.m{color:var(--c8)}
+
+/* ══════════════ 组件 9 · 长表（表头吸顶）══════════════ */
+.tw{flex:1;min-height:0;overflow-y:auto;border-top:1px solid var(--line)}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:12px;background:var(--card)}
+th{font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--dim);text-align:left;
+  padding:7px 12px;background:#F5F6FD;font-weight:500;position:sticky;top:0;z-index:1}
+td{padding:7px 12px;border-top:1px solid var(--line);vertical-align:top;color:var(--ink2)}
+td b{color:var(--ink)}
+.tag{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:6px;white-space:nowrap;display:inline-block}
+.t-ok{background:#DCFCE7;color:#047857}
+.t-w{background:#FEF3C7;color:#B45309}
+.t-x{background:#FEE2E2;color:#B91C1C}
+.who{font-family:var(--mono);font-size:10px;background:var(--grad);color:#fff;padding:2px 6px;border-radius:5px}
+
+/* ══════════════ 组件 10 · 四分组清单 ══════════════ */
+.cap4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;flex:1;min-height:0}
+.capcol{background:var(--card);border-radius:16px;box-shadow:var(--sh);display:flex;flex-direction:column;overflow:hidden}
+.capch{padding:13px 17px 11px;border-bottom:2px solid var(--d)}
+.capct{font-size:16.5px;font-weight:800;color:var(--d)}
+.capcs{font-size:11px;color:var(--dim)}
+.capls{flex:1;overflow-y:auto;padding:6px 13px 12px}
+.capi{padding:9px 4px;border-bottom:1px solid #F1F3FA;display:flex;gap:8px;align-items:flex-start}
+.capi:last-child{border:0}
+.capL{flex:1;min-width:0}
+.capzh{font-size:13px;font-weight:600;line-height:1.4}
+.capfn{font-family:var(--mono);font-size:10px;color:var(--indigo);margin-top:2px;word-break:break-all}
+.capst{font-family:var(--mono);font-size:9.5px;padding:2px 7px;border-radius:6px;white-space:nowrap;flex:none}
+
+/* ══════════════ 组件 11 · 思路卡 3×2 ══════════════ */
+.think{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr;gap:15px;flex:1;min-height:0}
+.tk{background:var(--card);border-radius:16px;padding:22px 24px;box-shadow:var(--sh);overflow-y:auto;border-top:4px solid;display:flex;flex-direction:column}
+.tkn{font-family:var(--mono);font-size:12px;font-weight:700;margin-bottom:7px;color:var(--d)}
+.tkt{font-size:17.5px;font-weight:800;margin-bottom:10px;line-height:1.4;letter-spacing:-.3px}
+.tkd{font-size:13px;line-height:2;color:var(--ink2)}
+.tkeg{margin-top:auto;background:#FAFBFE;border-radius:9px;padding:14px 15px;font-size:12px;
+  line-height:1.85;color:var(--dim);border-left:3px solid var(--d)}
+.tkeg b{color:var(--ink2);font-weight:600}
+
+/* ══════════════ 组件 12 · 分组清单卡（下一步）══════════════ */
+.nx{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;flex:1;min-height:0}
+.nxc{background:var(--card);border-radius:16px;box-shadow:var(--sh);display:flex;flex-direction:column;
+  overflow:hidden;border-top:4px solid}
+.nxh{padding:14px 18px 11px;display:flex;align-items:baseline;gap:9px;border-bottom:1px solid var(--line)}
+.nxt{font-size:16.5px;font-weight:800;letter-spacing:-.3px;color:var(--d)}
+.nxn{margin-left:auto;font-family:var(--mono);font-size:11px;color:#fff;padding:2px 9px;border-radius:8px;background:var(--d)}
+.nxl{flex:1;overflow-y:auto;padding:11px 18px 14px}
+.nxi{font-size:12.5px;line-height:1.82;color:var(--ink2);padding:9px 0 9px 15px;position:relative;
+  border-bottom:1px solid #F3F5FB}
+.nxi:last-child{border:0}
+.nxi::before{content:"";position:absolute;left:0;top:15px;width:6px;height:6px;border-radius:50%;background:var(--d)}
+
+/* 署名条 */
+.colo{margin-top:30px;font-family:var(--mono);font-size:11.5px;color:var(--dim);letter-spacing:.6px}
+
+/* 三格小数字（详情页左栏，把下半截填上）*/
+.mini3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:6px 0 16px}
+.mini3 div{background:#FAFBFE;border-radius:10px;padding:10px 12px;border-left:3px solid var(--d)}
+.mini3 b{display:block;font-size:20px;font-weight:800;letter-spacing:-.6px;line-height:1.4}
+.mini3 span{font-size:11px;color:var(--dim)}
+
+/* 窗口矮的时候，内容多的区域会在自己内部滚动。
+   底部渐隐 + 细滚动条，让「下面还有」看得出来，不像是被切坏了。 */
+.pd,.tw,.capls,.nxl,.tk{scrollbar-width:thin;scrollbar-color:#D6DAEE transparent}
+.pd::-webkit-scrollbar,.tw::-webkit-scrollbar,.capls::-webkit-scrollbar,
+.nxl::-webkit-scrollbar,.tk::-webkit-scrollbar{width:6px}
+.pd::-webkit-scrollbar-thumb,.tw::-webkit-scrollbar-thumb,.capls::-webkit-scrollbar-thumb,
+.nxl::-webkit-scrollbar-thumb,.tk::-webkit-scrollbar-thumb{background:#D6DAEE;border-radius:3px}
+.pane,.capcol,.nxc{position:relative}
+.pane::after,.capcol::after,.nxc::after{content:"";position:absolute;left:1px;right:7px;bottom:1px;
+  height:22px;border-radius:0 0 15px 15px;pointer-events:none;
+  background:linear-gradient(rgba(255,255,255,0),#fff)}
+
+/* 单卡通栏（组件速查页用）*/
+.solo{background:var(--card);border-radius:16px;box-shadow:var(--sh);flex:1;min-height:0;
+  display:flex;flex-direction:column;overflow:hidden}
+
+/* 长表页：25 行也要在一屏里放完，不许滚、不许省略 */
+.dense table{font-size:11.5px}
+.dense th{padding:5px 10px;font-size:9.5px}
+.dense td{padding:5.2px 10px;line-height:1.58}
+.dense .tag{font-size:9.5px;padding:1px 6px}
+.dense2 table{font-size:11px}
+.dense2 th{padding:4px 8px;font-size:9px}
+.dense2 td{padding:2.5px 8px;line-height:1.45}
+.dense2 .tag{font-size:9px;padding:1px 5px}
+/* 药丸标签原本只在 .dd 里生效，这里的正文块也要用 */
+.etag .c,.ewhy .c,.nxi .c,.lede .c{display:inline-block;background:#FEF6E7;color:#B45309;
+  padding:1px 8px;border-radius:7px;margin:0 5px 4px 0;font-size:11.5px;font-family:var(--mono)}
+.etag .c.h,.nxi .c.h{background:#FEF0F0;color:var(--c8)}
+/* 清单里的警告条 */
+.nxi.h{color:#B91C1C}
+.nxi.h::before{background:var(--c8)}
+/* 中性档：既非好也非坏，只是另一种情况 */
+.t-n{background:#EDEFF7;color:#5B6180}
+</style></head><body>
+<div class="nav"><b>ARC-AGI-3 · 第六发诊断</b><button data-i="0">封面</button><button data-i="1">源码包真相</button><button data-i="2">动画机制</button><button data-i="3">动画分布</button><button data-i="4">逐局成绩</button><button data-i="5">步数证据</button><button data-i="6">时间账</button><button data-i="7">零动作轮</button><button data-i="8">思考长尾</button><button data-i="9">回看成本</button><button data-i="10">下一步</button></div>
+<div class="deck">
+<section class="page cover" data-on="1">
+  <span class="eyebrow">ARC-AGI-3 · 第六发诊断 · 2026-08-27</span>
+  <h1>1.92 分打在了<br><em>吐字速度</em>上</h1>
+  <p class="sub">第六发（Duck harness + Qwen3.8-27B + 带图，公榜 1.92，173/2561）在 25 个公开局上全部跑到时间用尽。把日志、25 份完整对话记录和引擎重放对齐之后，卡点落在一个跟策略无关的地方：一局两小时十二分钟，模型只走得出五十来步，而这些局全部通关需要一万五千步。</p>
+  <div class="kpis">
+    <div class="kpi" style="border-top-color:var(--c1)"><b>1.92</b><span>公榜得分 · 前一发 0.95</span></div>
+    <div class="kpi" style="border-top-color:var(--c2)"><b>173</b><span>名次 / 2561 队 · 前百门槛 2.11</span></div>
+    <div class="kpi" style="border-top-color:var(--c8)"><b>9.0%</b><span>实走 1434 步 / 通关需 15907 步</span></div>
+    <div class="kpi" style="border-top-color:var(--c5)"><b>168 秒</b><span>每轮耗时中位 · 一局仅 47 轮</span></div>
+    <div class="kpi" style="border-top-color:var(--c6)"><b>57.8%</b><span>轮次一步没走出</span></div>
+    <div class="kpi" style="border-top-color:var(--c3)"><b>6225</b><span>每轮思考字符 · 回复仅 349</span></div>
+  </div>
+  <p class="colo">数据口径：kernel arc3-duck-q38-lb9（08-26 18:31→20:51）· 25/25 局完整对话记录 · 引擎离线重放 24 局（dc22 本地缺游戏源码）</p>
+</section>
+<section class="page">
+  <div class="shd"><span class="kicker" style="background:var(--c8)22;color:var(--c8)">SOURCE</span><h2>昨天交上去的那份源码</h2><p class="lede">LB-9 复刻件用的源码包并非 Tufa 官方原样。它是另一名参赛者自己的实验分支，且是一份未提交完的工作树，里面装着两个官方版没有的功能。</p></div>
+  <div class="body"><div class="think" style="grid-template-rows:1fr">
+    <div class="tk" style="border-top-color:var(--c8);--d:var(--c8)">
+      <div class="tkn">01 / 包的来历</div><div class="tkt">分支 feature/animation-awareness，状态 DIRTY</div>
+      <div class="tkd">包内 <b>git_status.txt</b> 写明：ARC3-Inference 与 tufa-arc-agi-framework 两个仓都停在 commit 9158303、分支 <b>feature/animation-awareness</b>、工作树 DIRTY，提交信息是「proactively suggest animation retrieval when stuck」。官方包停在 aa69123 / add-kaggle-share-flag。</div>
+      <div class="tkeg">整树 diff：净增 <b>844 行</b>、删 404 行；新增两个文件 <b>inference/utils/animation.py</b>（375 行）与 <b>inference/agent/noop_guard.py</b>（100 行）。</div>
+    </div>
+    <div class="tk" style="border-top-color:var(--c1);--d:var(--c1)">
+      <div class="tkn">02 / 多出来的两件东西</div><div class="tkt">动画感知，与无效动作硬拦截</div>
+      <div class="tkd">代码注释里带着作者自己的实验编号：<b>Experiment 1</b>（自动记忆，已回滚）、<b>Experiment 2</b>（无效动作拦截，2026-07-18）、<b>Experiment 3</b>（动画感知，2026-08-07）。两者都留了环境变量开关，默认全开。</div>
+      <div class="tkeg">Experiment 1 回滚的理由写得很直白：只在上下文里<b>提醒</b>模型某个动作没用，模型照犯不误，无效重复仍剩 <b>12%</b>。所以第二版改成 harness 直接拦。</div>
+    </div>
+    <div class="tk" style="border-top-color:var(--c4);--d:var(--c4)">
+      <div class="tkn">03 / 一条要更正的旧记录</div><div class="tkt">并发 28 是官方原版就有的设置</div>
+      <div class="tkd">此前记为「LB-9 = 换模型 + 并发 28」。核对两个包的 <b>preamble.txt</b>：官方包 solver 参数里 concurrency 本来就是 <b>28</b>，max_runtime_s_per_game 本来就是 <b>7920</b>。这个差异点不成立。</div>
+      <div class="tkeg">于是官方版 2.08 → LB-9 复刻 2.74 的那 <b>0.66 分</b>，来源只剩两处：模型从 Qwen3.6 换到 3.8，以及上面这两个功能。</div>
+    </div>
+  </div></div>
+</section>
+<section class="page">
+  <div class="shd"><span class="kicker" style="background:var(--c1)22;color:var(--c1)">MECHANISM</span><h2>被丢掉的中间帧</h2><p class="lede">arcengine 每执行一次内部 step 就渲染一帧，一个动作可能返回几十帧。官方 harness 只把最后一帧交给模型，中间的全部丢弃。</p></div>
+  <div class="body"><div class="two">
+    <div class="pane"><div class="pd">
+      <div class="role" style="--d:var(--c2)">三级机制</div>
+      <div class="sect">STAGE 1 · 每个动作后的摘要</div>
+      <div class="etag">回传 <b>frames</b>（返回几帧）、<b>unique_frames</b>、<b>board_unchanged</b>（末帧与动作前完全相同）、<b>transient_pixels</b> 及其外框。单帧动作不附加任何 token。</div>
+      <div class="sect">STAGE 2 · 按需回看</div>
+      <div class="etag">模型可调 <b>animation()</b> 取一段差分时间线，<b>animation(frame=k)</b> 按 transient 区域裁剪读某一帧。不消耗游戏动作预算。</div>
+      <div class="sect">STAGE 3 · 卡住时主动提示</div>
+      <div class="etag">同一关连续 <b>6 轮</b>无进展、且本关已有 <b>≥2 次</b>带 transient 像素的动画时才触发，冷却 6 轮。</div>
+      <div class="mini3" style="--d:var(--c2)">
+        <div><b>375</b>animation.py 行数</div><div><b>8</b>回看最多展示帧数</div><div><b>80</b>回看总格子预算</div></div>
+      <div class="sect">同步改了提示词</div>
+      <div class="etag">工具说明里新增 6 行，明写一句话：<b>board_unchanged 加上 board_changed == False 并不代表这个动作什么也没做</b>，被拒绝的点击、消耗掉的机会、撞墙的反弹，只显示在没被看到的那几帧里。</div>
+      <div class="dl"><div class="dt">触发阈值</div><div class="dd">无进展 <span class="c">6 轮</span>带 transient 动画 <span class="c">≥2 次</span>冷却 <span class="c">6 轮</span>跟进窗口 <span class="c">3 轮</span></div>
+      <div class="dt">为何不给整帧</div><div class="dd">一张 64×64 棋盘渲染成 4159 字符、约 1400–2000 token，而整个工具返回预算只有 1024 token。sb26 单动作最多 42 帧，去重后仍有 2.4–3.4 万 token，只能给差分时间线。</div>
+      <div class="dt">回看的形态</div><div class="dd">连续相同的帧折叠成 held_for_frames，逐帧只报变化的格子，写成 <span class="c">W&gt;R @ (row,col)</span> 这样一行；变化太多就退化成颜色迁移的计数。超预算时保留变化最大的几步，再按时间顺序排回去。</div></div>
+    </div></div>
+    <div class="pane"><div class="pd">
+      <div class="role" style="--d:var(--c4)">作者的实测，与我方复现</div>
+      <div class="ewhy" style="--d:var(--c4)">注释原文：「Measured over 24 games (12 multi-frame responses each), 13 games return multi-frame responses, in two distinct shapes」，并把 <b>ft09、sb26</b> 归为 type 1，<b>r11l、sk48</b> 归为 type 2。</div>
+      <div class="sect">两种形状</div>
+      <div class="etag"><b>type 1</b>　首帧末帧相同，一次被拒绝的点击、一次消耗掉的机会，全部只存在于中间帧 —— 只读末帧的模型物理上看不见。<br><b>type 2</b>　纯运动插值，中间帧不含末帧以外的信息。</div>
+      <div class="sect">重放怎么走的</div>
+      <div class="etag">每局先按「每类动作各试一遍」走 6 步，其余按 55% 概率随机点击、45% 随机方向键，共 150 步；遇终局就重开继续采样。逐动作记录返回帧数、末帧是否与动作前相同、中间帧独有的像素数。</div>
+      <div class="sect">复现口径</div>
+      <div class="etag">直接 import 他的 <b>summarize_animation</b> 对本地 24 局重放（随机策略 150 步/局）。他写「42 frames of 64x64 for one sb26 action」，我方实测 sb26 单动作最大帧数同为 <b>42</b>；他写 24 局中 13 局多帧，我方测得 <b>14</b> 局。同一把尺子。</div>
+      <div class="mini3" style="--d:var(--c4)">
+        <div><b>14 / 24</b>会返回多帧</div><div><b>3 / 24</b>末帧看不见</div><div><b>42</b>sb26 单动作最大帧数</div></div>
+      <div class="sect">另一件配套的事</div>
+      <div class="etag">同一份改动里还修了个隐患：<b>带动画的动作永远不算无效动作</b>。type 1 里首帧末帧本就相同，若按「棋盘没变」记成无效，无效动作拦截会在动画最多的那几局把明明起效的操作硬挡掉。</div>
+      <div class="dl"><div class="dt">脚本</div><div class="dd"><span class="c">probes/20260827/anim_scan.py</span><span class="c">anim_scan_s0.json</span></div>
+      <div class="dt">局限</div><div class="dd">随机走法进不去深层关卡，深层可能仍有未采到的 type 1 情形；dc22 本地只有 metadata.json、缺游戏源码，无法起环境。</div></div>
+    </div></div>
+  </div></div>
+</section>
+<section class="page">
+  <div class="shd"><span class="kicker" style="background:var(--c2)22;color:var(--c2)">SCAN</span><h2>哪些局的动画真的藏着东西</h2><p class="lede">把判据收紧到「末帧与动作前完全相同、东西全在中间帧」——只有这种情形，模型读末帧无论如何也看不到。24 局离线重放，每局随机走 150 步。</p></div>
+  <div class="body"><div class="pane dense" style="flex:1"><div class="tw"><table>
+    <thead><tr><th>局</th><th>采样动作</th><th>多帧动作</th><th>占比</th><th>末帧看不见的</th><th>最大帧数</th><th>归类</th><th>第六发得分</th></tr></thead>
+    <tbody><tr><td><b>lf52</b></td><td>150</td><td>150</td><td>100.0%</td><td><b>0</b></td><td>27</td><td><span class='tag t-w'>type 2 · 纯运动插值</span></td><td>1.82</td></tr><tr><td><b>sc25</b></td><td>138</td><td>62</td><td>44.9%</td><td><b>62</b></td><td>22</td><td><span class='tag t-ok'>type 1 · 信息藏在中间帧</span></td><td>7.29</td></tr><tr><td><b>bp35</b></td><td>46</td><td>46</td><td>100.0%</td><td><b>0</b></td><td>5</td><td><span class='tag t-w'>type 2 · 纯运动插值</span></td><td>0.00</td></tr><tr><td><b>sk48</b></td><td>150</td><td>40</td><td>26.7%</td><td><b>0</b></td><td>3</td><td><span class='tag t-w'>type 2 · 纯运动插值</span></td><td>0.00</td></tr><tr><td><b>g50t</b></td><td>130</td><td>33</td><td>25.4%</td><td><b>0</b></td><td>25</td><td><span class='tag t-w'>type 2 · 纯运动插值</span></td><td>0.00</td></tr><tr><td><b>su15</b></td><td>92</td><td>32</td><td>34.8%</td><td><b>0</b></td><td>5</td><td><span class='tag t-w'>type 2 · 纯运动插值</span></td><td>2.22</td></tr><tr><td><b>tu93</b></td><td>140</td><td>20</td><td>14.3%</td><td><b>0</b></td><td>8</td><td><span class='tag t-w'>type 2 · 纯运动插值</span></td><td>1.25</td></tr><tr><td><b>r11l</b></td><td>60</td><td>17</td><td>28.3%</td><td><b>0</b></td><td>3</td><td><span class='tag t-w'>type 2 · 纯运动插值</span></td><td>4.76</td></tr><tr><td><b>ft09</b></td><td>46</td><td>14</td><td>30.4%</td><td><b>14</b></td><td>5</td><td><span class='tag t-ok'>type 1 · 信息藏在中间帧</span></td><td>6.90</td></tr><tr><td><b>sb26</b></td><td>150</td><td>11</td><td>7.3%</td><td><b>0</b></td><td>42</td><td><span class='tag t-w'>type 2 · 纯运动插值</span></td><td>0.20</td></tr><tr><td><b>cd82</b></td><td>100</td><td>10</td><td>10.0%</td><td><b>1</b></td><td>15</td><td><span class='tag t-ok'>type 1 · 信息藏在中间帧</span></td><td>0.00</td></tr><tr><td><b>sp80</b></td><td>21</td><td>4</td><td>19.0%</td><td><b>0</b></td><td>22</td><td><span class='tag t-w'>type 2 · 纯运动插值</span></td><td>0.00</td></tr><tr><td><b>ls20</b></td><td>150</td><td>1</td><td>0.7%</td><td><b>0</b></td><td>6</td><td><span class='tag t-w'>type 2 · 纯运动插值</span></td><td>2.20</td></tr><tr><td><b>tn36</b></td><td>132</td><td>1</td><td>0.8%</td><td><b>0</b></td><td>2</td><td><span class='tag t-w'>type 2 · 纯运动插值</span></td><td>3.57</td></tr><tr><td><b>ar25</b></td><td>147</td><td>0</td><td>0.0%</td><td><b>0</b></td><td>1</td><td><span class='tag t-x'>无动画</span></td><td>8.33</td></tr><tr><td><b>cn04</b></td><td>75</td><td>0</td><td>0.0%</td><td><b>0</b></td><td>1</td><td><span class='tag t-x'>无动画</span></td><td>4.76</td></tr><tr><td><b>ka59</b></td><td>123</td><td>0</td><td>0.0%</td><td><b>0</b></td><td>1</td><td><span class='tag t-x'>无动画</span></td><td>2.57</td></tr><tr><td><b>lp85</b></td><td>150</td><td>0</td><td>0.0%</td><td><b>0</b></td><td>1</td><td><span class='tag t-x'>无动画</span></td><td>2.78</td></tr><tr><td><b>m0r0</b></td><td>150</td><td>0</td><td>0.0%</td><td><b>0</b></td><td>1</td><td><span class='tag t-x'>无动画</span></td><td>0.00</td></tr><tr><td><b>re86</b></td><td>150</td><td>0</td><td>0.0%</td><td><b>0</b></td><td>1</td><td><span class='tag t-x'>无动画</span></td><td>4.19</td></tr><tr><td><b>s5i5</b></td><td>114</td><td>0</td><td>0.0%</td><td><b>0</b></td><td>1</td><td><span class='tag t-x'>无动画</span></td><td>2.78</td></tr><tr><td><b>tr87</b></td><td>150</td><td>0</td><td>0.0%</td><td><b>0</b></td><td>1</td><td><span class='tag t-x'>无动画</span></td><td>0.00</td></tr><tr><td><b>vc33</b></td><td>114</td><td>0</td><td>0.0%</td><td><b>0</b></td><td>1</td><td><span class='tag t-x'>无动画</span></td><td>10.71</td></tr><tr><td><b>wa30</b></td><td>150</td><td>0</td><td>0.0%</td><td><b>0</b></td><td>1</td><td><span class='tag t-x'>无动画</span></td><td>2.22</td></tr></tbody></table></div>
+    <div class="legend"><b style="background:var(--c4)">14 / 24</b> 局会返回多帧（作者测 24 局中 13 局）
+      <b style="background:var(--c8)">3 / 24</b> 局存在末帧看不见的信息 —— ft09、sc25、cd82
+      <b style="background:var(--c6)">10 / 24</b> 局完全不产生多帧，此功能对它们无作用</div>
+  </div></div>
+</section>
+<section class="page">
+  <div class="shd"><span class="kicker" style="background:var(--c4)22;color:var(--c4)">SCORE</span><h2>1.92 分的构成</h2><p class="lede">25 局全部以 gave_up 结束 —— 时间用尽，没有一局玩通。开张的有 17 局，过 2 关的 6 局，过 3 关的 0 局。</p></div>
+  <div class="body"><div class="pane dense" style="flex:1"><div class="tw"><table>
+    <thead><tr><th>局</th><th>得分</th><th>过关</th><th>步数</th><th>模型轮数</th><th>每轮耗时</th><th>零动作轮</th><th>动作/轮</th><th>思考字符/轮</th><th>animation</th><th>通关需要</th><th>走完</th></tr></thead>
+    <tbody><tr><td><b>vc33</b></td><td><span class='tag t-ok'>10.71</span></td><td>2 / 7</td><td><b>19</b></td><td>27</td><td>228s</td><td>58%</td><td>0.70</td><td>8925</td><td>—</td><td>447</td><td><b>4.3%</b></td></tr><tr><td><b>ar25</b></td><td><span class='tag t-ok'>8.33</span></td><td>2 / 8</td><td><b>111</b></td><td>47</td><td>124s</td><td>54%</td><td>2.36</td><td>5364</td><td>—</td><td>748</td><td><b>14.8%</b></td></tr><tr><td><b>sc25</b></td><td><span class='tag t-ok'>7.29</span></td><td>2 / 6</td><td><b>53</b></td><td>39</td><td>196s</td><td>32%</td><td>1.36</td><td>6973</td><td>6</td><td>350</td><td><b>15.1%</b></td></tr><tr><td><b>ft09</b></td><td><span class='tag t-ok'>6.90</span></td><td>2 / 6</td><td><b>49</b></td><td>38</td><td>176s</td><td>51%</td><td>1.29</td><td>6100</td><td>1</td><td>208</td><td><b>23.6%</b></td></tr><tr><td><b>r11l</b></td><td><span class='tag t-ok'>4.76</span></td><td>1 / 6</td><td><b>17</b></td><td>28</td><td>267s</td><td>59%</td><td>0.61</td><td>8452</td><td>3</td><td>233</td><td><b>7.3%</b></td></tr><tr><td><b>cn04</b></td><td><span class='tag t-ok'>4.76</span></td><td>1 / 6</td><td><b>31</b></td><td>32</td><td>217s</td><td>61%</td><td>0.97</td><td>8242</td><td>—</td><td>789</td><td><b>3.9%</b></td></tr><tr><td><b>re86</b></td><td><span class='tag t-ok'>4.19</span></td><td>2 / 8</td><td><b>96</b></td><td>36</td><td>196s</td><td>51%</td><td>2.67</td><td>5978</td><td>—</td><td>1255</td><td><b>7.6%</b></td></tr><tr><td><b>tn36</b></td><td><span class='tag t-w'>3.57</span></td><td>1 / 7</td><td><b>85</b></td><td>42</td><td>153s</td><td>51%</td><td>2.02</td><td>7243</td><td>8</td><td>317</td><td><b>26.8%</b></td></tr><tr><td><b>lp85</b></td><td><span class='tag t-w'>2.78</span></td><td>1 / 8</td><td><b>13</b></td><td>28</td><td>215s</td><td>70%</td><td>0.46</td><td>9083</td><td>—</td><td>388</td><td><b>3.4%</b></td></tr><tr><td><b>s5i5</b></td><td><span class='tag t-w'>2.78</span></td><td>1 / 8</td><td><b>44</b></td><td>32</td><td>168s</td><td>42%</td><td>1.38</td><td>7726</td><td>2</td><td>638</td><td><b>6.9%</b></td></tr><tr><td><b>ka59</b></td><td><span class='tag t-w'>2.57</span></td><td>1 / 7</td><td><b>68</b></td><td>32</td><td>170s</td><td>48%</td><td>2.12</td><td>7662</td><td>2</td><td>730</td><td><b>9.3%</b></td></tr><tr><td><b>su15</b></td><td><span class='tag t-w'>2.22</span></td><td>1 / 9</td><td><b>54</b></td><td>51</td><td>124s</td><td>54%</td><td>1.06</td><td>4753</td><td>11</td><td>361</td><td><b>15.0%</b></td></tr><tr><td><b>wa30</b></td><td><span class='tag t-w'>2.22</span></td><td>1 / 9</td><td><b>72</b></td><td>34</td><td>151s</td><td>45%</td><td>2.12</td><td>7090</td><td>2</td><td>1843</td><td><b>3.9%</b></td></tr><tr><td><b>ls20</b></td><td><span class='tag t-w'>2.20</span></td><td>1 / 7</td><td><b>95</b></td><td>74</td><td>79s</td><td>88%</td><td>1.28</td><td>2016</td><td>3</td><td>776</td><td><b>12.2%</b></td></tr><tr><td><b>lf52</b></td><td><span class='tag t-w'>1.82</span></td><td>1 / 10</td><td><b>41</b></td><td>53</td><td>100s</td><td>62%</td><td>0.77</td><td>4340</td><td>7</td><td>1339</td><td><b>3.1%</b></td></tr><tr><td><b>tu93</b></td><td><span class='tag t-w'>1.25</span></td><td>2 / 9</td><td><b>92</b></td><td>33</td><td>190s</td><td>66%</td><td>2.79</td><td>7212</td><td>6</td><td>462</td><td><b>19.9%</b></td></tr><tr><td><b>sb26</b></td><td><span class='tag t-w'>0.20</span></td><td>1 / 8</td><td><b>102</b></td><td>71</td><td>100s</td><td>39%</td><td>1.44</td><td>3796</td><td>19</td><td>213</td><td><b>47.9%</b></td></tr><tr><td><b>cd82</b></td><td><span class='tag t-x'>0.00</span></td><td>0 / 6</td><td><b>15</b></td><td>44</td><td>147s</td><td>72%</td><td>0.34</td><td>6352</td><td>12</td><td>171</td><td><b>8.8%</b></td></tr><tr><td><b>bp35</b></td><td><span class='tag t-x'>0.00</span></td><td>0 / 9</td><td><b>39</b></td><td>41</td><td>138s</td><td>60%</td><td>0.95</td><td>6522</td><td>7</td><td>651</td><td><b>6.0%</b></td></tr><tr><td><b>dc22</b></td><td><span class='tag t-x'>0.00</span></td><td>0 / 6</td><td><b>115</b></td><td>39</td><td>168s</td><td>63%</td><td>2.95</td><td>7577</td><td>1</td><td>—</td><td>—</td></tr><tr><td><b>sk48</b></td><td><span class='tag t-x'>0.00</span></td><td>0 / 8</td><td><b>41</b></td><td>32</td><td>188s</td><td>39%</td><td>1.28</td><td>6865</td><td>7</td><td>1070</td><td><b>3.8%</b></td></tr><tr><td><b>m0r0</b></td><td><span class='tag t-x'>0.00</span></td><td>0 / 6</td><td><b>51</b></td><td>45</td><td>149s</td><td>52%</td><td>1.13</td><td>6123</td><td>—</td><td>1107</td><td><b>4.6%</b></td></tr><tr><td><b>g50t</b></td><td><span class='tag t-x'>0.00</span></td><td>0 / 7</td><td><b>35</b></td><td>35</td><td>181s</td><td>71%</td><td>1.00</td><td>7692</td><td>2</td><td>879</td><td><b>4.0%</b></td></tr><tr><td><b>tr87</b></td><td><span class='tag t-x'>0.00</span></td><td>0 / 6</td><td><b>59</b></td><td>42</td><td>162s</td><td>80%</td><td>1.40</td><td>5694</td><td>—</td><td>414</td><td><b>14.3%</b></td></tr><tr><td><b>sp80</b></td><td><span class='tag t-x'>0.00</span></td><td>0 / 6</td><td><b>37</b></td><td>36</td><td>174s</td><td>60%</td><td>1.03</td><td>8720</td><td>11</td><td>518</td><td><b>7.1%</b></td></tr></tbody></table></div>
+    <div class="legend"><b style="background:var(--c8)">8 局</b> 一关未过
+      <b style="background:var(--c6)">11 局</b> 过 1 关
+      <b style="background:var(--c4)">6 局</b> 过 2 关
+      <b style="background:var(--c1)">0 局</b> 过 3 关及以上　·　dc22 本地缺游戏源码，取不到基准步数</div>
+  </div></div>
+</section>
+<section class="page">
+  <div class="shd"><span class="kicker" style="background:var(--c3)22;color:var(--c3)">EVIDENCE</span><h2>玩得动，只是没时间玩</h2><p class="lede">每局元数据带着官方给的各关基准步数，日志的 per-level 字段正好是「每关实际步数 / 基准步数」。两边一对，模型的水平和它的处境就分开了。</p></div>
+  <div class="body"><div class="two" style="grid-template-columns:1fr 1fr">
+    <div class="pane dense"><div class="phd">已过掉的关 · 全部 23 关，按「实际 / 基准」升序</div><div class="tw"><table>
+      <thead><tr><th>局</th><th>关</th><th>模型步数</th><th>官方基准</th><th>比值</th></tr></thead><tbody><tr><td><b>ft09</b></td><td>第 1 关</td><td>10</td><td>43</td><td><span class='tag t-ok'>0.23</span></td></tr><tr><td><b>r11l</b></td><td>第 1 关</td><td>6</td><td>22</td><td><span class='tag t-ok'>0.27</span></td></tr><tr><td><b>lf52</b></td><td>第 1 关</td><td>12</td><td>32</td><td><span class='tag t-ok'>0.38</span></td></tr><tr><td><b>vc33</b></td><td>第 2 关</td><td>7</td><td>18</td><td><span class='tag t-ok'>0.39</span></td></tr><tr><td><b>lp85</b></td><td>第 1 关</td><td>7</td><td>17</td><td><span class='tag t-ok'>0.41</span></td></tr><tr><td><b>wa30</b></td><td>第 1 关</td><td>30</td><td>71</td><td><span class='tag t-ok'>0.42</span></td></tr><tr><td><b>ar25</b></td><td>第 2 关</td><td>33</td><td>50</td><td><span class='tag t-ok'>0.66</span></td></tr><tr><td><b>tn36</b></td><td>第 1 关</td><td>22</td><td>32</td><td><span class='tag t-ok'>0.69</span></td></tr><tr><td><b>ar25</b></td><td>第 1 关</td><td>26</td><td>32</td><td><span class='tag t-ok'>0.81</span></td></tr><tr><td><b>cn04</b></td><td>第 1 关</td><td>24</td><td>29</td><td><span class='tag t-ok'>0.83</span></td></tr><tr><td><b>su15</b></td><td>第 1 关</td><td>20</td><td>22</td><td><span class='tag t-ok'>0.91</span></td></tr><tr><td><b>s5i5</b></td><td>第 1 关</td><td>19</td><td>20</td><td><span class='tag t-ok'>0.95</span></td></tr><tr><td><b>sc25</b></td><td>第 1 关</td><td>40</td><td>36</td><td><span class='tag t-w'>1.11</span></td></tr><tr><td><b>vc33</b></td><td>第 1 关</td><td>8</td><td>7</td><td><span class='tag t-w'>1.14</span></td></tr><tr><td><b>ka59</b></td><td>第 1 关</td><td>33</td><td>28</td><td><span class='tag t-w'>1.18</span></td></tr><tr><td><b>ls20</b></td><td>第 1 关</td><td>28</td><td>22</td><td><span class='tag t-w'>1.27</span></td></tr><tr><td><b>re86</b></td><td>第 2 关</td><td>59</td><td>42</td><td><span class='tag t-w'>1.40</span></td></tr><tr><td><b>re86</b></td><td>第 1 关</td><td>37</td><td>26</td><td><span class='tag t-w'>1.42</span></td></tr><tr><td><b>sc25</b></td><td>第 2 关</td><td>10</td><td>6</td><td><span class='tag t-w'>1.67</span></td></tr><tr><td><b>tu93</b></td><td>第 2 关</td><td>35</td><td>16</td><td><span class='tag t-w'>2.19</span></td></tr><tr><td><b>ft09</b></td><td>第 2 关</td><td>31</td><td>12</td><td><span class='tag t-w'>2.58</span></td></tr><tr><td><b>tu93</b></td><td>第 1 关</td><td>50</td><td>19</td><td><span class='tag t-w'>2.63</span></td></tr><tr><td><b>sb26</b></td><td>第 1 关</td><td>67</td><td>18</td><td><span class='tag t-w'>3.72</span></td></tr></tbody></table></div>
+      <div class="legend"><b style="background:var(--c4)">12 / 23</b> 关的步数少于官方基准
+        <b style="background:var(--c6)">11 / 23</b> 关多于基准　·　比值中位 0.95</div></div>
+    <div class="pane dense"><div class="phd">卡住的那一关 · 连基准步数都没走到就时间到</div><div class="tw"><table>
+      <thead><tr><th>局</th><th>卡在</th><th>实走</th><th>基准</th><th>比值</th></tr></thead><tbody><tr><td><b>vc33</b></td><td>第 3 关</td><td>4</td><td>44</td><td><span class='tag t-x'>0.09</span></td></tr><tr><td><b>sc25</b></td><td>第 3 关</td><td>3</td><td>32</td><td><span class='tag t-x'>0.09</span></td></tr><tr><td><b>cn04</b></td><td>第 2 关</td><td>7</td><td>54</td><td><span class='tag t-x'>0.13</span></td></tr><tr><td><b>lp85</b></td><td>第 2 关</td><td>6</td><td>38</td><td><span class='tag t-x'>0.16</span></td></tr><tr><td><b>tu93</b></td><td>第 3 关</td><td>7</td><td>34</td><td><span class='tag t-x'>0.21</span></td></tr><tr><td><b>cd82</b></td><td>第 1 关</td><td>15</td><td>55</td><td><span class='tag t-x'>0.27</span></td></tr><tr><td><b>s5i5</b></td><td>第 2 关</td><td>25</td><td>89</td><td><span class='tag t-x'>0.28</span></td></tr><tr><td><b>ka59</b></td><td>第 2 关</td><td>35</td><td>109</td><td><span class='tag t-x'>0.32</span></td></tr><tr><td><b>r11l</b></td><td>第 2 关</td><td>11</td><td>33</td><td><span class='tag t-x'>0.33</span></td></tr><tr><td><b>ft09</b></td><td>第 3 关</td><td>8</td><td>23</td><td><span class='tag t-x'>0.35</span></td></tr><tr><td><b>wa30</b></td><td>第 2 关</td><td>42</td><td>119</td><td><span class='tag t-x'>0.35</span></td></tr><tr><td><b>lf52</b></td><td>第 2 关</td><td>29</td><td>81</td><td><span class='tag t-x'>0.36</span></td></tr><tr><td><b>g50t</b></td><td>第 1 关</td><td>35</td><td>78</td><td><span class='tag t-x'>0.45</span></td></tr><tr><td><b>ls20</b></td><td>第 2 关</td><td>67</td><td>123</td><td><span class='tag t-w'>0.54</span></td></tr><tr><td><b>sk48</b></td><td>第 1 关</td><td>41</td><td>61</td><td><span class='tag t-w'>0.67</span></td></tr><tr><td><b>ar25</b></td><td>第 3 关</td><td>52</td><td>75</td><td><span class='tag t-w'>0.69</span></td></tr><tr><td><b>su15</b></td><td>第 2 关</td><td>34</td><td>42</td><td><span class='tag t-w'>0.81</span></td></tr><tr><td><b>tn36</b></td><td>第 2 关</td><td>63</td><td>72</td><td><span class='tag t-w'>0.88</span></td></tr><tr><td><b>sp80</b></td><td>第 1 关</td><td>37</td><td>39</td><td><span class='tag t-w'>0.95</span></td></tr><tr><td><b>tr87</b></td><td>第 1 关</td><td>59</td><td>54</td><td><span class='tag t-n'>1.09</span></td></tr><tr><td><b>sb26</b></td><td>第 2 关</td><td>35</td><td>28</td><td><span class='tag t-n'>1.25</span></td></tr><tr><td><b>m0r0</b></td><td>第 1 关</td><td>51</td><td>30</td><td><span class='tag t-n'>1.70</span></td></tr><tr><td><b>bp35</b></td><td>第 1 关</td><td>39</td><td>21</td><td><span class='tag t-n'>1.86</span></td></tr><tr><td><b>dc22</b></td><td>第 1 关</td><td>115</td><td>59</td><td><span class='tag t-n'>1.95</span></td></tr></tbody></table></div>
+      <div class="legend"><b style="background:var(--c8)">13 局</b> 连基准的一半都没走到
+        <b style="background:var(--c6)">6 局</b> 走到基准的五成至九成
+        <b style="background:#8B93B0">5 局</b> 步数超过基准仍未过关　·　中位 0.40</div></div>
+  </div></div>
+</section>
+<section class="page">
+  <div class="shd"><span class="kicker" style="background:var(--c5)22;color:var(--c5)">CLOCK</span><h2>一局两小时十二分，够走 47 轮</h2><p class="lede">28 路共享一张卡，每路每秒吐得出十来个 token。一轮从发出到下一轮开始，中位数 168 秒。轮数与每轮思考量的乘积，各局都落在同一个量级。</p></div>
+  <div class="body"><div class="two" style="grid-template-columns:1.35fr 1fr">
+    <div class="pane dense"><div class="phd">逐局 · 轮数与思考量（按轮数排序）</div><div class="tw"><table>
+      <thead><tr><th>局</th><th>轮数</th><th>每轮耗时</th><th>思考字符/轮</th><th>思考总字符</th><th>步数</th><th>得分</th></tr></thead>
+      <tbody><tr><td><b>ls20</b></td><td>74</td><td>79s</td><td>2016</td><td>149,197</td><td>95</td><td>2.20</td></tr><tr><td><b>sb26</b></td><td>71</td><td>100s</td><td>3796</td><td>269,506</td><td>102</td><td>0.20</td></tr><tr><td><b>lf52</b></td><td>53</td><td>100s</td><td>4340</td><td>230,017</td><td>41</td><td>1.82</td></tr><tr><td><b>su15</b></td><td>51</td><td>124s</td><td>4753</td><td>242,409</td><td>54</td><td>2.22</td></tr><tr><td><b>ar25</b></td><td>47</td><td>124s</td><td>5364</td><td>252,113</td><td>111</td><td>8.33</td></tr><tr><td><b>m0r0</b></td><td>45</td><td>149s</td><td>6123</td><td>275,549</td><td>51</td><td>0.00</td></tr><tr><td><b>cd82</b></td><td>44</td><td>147s</td><td>6352</td><td>279,494</td><td>15</td><td>0.00</td></tr><tr><td><b>tr87</b></td><td>42</td><td>162s</td><td>5694</td><td>239,159</td><td>59</td><td>0.00</td></tr><tr><td><b>tn36</b></td><td>42</td><td>153s</td><td>7243</td><td>304,208</td><td>85</td><td>3.57</td></tr><tr><td><b>bp35</b></td><td>41</td><td>138s</td><td>6522</td><td>267,415</td><td>39</td><td>0.00</td></tr><tr><td><b>dc22</b></td><td>39</td><td>168s</td><td>7577</td><td>295,515</td><td>115</td><td>0.00</td></tr><tr><td><b>sc25</b></td><td>39</td><td>196s</td><td>6973</td><td>271,936</td><td>53</td><td>7.29</td></tr><tr><td><b>ft09</b></td><td>38</td><td>176s</td><td>6100</td><td>231,794</td><td>49</td><td>6.90</td></tr><tr><td><b>re86</b></td><td>36</td><td>196s</td><td>5978</td><td>215,218</td><td>96</td><td>4.19</td></tr><tr><td><b>sp80</b></td><td>36</td><td>174s</td><td>8720</td><td>313,930</td><td>37</td><td>0.00</td></tr><tr><td><b>g50t</b></td><td>35</td><td>181s</td><td>7692</td><td>269,225</td><td>35</td><td>0.00</td></tr><tr><td><b>wa30</b></td><td>34</td><td>151s</td><td>7090</td><td>241,072</td><td>72</td><td>2.22</td></tr><tr><td><b>tu93</b></td><td>33</td><td>190s</td><td>7212</td><td>237,987</td><td>92</td><td>1.25</td></tr><tr><td><b>ka59</b></td><td>32</td><td>170s</td><td>7662</td><td>245,177</td><td>68</td><td>2.57</td></tr><tr><td><b>sk48</b></td><td>32</td><td>188s</td><td>6865</td><td>219,679</td><td>41</td><td>0.00</td></tr><tr><td><b>cn04</b></td><td>32</td><td>217s</td><td>8242</td><td>263,732</td><td>31</td><td>4.76</td></tr><tr><td><b>s5i5</b></td><td>32</td><td>168s</td><td>7726</td><td>247,241</td><td>44</td><td>2.78</td></tr><tr><td><b>r11l</b></td><td>28</td><td>267s</td><td>8452</td><td>236,667</td><td>17</td><td>4.76</td></tr><tr><td><b>lp85</b></td><td>28</td><td>215s</td><td>9083</td><td>254,327</td><td>13</td><td>2.78</td></tr><tr><td><b>vc33</b></td><td>27</td><td>228s</td><td>8925</td><td>240,986</td><td>19</td><td>10.71</td></tr></tbody></table></div></div>
+    <div class="pane"><div class="pd">
+      <div class="role" style="--d:var(--c6)">一局能吐的字总量是死的</div>
+      <div class="ewhy" style="--d:var(--c6)">ls20 每轮只想 2016 字，跑出 <b>74 轮</b>；lp85 每轮想 9083 字，只跑了 <b>28 轮</b>。两者相乘都在二十几万字符 —— 时间预算换算成吐字量之后，写得越省，轮数越多。</div>
+      <div class="mini3" style="--d:var(--c6)">
+        <div><b>168s</b>每轮耗时中位</div><div><b>47</b>一局轮数上限</div><div><b>1011</b>25 局总轮数</div></div>
+      <div class="sect">每轮输出的去向</div>
+      <div class="etag">思考 <b>6225</b> 字符　·　回复正文 <b>349</b> 字符<br>思考占了输出的 <b>94.7%</b>，而思考本身不产生任何动作。</div>
+      <div class="sect">每轮输入的构成</div>
+      <div class="etag">系统提示词 <b>14187</b> 字符（每轮重发）　·　用户消息 <b>3052</b> 字符　·　工具输出中位 <b>381</b> 字符　·　上下文窗口 31744 token</div>
+      <div class="sect">公开集与隐藏集的配置</div>
+      <div class="etag">notebook 里 <b>max_runtime_s_per_game=7920</b>、<b>concurrency=28</b> 只在公开分支显式设置；提交走 pickle 里的原值，核对下来两边一致。提交时 soft_end_time 返回 None，不额外收紧。<br>110 个隐藏局按并发 28 要跑 4 批，约 <b>8.8 小时</b>。</div>
+      <div class="sect">线上确认为开启</div>
+      <div class="etag">对话记录的状态块印着：<span class="c">hard_noop_guard: True</span><span class="c">context_budget_tokens: 31744</span><span class="c">tool_output_tokens: 1024</span><span class="c">model: Qwen/Qwen3.8-27B-FP8</span></div>
+      <div class="dl"><div class="dt">口径</div><div class="dd">每轮耗时取相邻两轮时间戳之差的中位数；25 局并发同时起跑，每局时间上限 7920 秒</div></div>
+    </div></div>
+  </div></div>
+</section>
+<section class="page">
+  <div class="shd"><span class="kicker" style="background:var(--c6)22;color:var(--c6)">IDLE</span><h2>过半轮次走不出一步</h2><p class="lede">570 个轮次里动作计数原地不动。按工具调用内容归类，三分之二花在「看棋盘」上。</p></div>
+  <div class="body">
+    <div class="kpis" style="grid-template-columns:repeat(4,1fr);margin:0 0 16px">
+      <div class="kpi" style="border-top-color:var(--c7)"><b>570 / 986</b><span>零动作轮 · 57.8%</span></div>
+      <div class="kpi" style="border-top-color:var(--c1)"><b>67.5%</b><span>其中用于读棋盘</span></div>
+      <div class="kpi" style="border-top-color:var(--c5)"><b>0 / 1.45</b><span>每轮动作数 中位 / 平均</span></div>
+      <div class="kpi" style="border-top-color:var(--c3)"><b>49</b><span>单轮最多下发动作数</span></div>
+    </div>
+    <div class="nx" style="grid-template-columns:repeat(5,1fr)"><div class="nxc" style="border-top-color:var(--c1);--d:var(--c1)">
+  <div class="nxh"><span class="nxt">读 ascii 看棋盘</span><span class="nxn">195</span></div>
+  <div class="nxl"><div class="nxi">占零动作轮 <b>34.2%</b></div>
+  <div class="nxi">折合整轮时间约 <b>9.1 小时</b></div>
+  <div class="nxi">棋盘不进上下文，模型必须调 python 才能读到 ascii。系统提示词明写「原始数字网格故意不暴露」。</div></div></div><div class="nxc" style="border-top-color:var(--c2);--d:var(--c2)">
+  <div class="nxh"><span class="nxt">读 segmentation 解析棋盘</span><span class="nxn">190</span></div>
+  <div class="nxl"><div class="nxi">占零动作轮 <b>33.3%</b></div>
+  <div class="nxi">折合整轮时间约 <b>8.9 小时</b></div>
+  <div class="nxi">segmentation 把棋盘解析成对象、颜色、包含与邻接关系，是官方指定的「主要视图」，同样要单独一轮去取。</div></div></div><div class="nxc" style="border-top-color:var(--c3);--d:var(--c3)">
+  <div class="nxh"><span class="nxt">纯计算 / 其它</span><span class="nxn">88</span></div>
+  <div class="nxl"><div class="nxi">占零动作轮 <b>15.4%</b></div>
+  <div class="nxi">折合整轮时间约 <b>4.1 小时</b></div>
+  <div class="nxi">在 python 里做统计、比对、记笔记，不触碰环境。</div></div></div><div class="nxc" style="border-top-color:var(--c4);--d:var(--c4)">
+  <div class="nxh"><span class="nxt">回看 animation</span><span class="nxn">84</span></div>
+  <div class="nxl"><div class="nxi">占零动作轮 <b>14.7%</b></div>
+  <div class="nxi">折合整轮时间约 <b>3.9 小时</b></div>
+  <div class="nxi">主动回看某个动作的中间帧。不消耗游戏动作预算，但消耗一整轮。</div></div></div><div class="nxc" style="border-top-color:var(--c5);--d:var(--c5)">
+  <div class="nxh"><span class="nxt">调了 action 却没走出一步</span><span class="nxn">13</span></div>
+  <div class="nxl"><div class="nxi">占零动作轮 <b>2.3%</b></div>
+  <div class="nxi">折合整轮时间约 <b>0.6 小时</b></div>
+  <div class="nxi">发出了 action() 调用，动作计数却没有前进 —— 终局状态或被无效动作拦截挡下。</div></div></div></div>
+  </div>
+</section>
+<section class="page">
+  <div class="shd"><span class="kicker" style="background:var(--c7)22;color:var(--c7)">TAIL</span><h2>思考长度的长尾</h2><p class="lede">1339 轮里 finish_reason 全是 tool_calls，一次 length 都没有 —— 思考从未被截断，写多长完全由模型自己决定。中位数三千字，尾巴拖到三万五。</p></div>
+  <div class="body"><div class="two" style="grid-template-columns:1fr 1.15fr">
+    <div class="pane"><div class="pd">
+      <div class="role" style="--d:var(--c8)">分位数</div>
+      <div class="mini3" style="--d:var(--c8);grid-template-columns:repeat(2,1fr)">
+        <div><b>3,115</b>中位</div><div><b>4,700</b>平均</div>
+        <div><b>11,926</b>P90</div><div><b>15,688</b>P95</div></div>
+      <div class="etag" style="margin-top:4px">最长的一轮 <b>35,043</b> 字符。按每路每秒吐 48 个字符估算，这一轮单独就要 <b>12 分钟</b>，占掉一局时间的 9%。</div>
+      <div class="sect">finish_reason 分布</div>
+      <div class="etag"><b>tool_calls</b> 1332　·　<b>stop</b> 7</div>
+      <div class="sect">可用的旋钮</div>
+      <div class="etag"><span class="c">LOCAL_ANALYZER_MAX_OUTPUT</span>默认 0（不封顶）<br><span class="c">LOCAL_ANALYZER_ENABLE_THINKING</span>默认 True<br>两者都是环境变量，源码零改动。<b>模块级读取，必须在 import 之前设。</b></div>
+      <div class="sect">动手前要先确认的一件事</div>
+      <div class="ewhy" style="--d:var(--c8)">封顶封的是整个输出，思考、正文、工具调用共用这一份额度。若截断落在思考中途、导致这一轮吐不出完整的工具调用，那么这一轮直接作废 —— 旋钮就成了负收益。查 tool_agent 对 finish_reason=length 的处理即可定论。</div>
+      <div class="dl"><div class="dt">验证路径</div><div class="dd">按三层框架：<span class="c">DeepSeek 做实验</span><span class="c">qwen3.6-27b + 图 做验证</span><span class="c">线上 Qwen3.8 测试</span>三层一致才进当天提交</div></div>
+    </div></div>
+    <div class="pane"><div class="phd">单轮封顶的收益曲线 · 25 局 1339 轮实测</div><div class="tw"><table>
+      <thead><tr><th>封顶字符</th><th>触发轮次</th><th>占比</th><th>省下字符</th><th>占总量</th><th>同时间多跑轮次</th></tr></thead>
+      <tbody><tr><td><b>500</b></td><td>1017</td><td>76.0%</td><td>5,716,543</td><td>90.8%</td><td><span class='tag t-ok'>+990.7%</span></td></tr><tr><td><b>1,000</b></td><td>931</td><td>69.5%</td><td>5,229,289</td><td>83.1%</td><td><span class='tag t-ok'>+491.4%</span></td></tr><tr><td><b>1,500</b></td><td>860</td><td>64.2%</td><td>4,782,041</td><td>76.0%</td><td><span class='tag t-ok'>+316.4%</span></td></tr><tr><td><b>2,000</b></td><td>791</td><td>59.1%</td><td>4,368,751</td><td>69.4%</td><td><span class='tag t-ok'>+227.0%</span></td></tr><tr><td><b>2,500</b></td><td>732</td><td>54.7%</td><td>3,987,831</td><td>63.4%</td><td><span class='tag t-ok'>+173.0%</span></td></tr><tr><td><b>3,000</b></td><td>683</td><td>51.0%</td><td>3,632,843</td><td>57.7%</td><td><span class='tag t-ok'>+136.5%</span></td></tr><tr><td><b>4,000</b></td><td>572</td><td>42.7%</td><td>3,007,246</td><td>47.8%</td><td><span class='tag t-ok'>+91.5%</span></td></tr><tr><td><b>5,000</b></td><td>456</td><td>34.1%</td><td>2,494,652</td><td>39.6%</td><td><span class='tag t-ok'>+65.7%</span></td></tr><tr><td><b>6,000</b></td><td>380</td><td>28.4%</td><td>2,074,594</td><td>33.0%</td><td><span class='tag t-ok'>+49.2%</span></td></tr><tr><td><b>7,000</b></td><td>317</td><td>23.7%</td><td>1,726,970</td><td>27.4%</td><td><span class='tag t-ok'>+37.8%</span></td></tr><tr style="background:#FFF7ED"><td><b>8,000</b></td><td>255</td><td>19.0%</td><td>1,441,658</td><td>22.9%</td><td><span class='tag t-ok'>+29.7%</span></td></tr><tr><td><b>10,000</b></td><td>178</td><td>13.3%</td><td>1,012,070</td><td>16.1%</td><td><span class='tag t-ok'>+19.2%</span></td></tr><tr><td><b>12,000</b></td><td>131</td><td>9.8%</td><td>708,671</td><td>11.3%</td><td><span class='tag t-ok'>+12.7%</span></td></tr><tr><td><b>15,000</b></td><td>76</td><td>5.7%</td><td>407,185</td><td>6.5%</td><td><span class='tag t-ok'>+6.9%</span></td></tr><tr><td><b>20,000</b></td><td>30</td><td>2.2%</td><td>158,151</td><td>2.5%</td><td><span class='tag t-ok'>+2.6%</span></td></tr></tbody></table></div>
+      <div class="legend"><b style="background:var(--c5)">8000</b> 建议起点：只碰 19.0% 的轮次，其余八成完全不受影响
+        <b style="background:var(--c8)">待核实</b> 截断发生在思考中途时，该轮能否吐出完整工具调用</div></div>
+  </div></div>
+</section>
+<section class="page">
+  <div class="shd"><span class="kicker" style="background:var(--c1)22;color:var(--c1)">COST</span><h2>回看动画值不值</h2><p class="lede">Stage 1 的摘要几乎不花钱，附在动作结果里几十个 token。花钱的是 Stage 2 —— 每次主动回看要占掉一整轮，而一轮是 168 秒。</p></div>
+  <div class="body"><div class="two" style="grid-template-columns:1.2fr 1fr">
+    <div class="pane dense2"><div class="phd">逐局 · 回看次数与随后 4 轮内的过关</div><div class="tw"><table>
+      <thead><tr><th>局</th><th>回看次数</th><th>随后 4 轮内过关</th><th>折合时间</th><th>该局动画类型</th><th>得分</th></tr></thead>
+      <tbody><tr><td><b>sb26</b></td><td>19</td><td>0</td><td>32 分</td><td><span class='tag t-w'>type 2</span></td><td>0.20</td></tr><tr><td><b>cd82</b></td><td>12</td><td>0</td><td>29 分</td><td><span class='tag t-ok'>type 1</span></td><td>0.00</td></tr><tr><td><b>sp80</b></td><td>11</td><td>0</td><td>32 分</td><td><span class='tag t-w'>type 2</span></td><td>0.00</td></tr><tr><td><b>su15</b></td><td>11</td><td>0</td><td>23 分</td><td><span class='tag t-w'>type 2</span></td><td>2.22</td></tr><tr><td><b>tn36</b></td><td>8</td><td>0</td><td>20 分</td><td><span class='tag t-w'>type 2</span></td><td>3.57</td></tr><tr><td><b>bp35</b></td><td>7</td><td>0</td><td>16 分</td><td><span class='tag t-w'>type 2</span></td><td>0.00</td></tr><tr><td><b>lf52</b></td><td>7</td><td>0</td><td>12 分</td><td><span class='tag t-w'>type 2</span></td><td>1.82</td></tr><tr><td><b>sk48</b></td><td>7</td><td>0</td><td>22 分</td><td><span class='tag t-w'>type 2</span></td><td>0.00</td></tr><tr><td><b>sc25</b></td><td>6</td><td>1</td><td>20 分</td><td><span class='tag t-ok'>type 1</span></td><td>7.29</td></tr><tr><td><b>tu93</b></td><td>6</td><td>3</td><td>19 分</td><td><span class='tag t-w'>type 2</span></td><td>1.25</td></tr><tr><td><b>ls20</b></td><td>3</td><td>0</td><td>4 分</td><td><span class='tag t-w'>type 2</span></td><td>2.20</td></tr><tr><td><b>r11l</b></td><td>3</td><td>0</td><td>13 分</td><td><span class='tag t-w'>type 2</span></td><td>4.76</td></tr><tr><td><b>g50t</b></td><td>2</td><td>0</td><td>6 分</td><td><span class='tag t-w'>type 2</span></td><td>0.00</td></tr><tr><td><b>ka59</b></td><td>2</td><td>1</td><td>6 分</td><td><span class='tag t-x'>无动画</span></td><td>2.57</td></tr><tr><td><b>s5i5</b></td><td>2</td><td>0</td><td>6 分</td><td><span class='tag t-x'>无动画</span></td><td>2.78</td></tr><tr><td><b>wa30</b></td><td>2</td><td>0</td><td>5 分</td><td><span class='tag t-x'>无动画</span></td><td>2.22</td></tr><tr><td><b>dc22</b></td><td>1</td><td>0</td><td>3 分</td><td><span class='tag t-x'>无动画</span></td><td>0.00</td></tr><tr><td><b>ft09</b></td><td>1</td><td>0</td><td>3 分</td><td><span class='tag t-ok'>type 1</span></td><td>6.90</td></tr><tr><td><b>ar25</b></td><td>—</td><td>—</td><td>—</td><td><span class='tag t-x'>无动画</span></td><td>8.33</td></tr><tr><td><b>cn04</b></td><td>—</td><td>—</td><td>—</td><td><span class='tag t-x'>无动画</span></td><td>4.76</td></tr><tr><td><b>lp85</b></td><td>—</td><td>—</td><td>—</td><td><span class='tag t-x'>无动画</span></td><td>2.78</td></tr><tr><td><b>m0r0</b></td><td>—</td><td>—</td><td>—</td><td><span class='tag t-x'>无动画</span></td><td>0.00</td></tr><tr><td><b>re86</b></td><td>—</td><td>—</td><td>—</td><td><span class='tag t-x'>无动画</span></td><td>4.19</td></tr><tr><td><b>tr87</b></td><td>—</td><td>—</td><td>—</td><td><span class='tag t-x'>无动画</span></td><td>0.00</td></tr><tr><td><b>vc33</b></td><td>—</td><td>—</td><td>—</td><td><span class='tag t-x'>无动画</span></td><td>10.71</td></tr></tbody></table></div>
+      <div class="legend"><b style="background:var(--c2)">110 次</b> 总回看
+        <b style="background:var(--c4)">5 次</b> 随后 4 轮内过关（4.5%）
+        <b style="background:var(--c6)">7 局</b> 一次没调过</div></div>
+    <div class="pane"><div class="pd">
+      <div class="role" style="--d:var(--c8)">一处错配</div>
+      <div class="ewhy" style="--d:var(--c8)">离线重放测出「末帧看不见信息」的三局是 <b>ft09、sc25、cd82</b>。而线上回看最多的四局是 <b>sb26 19 次、cd82 12 次、su15 与 sp80 各 11 次</b> —— 其中 sb26 在重放里 11 次多帧全部 board_changed，末帧本来就看得见；ft09 明明 14/14 都看不见，却只回看了 <b>1 次</b>。</div>
+      <div class="sect">成本</div>
+      <div class="etag">110 次 × 168 秒 ≈ <b>5.1 小时</b>，摊到 25 局是每局 <b>12 分钟</b>，占单局时间预算的 9.4%。占零动作轮的 14.7%。</div>
+      <div class="sect">收益</div>
+      <div class="etag">5 次回看后 4 轮内发生过关，命中率 <b>4.5%</b>。判据取用户消息里的 level 字段跳变（模型自行 print 的 level_completed 只记到 8 次，不完整，已弃用）。</div>
+      <div class="mini3" style="--d:var(--c2)">
+        <div><b>110</b>总回看次数</div><div><b>5</b>随后过关</div><div><b>5.1h</b>折合时间</div></div>
+      <div class="sect">命中落在哪</div>
+      <div class="etag">5 次命中分布在三局：<b>tu93 3 次</b>、<b>sc25 1 次</b>、<b>ka59 1 次</b>。sc25 正是重放里 62/62 末帧看不见的那局；而 tu93 属 type 2 纯插值，ka59 在重放里一次多帧都没采到 —— 后两者说明随机重放的覆盖不足以判定线上情形。</div>
+      <div class="dl"><div class="dt">留意</div><div class="dd">关掉 <span class="c">ARC3_ANIMATION_AWARENESS</span> 会把 Stage 1 摘要一并关掉。要单独留摘要、去回看，得改源码。</div>
+      <div class="dt">样本</div><div class="dd">单遍 25 局，作者自述该基准单遍方差约 ±0.45，这里的命中率只作方向参考</div>
+      <div class="dt">判据</div><div class="dd">「随后 4 轮内过关」取用户消息里 <span class="c">Current state: level N</span> 的跳变。先用过 <span class="c">'level_completed': True</span> 字符串，只记到 8 次而实际过关 14 次 —— 该字段依赖模型自行 print，已弃用。</div></div>
+    </div></div>
+  </div></div>
+</section>
+<section class="page">
+  <div class="shd"><span class="kicker" style="background:var(--c4)22;color:var(--c4)">NEXT</span><h2>四个旋钮与一条新路</h2><p class="lede">分数吃两样：过了几关、花了多少步。眼下卡在连基准步数都走不到，能动的就是让每局多走几步。</p></div>
+  <div class="body"><div class="nx">
+    <div class="nxc" style="border-top-color:var(--c5);--d:var(--c5)">
+      <div class="nxh"><span class="nxt">环境变量即可</span><span class="nxn">零改动</span></div>
+      <div class="nxl">
+        <div class="nxi"><b>单轮思考封顶</b> · <span class="c">LOCAL_ANALYZER_MAX_OUTPUT</span>　默认 0 不封顶。封到 8000 字符只碰 19.0% 的轮次，换来约 30% 更多轮次</div>
+        <div class="nxi"><b>关思考</b> · <span class="c">LOCAL_ANALYZER_ENABLE_THINKING=0</span>　幅度最大，风险也最大。思考占了输出的 94.7%</div>
+        <div class="nxi"><b>动画回看开关</b> · <span class="c">ARC3_ANIMATION_AWARENESS=0</span>　省下每局约 12 分钟，同时失去 Stage 1 摘要</div>
+        <div class="nxi"><b>无效动作拦截</b> · <span class="c">ARC3_HARD_NOOP_GUARD</span>　线上已确认为开启状态，暂无理由关</div>
+        <div class="nxi"><b>工具输出上限</b> · <span class="c">LOCAL_ANALYZER_TOOL_OUTPUT_TOKENS</span>　当前 1024，而工具输出中位数只有 381 字符 —— 这一项眼下并非瓶颈</div>
+        <div class="nxi"><b>上下文窗口</b> · <span class="c">LOCAL_ANALYZER_CONTEXT_WINDOW</span>　当前 32768，历史保留 9 条消息</div>
+        <div class="nxi"><b>单轮工具步数</b> · <span class="c">LOCAL_ANALYZER_TOOL_STEPS</span>　当前 12</div>
+        <div class="nxi"><b>采样温度相关</b> · <span class="c">LOCAL_ANALYZER_TOP_K</span>　当前 20，<span class="c">LOCAL_ANALYZER_SEED</span>　当前 -1（不固定）</div>
+        <div class="nxi">公开集与隐藏集的这些值一致，提交时 soft_end_time 返回 None，不额外收紧</div>
+        <div class="nxi h">坑：这些都是模块级读取，notebook 里必须在 import 之前 os.environ 设好，否则设了等于没设</div>
+        <div class="nxi h">封顶前必须先确认：截断落在思考中途时，该轮能否吐出完整的工具调用。若不能，这一轮直接作废，旋钮就成了负收益</div></div></div>
+    <div class="nxc" style="border-top-color:var(--c1);--d:var(--c1)">
+      <div class="nxh"><span class="nxt">要改源码包</span><span class="nxn">中等</span></div>
+      <div class="nxl">
+        <div class="nxi"><b>棋盘进上下文</b>　零动作轮里 67.5% 花在读棋盘。系统提示词明写「原始数字网格故意不暴露」，模型只能单开一轮去取</div>
+        <div class="nxi">代价是每轮多约 1200 token 输入，省下的是整轮生成。输入并行预填、输出逐字生成，单价差着量级 —— 这笔交换值得实测</div>
+        <div class="nxi"><b>鼓励批量下发</b>　当前每轮动作数中位 0、平均 1.45，而 harness 本来就支持一次提交多个动作，最多的一轮走了 49 步</div>
+        <div class="nxi">批量的风险：错了会浪费更多步，而计分对步数是平方惩罚</div>
+        <div class="nxi"><b>只留摘要、去掉回看</b>　保住 Stage 1 的白送信息，砍掉 Stage 2 每次一整轮的开销。当前 110 次回看命中 5 次</div>
+        <div class="nxi"><b>补 dc22 的游戏源码</b>　本地 25 局里唯独它起不来，离线实验缺一块</div>
+        <div class="nxi">Stage 1 的摘要本身几乎不花钱 —— 单帧动作一个 token 都不附加，多帧时也只有几十个</div>
+        <div class="nxi">segmentation 把棋盘解析成对象、颜色、包含与邻接关系，官方指定它作「主要视图」，体积比整张 ascii 小得多，更适合挂进上下文</div>
+        <div class="nxi">改源码包要重新打 Kaggle dataset 并更新 kernel 的 dataset_sources，跑一轮 kernel 约 2 小时 20 分</div>
+        <div class="nxi">任何一样改动都按三层框架验：DeepSeek 做实验 → qwen3.6-27b 开图做验证 → 线上 Qwen3.8 测试</div></div></div>
+    <div class="nxc" style="border-top-color:var(--c3);--d:var(--c3)">
+      <div class="nxh"><span class="nxt">对手的新方向</span><span class="nxn">polyphony</span></div>
+      <div class="nxl">
+        <div class="nxi">同一作者 08-26 15:20 发布新包，分支 <span class="c">experiment/polyphony</span>，整个 agent 目录重写成「观察 → 改代码 → 规划 → 行动」四相循环，共 2339 行</div>
+        <div class="nxi"><b>让代码走步</b>　模型写 policy.py 预测状态、goal.py 定义胜利，harness 做宽度优先搜索，12 步深、两万节点，搜到就批量提交</div>
+        <div class="nxi"><b>开局硬探测</b>　每关开始 harness 自己把每类动作各试一遍，模型还没看到一个 token。理由写在注释里：Q3.8 中位数要 9 步才试全动作类，五局里从未试全</div>
+        <div class="nxi"><b>策略死线</b>　时钟走到 55% 仍未验证出策略，就放弃建模直接开打。理由：这个臂最可能的死法是策略优雅而一个动作没打出去</div>
+        <div class="nxi"><b>守门员</b>　策略必须先能重现真实轨迹才准进搜索 —— 搜一个不能重现环境的世界模型，出来的计划看着严谨、其实是虚构</div>
+        <div class="nxi">当前状态是冒烟测试：3 局 1 遍，benchmark 标签 poly-20260826-smoke</div>
+        <div class="nxi">硬编码的护栏：搜索深度 12、节点预算两万、单次工具调用 40 次、Edit 轻量档 15 次、上下文 24 万字符 —— 注释写明这些数字「不交给模型决定」，因为上一版 NOOA 有两局就挂死在没有这两个上限的即兴搜索里</div>
+        <div class="nxi">工具沙箱也上了闸：单次 run_python 墙钟 20 秒、CPU 15 秒、写盘 16MB、工具输出 4KB</div>
+        <div class="nxi">一处呼应：08-26 手打 r11l 通关后得出的「点击类先各点一遍」，被他写成了代码里的硬执行；我方写进了手册文本，而手册臂的模型从头到尾没点过空地</div>
+        <div class="nxi">同一条规律的两种写法：写进提示词模型可以不听，写进 harness 模型没得选</div></div></div>
+  </div></div>
+</section>
+</div>
+<div class="foot"><button class="nb" id="prev">← 上一页</button><button class="nb" id="next">下一页 →</button>
+<span id="pgname"></span><span class="dots"><i data-i="0" data-on="1"></i><i data-i="1" data-on="0"></i><i data-i="2" data-on="0"></i><i data-i="3" data-on="0"></i><i data-i="4" data-on="0"></i><i data-i="5" data-on="0"></i><i data-i="6" data-on="0"></i><i data-i="7" data-on="0"></i><i data-i="8" data-on="0"></i><i data-i="9" data-on="0"></i><i data-i="10" data-on="0"></i></span><span id="pgno"></span></div>
+<script>
+const NAMES = ["封面", "源码包真相", "动画机制", "动画分布", "逐局成绩", "步数证据", "时间账", "零动作轮", "思考长尾", "回看成本", "下一步"];
+/* ── 高度锁定缩放 + 宽度自适应 ──
+   纵向：设计高固定 952，缩放由可用高度决定，所以一页的内容量永远排得下，不会滚。
+   横向：设计宽按视口反算，页面永远铺满整个窗口宽度，左右不留白，
+        多出来的宽度由 grid 的 1fr 列和 flex 自己吸收。
+   好处：版式只需要在 952 这一个高度上调对，不必写媒体查询逐档打补丁。 */
+const DH = 952, TOP = 50, BOT = 42;
+const pages = [...document.querySelectorAll('.page')];
+function fit(){
+  const s  = (innerHeight - TOP - BOT) / DH;
+  const dw = innerWidth / s;
+  pages.forEach(p => {
+    p.style.width = dw + 'px';
+    p.style.transform = 'translate(0px,' + TOP + 'px) scale(' + s + ')';
+  });
+}
+addEventListener('resize', fit);
+fit();
+
+/* ── 翻页 ── */
+const N = pages.length;
+let cur = 0;
+const $$ = s => [...document.querySelectorAll(s)];
+function go(i){
+  cur = Math.max(0, Math.min(N - 1, i));
+  pages.forEach((p, k) => p.dataset.on = (k === cur) ? '1' : '0');
+  $$('.dots i').forEach(d => d.dataset.on = (+d.dataset.i === cur) ? '1' : '0');
+  $$('.nav button').forEach(b => b.setAttribute('aria-current', +b.dataset.i === cur));
+  document.getElementById('pgname').textContent = NAMES[cur];
+  document.getElementById('pgno').textContent = (cur + 1) + ' / ' + N;
+}
+$$('.nav button').forEach(b => b.onclick = () => go(+b.dataset.i));
+$$('.dots i').forEach(d => d.onclick = () => go(+d.dataset.i));
+$$('.ov[data-go]').forEach(o => o.onclick = () => go(+o.dataset.go));
+document.getElementById('prev').onclick = () => go(cur - 1);
+document.getElementById('next').onclick = () => go(cur + 1);
+addEventListener('keydown', ev => {
+  if (['ArrowRight','PageDown',' '].includes(ev.key)) { ev.preventDefault(); go(cur + 1); }
+  if (['ArrowLeft','PageUp'].includes(ev.key))        { ev.preventDefault(); go(cur - 1); }
+  if (ev.key === 'Home') go(0);
+  if (ev.key === 'End')  go(N - 1);
+});
+go(0);
+</script></body></html>
