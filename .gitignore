@@ -53,3 +53,12 @@ probes/**/*_failed*/
 probes/**/kaggle_handbook_out/
 probes/**/sb26_official/
 probes/**/sb26_handbook/
+
+# 实验产物 —— 每次 A/B 跑完 harness 生成的大目录(artifacts/transcripts/solver_analysis 等)
+# 只提交脚本、报告和结论, 跑出来的原始数据留在本地
+probes/*/duck_guide_ab/
+probes/*/duck_q27_ab/
+probes/*/lb9_out/
+probes/*/lb9_v2_out/
+# 手打游戏时的临时脚本
+_tmp_*.py

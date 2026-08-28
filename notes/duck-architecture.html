@@ -1,0 +1,177 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8">
+<title>Duck harness 架构 · 底层调用逻辑</title>
+<style>
+:root{--bg:#F6F7FD;--card:#FFF;--ink:#1B1B33;--ink2:#4C5271;--dim:#8B93B0;--line:#E7E9F5;
+--c1:#3B82F6;--c2:#06B6D4;--c3:#A855F7;--c4:#10B981;--c5:#F59E0B;--c6:#EC4899;--c8:#EF4444;
+--mono:ui-monospace,"SF Mono",Menlo,monospace;--sans:-apple-system,"PingFang SC",sans-serif;
+--sh:0 1px 2px rgba(27,27,51,.05),0 6px 20px rgba(99,102,241,.07)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.75 var(--sans);padding:32px 40px 60px}
+h1{font-size:30px;font-weight:800;letter-spacing:-.6px;margin-bottom:6px}
+.sub{color:var(--dim);font-size:13.5px;margin-bottom:26px}
+h2{font-size:19px;font-weight:800;margin:30px 0 12px;padding-left:11px;border-left:4px solid var(--c1)}
+h2.c3{border-color:var(--c3)} h2.c4{border-color:var(--c4)} h2.c5{border-color:var(--c5)} h2.c8{border-color:var(--c8)}
+.card{background:var(--card);border-radius:14px;padding:18px 22px;box-shadow:var(--sh);margin-bottom:14px}
+pre{font-family:var(--mono);font-size:12px;line-height:1.65;overflow-x:auto;color:var(--ink2);white-space:pre}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+th{text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:1px;color:var(--dim);
+padding:7px 10px;background:#F5F6FD;font-weight:500}
+td{padding:7px 10px;border-top:1px solid var(--line);color:var(--ink2);vertical-align:top}
+td b,th b{color:var(--ink)}
+code{font-family:var(--mono);font-size:11.5px;background:#F1F3FA;padding:1px 6px;border-radius:5px;color:#5B21B6}
+.warn{background:#FEF6E7;border-left:3px solid var(--c5);padding:11px 15px;border-radius:0 9px 9px 0;
+font-size:13px;color:#7C4A03;margin:10px 0}
+.bad{background:#FEF0F0;border-left:3px solid var(--c8);color:#9B1C1C}
+.ok{background:#ECFDF5;border-left:3px solid var(--c4);color:#065F46}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.tag{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:5px;background:#EEF0FC;color:#4338CA}
+</style></head><body>
+
+<h1>Duck harness 架构</h1>
+<p class="sub">Tufa Labs · ARC-AGI-3 Milestone 1 冠军方案 · 读的是 <code>reference/duck-harness/ARC3-Inference</code> 实际代码 · 2026-08-28</p>
+
+<h2>一、两层循环：这是 act-look-act，不是 ReAct</h2>
+<div class="card"><pre>
+solver.play()                                   外层 · 一局游戏, 时间上限 7920s
+│
+├─ while not should_stop():
+│    ├─ analysis_step += 1
+│    └─ analyzer.analyze(...)  ──────────────►  内层 · 一个 "轮"
+│         │
+│         │  while turn_count &lt; tool_steps:          ← 关键: 轮内可以反复
+│         │    ├─ messages = [system, *history, user]
+│         │    ├─ _trim_messages_for_context()        按 token 预算裁剪
+│         │    ├─ _chat_completion()  ─────────────►  一次模型生成
+│         │    ├─ 解析 tool_calls
+│         │    ├─ _dispatch_tool() → run_sandboxed_python()
+│         │    │     └─ 子进程里 exec 模型写的代码
+│         │    │          └─ 代码内部可直接 action([...])  ← 动作在代码里
+│         │    ├─ 结果 append 进 messages
+│         │    └─ if 到 yield_seconds: break          ← 让出闸门
+│         │
+│         └─ return AnalyzerTurnResult
+│
+└─ 写状态快照 / 记录 / 下一轮
+</pre></div>
+
+<div class="card">
+<b>跟 coding agent 的 ReAct 循环差在哪</b>
+<table>
+<tr><th>ReAct（多数 coding agent）</th><th>Duck 的 act-look-act</th></tr>
+<tr><td>模型输出一个动作 → harness 执行 → 结果回上下文 → 模型再想</td>
+    <td>模型输出<b>一段代码</b>，代码里可以边走边看边决定</td></tr>
+<tr><td>每个动作都要一次完整生成</td><td>一段代码里能走 N 步（实测最多一轮 49 步）</td></tr>
+<tr><td>循环/条件判断由模型用自然语言表达</td><td>循环/条件判断<b>就是 python 语句</b></td></tr>
+</table>
+<div class="ok warn">模型写的代码可以长这样，动作、观察、再动作全在一次生成里闭环：
+<pre style="margin-top:8px;color:#065F46">res = action(['LEFT'])
+if res['board_changed']:
+    seg = current_frame.segmentation      # 状态已自动刷新
+    tgt = [n for n in seg['nodes'] if n['color']=='R']
+    action([{'action':'MOUSE','row':tgt[0]['boundary'][0][0],'col':...}])</pre></div>
+<p style="margin-top:10px;color:var(--ink2)">实证：08-25 同模型同题对照，Duck <b>2 关 58 步</b>，改成一次一动作的版本 <b>2 关 317 步</b>。差一个量级。</p>
+</div>
+
+<h2 class="c3">二、模型调用：一次请求怎么拼出来</h2>
+<div class="card"><pre>
+messages = [
+  {role: system, content: 系统提示词}            ← 14187 字符, 每轮重发(靠前缀缓存)
+  ...history_messages...                        ← 跨轮保留, 上限 30 个 assistant 轮
+  {role: user,   content: 本轮提示 + 棋盘图}      ← 每轮新建
+]
+        │
+        ├─ _trim_messages_for_context()
+        │    budget = 32768 - reply_reserve(512) - safety(512)
+        │    while 估算 token &gt; budget:
+        │        _drop_oldest_history_block()   ← 整块丢最老的, 不砍字符
+        │
+        ├─ _chat_completion(messages, tools=[python])
+        │    temperature 0.6 / top_p 0.95 / top_k 20 / thinking on
+        │
+        └─ 返回 → 若服务端仍报超长 → 再裁一次重试 → 仍不行才抛
+</pre>
+<div class="warn"><b>裁剪按"块"而非按字符</b>：保证 assistant + tool_result 成对丢弃，不会留下半截的工具调用。这是长跑 agent 的稳定性细节。</div>
+</div>
+
+<h2 class="c4">三、工具：只有一个 python，但它很特别</h2>
+<div class="grid2">
+<div class="card"><b>沙箱是什么</b>
+<pre>run_sandboxed_python()
+ └ tempfile.TemporaryDirectory()
+   └ subprocess.Popen([python, -I, -S, -c, BOOTSTRAP])
+     ├ stdin/stdout 走 JSON 行协议
+     ├ RLIMIT_CPU / FSIZE(1MB) / NOFILE(32)
+     └ 跑完 → 进程销毁 + 目录删除</pre>
+<p style="font-size:12.5px;color:var(--ink2);margin-top:8px">每次工具调用<b>全新子进程</b>。所以模型 <code>def</code> 的函数活不过这一轮 —— 实测 24.6% 的调用含 def。</p>
+</div>
+<div class="card"><b>沙箱里能用什么</b>
+<table style="font-size:12.5px">
+<tr><td><b>注入的变量</b></td><td><code>current_frame</code> <code>previous_frame</code> <code>history</code> <code>transitions</code> <code>valid_actions</code> <code>last_action_result</code></td></tr>
+<tr><td><b>注入的函数</b></td><td><code>action(actions)</code> ← 真正执行游戏动作</td></tr>
+<tr><td><b>可 import</b></td><td>只有 12 个纯计算模块：bisect collections copy fractions functools heapq itertools json math operator random re statistics string</td></tr>
+<tr><td><b>没有</b></td><td><code>os</code> <code>pathlib</code> <code>open</code> — 无法读写文件</td></tr>
+</table>
+</div>
+</div>
+
+<div class="card"><b><code>action()</code> 的往返：这是整个设计的核心</b>
+<pre>沙箱子进程                            宿主 (ToolAgent)                     引擎
+ action(['LEFT'])
+   └ _send({type:action})  ──────────►  action_handler()
+                                          └ step_env()  ──────────────►  真正执行
+                                                                          ↓
+                                        ◄──────────────────────────────  新状态
+                                          _compact_action_result()
+     _recv() ◄─────────────────────────  {action_result, state}
+   └ _refresh_state()   ← current_frame / history / transitions 全部就地更新
+ 继续执行下一行 python</pre>
+<p style="margin-top:8px;color:var(--ink2)">所以代码里 <code>action()</code> 之后的那一行，看到的已经是<b>动作执行后的世界</b>。这就是 act-look-act 能成立的机制基础。</p>
+</div>
+
+<h2 class="c5">四、记忆：三套并存，生命周期各不同</h2>
+<div class="card">
+<table>
+<tr><th>层</th><th>存什么</th><th>活多久</th><th>怎么进上下文</th></tr>
+<tr><td><b>对话历史</b><br><code>_history_messages</code></td><td>过去若干轮的完整消息（含 assistant 推理、工具调用、结果）</td><td>上限 30 个 assistant 轮，超预算按块丢最老的</td><td>直接作为 messages 中段</td></tr>
+<tr><td><b>世界模型</b><br><code>_summarized_knowledge</code></td><td>7 个字段：world_model / goal_model / action_model / recent_findings / open_questions / current_plan / cross_level_notes</td><td><b>永不丢弃</b>，跨关卡保留</td><td>每轮渲染进 user 消息</td></tr>
+<tr><td><b>运行时状态</b><br><code>runtime_state.json</code></td><td>当前帧、历史帧、valid_actions</td><td>每轮覆写，落盘</td><td>由沙箱读取，不进上下文</td></tr>
+</table>
+<div class="warn" style="margin-top:12px"><b>世界模型是模型自己写的</b>：它在回复里写 <code>World model:</code> <code>Goal model:</code> <code>Plan:</code> 这类前缀段落，<code>_extract_scientist_note()</code> 把它们抽出来存进字典，下一轮再渲染回提示词。提示词里那句强制要求：<i>"BEFORE EXECUTING NEW ACTIONS YOU MUST ALWAYS GIVE THE REVISED VERSION OF THE WORLD MODEL"</i>。
+<br><br>这是 Duck 处理"长跑失忆"的办法 —— 对话历史会被裁掉，但模型自己提炼的结论一直在。</div>
+</div>
+
+<h2 class="c8">五、让出闸门 yield_seconds：设计意图与我们踩的坑</h2>
+<div class="card">
+<pre>def control_yield_reason():
+    if should_stop(): return "stop_requested"
+    if (now - turn_started_at) &gt;= yield_seconds:
+        return "turn_time_budget"      ← 到点交还控制权给 solver
+    return None</pre>
+<p style="margin:10px 0;color:var(--ink2)"><b>设计意图</b>：让内层循环别陷太久，逼模型频繁交班、频繁产出动作。sonpham 的实验记录说「tempo 机制（60 秒让出、act-look-act）在这个模型尺度上压倒其它一切因素」。</p>
+<div class="bad warn"><b>但配 12 tok/s 的模型时它失效了。</b>
+线上一次生成要 130~170 秒，而闸门是 60 秒 —— 检查永远发生在生成<b>之后</b>，内层循环实际只跑一次。act-look-act 从未发生。
+<br><br>更糟：模型没吐出工具调用时，harness 会追加提示准备重试，<code>continue</code> 回循环顶部第一件事就撞上闸门 → <b>重试永远轮不上，那一轮直接作废</b>。</div>
+<table style="margin-top:12px">
+<tr><th>闸门</th><th>总生成次数</th><th>总轮数</th><th>生成/轮</th><th>说明</th></tr>
+<tr><td><b>60s</b></td><td>1061</td><td>993</td><td><b>1.07</b></td><td>现状，act-look-act 不成立</td></tr>
+<tr><td>200s</td><td>1061</td><td>565</td><td>1.88</td><td></td></tr>
+<tr><td><b>400s</b></td><td>1061</td><td>371</td><td><b>2.86</b></td><td>一轮容得下走-看-再走</td></tr>
+<tr><td>900s</td><td>1061</td><td>199</td><td>5.33</td><td>轮数少，纠偏机会也少</td></tr>
+</table>
+<p style="margin-top:8px;font-size:12.5px;color:var(--dim)">按第六发 25 局真实耗时序列模拟（986 个轮间隔，中位 145s、P90 395s）。生成总次数由时间预算决定基本不变，闸门只改变它们如何分组成轮 —— 但同轮内的第 2、3 次生成能命中前缀缓存，省下重发 system prompt 的开销。</p>
+</div>
+
+<h2>六、一句话总结各部分的取舍</h2>
+<div class="card">
+<table>
+<tr><th>设计</th><th>换来了什么</th><th>代价</th></tr>
+<tr><td>动作写在 python 代码里</td><td>一次生成能走多步、能写搜索</td><td>模型必须会写代码</td></tr>
+<tr><td><code>action()</code> 后状态就地刷新</td><td>act-look-act 闭环成立</td><td>宿主与沙箱要维持双向协议</td></tr>
+<tr><td>沙箱每次全新子进程</td><td>隔离干净、跑崩不影响宿主</td><td>模型的辅助函数活不过一轮</td></tr>
+<tr><td>历史按块淘汰</td><td>消息结构永远完整</td><td>丢弃粒度粗，可能丢掉有用的</td></tr>
+<tr><td>世界模型由模型自写自读</td><td>长跑不失忆，跨关卡保留结论</td><td>模型写错了就一直错下去</td></tr>
+<tr><td>让出闸门</td><td>逼模型频繁交班</td><td><b>必须与模型速度匹配，否则机制失效</b></td></tr>
+</table>
+</div>
+
+</body></html>
