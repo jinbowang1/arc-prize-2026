@@ -1,0 +1,767 @@
+diff --git a/ARC3-Inference/inference/agent/prompts.py b/ARC3-Inference/inference/agent/prompts.py
+index 2e59574..ab9e83d 100644
+--- a/ARC3-Inference/inference/agent/prompts.py
++++ b/ARC3-Inference/inference/agent/prompts.py
+@@ -19,6 +19,9 @@ GAME_OVERVIEW_ADDENDUM = (
+     f"- Color legend: {ARC_COLOR_LEGEND}.\n"
+ )
+ 
++import os as _os
++FIELD_GUIDE_ADDENDUM = (open(_os.environ["DUCK_FIELD_GUIDE"]).read() if _os.environ.get("DUCK_FIELD_GUIDE") else "")
++
+ VISUAL_GAME_ADDENDUM = (
+     "\n\nVisual-game guidance:\n"
+     "- Treat each board as a scene with objects, blockers, targets, adjacency, containment, motion, and symmetry.\n"
+diff --git a/ARC3-Inference/inference/agent/python_tool_sandbox.py b/ARC3-Inference/inference/agent/python_tool_sandbox.py
+index ac24747..b74c8d8 100644
+--- a/ARC3-Inference/inference/agent/python_tool_sandbox.py
++++ b/ARC3-Inference/inference/agent/python_tool_sandbox.py
+@@ -222,6 +222,18 @@ _SANDBOX_BOOTSTRAP = textwrap.dedent(
+         return transitions
+ 
+ 
++    def _collect_defined_names(ns):
++        # Names of helper functions this snippet defined; the host keeps their source.
++        injected = {"action", "result"}
++        out = []
++        for name, value in ns.items():
++            if name.startswith("_") or name in injected:
++                continue
++            if type(value).__name__ == "function":
++                out.append(name)
++        return sorted(set(out))
++
++
+     def _json_safe(value):
+         if value is None or isinstance(value, (str, int, float, bool)):
+             return value
+@@ -369,6 +381,15 @@ _SANDBOX_BOOTSTRAP = textwrap.dedent(
+         runtime_globals["action"] = action
+         _refresh_state(initial.get("state") or {})
+ 
++        # Replay helper definitions carried over from earlier turns so they are
++        # available again in this fresh sandbox process.
++        carried = str(initial.get("carried_defs", "") or "")
++        if carried:
++            try:
++                exec(compile(carried, "<carried_defs>", "exec"), runtime_globals, runtime_globals)
++            except Exception:
++                pass  # a stale carried definition must not break this turn
++
+         try:
+             compiled = compile(str(initial.get("code", "")), "<python_tool>", "exec")
+             with contextlib.redirect_stdout(stdout):
+@@ -379,6 +400,7 @@ _SANDBOX_BOOTSTRAP = textwrap.dedent(
+                     "stdout": stdout.getvalue(),
+                     "result": _json_safe(runtime_globals.get("result")),
+                     "action_results": _json_safe(action_results),
++                    "defined_names": _collect_defined_names(runtime_globals),
+                 }
+             )
+         except Exception as exc:
+@@ -445,12 +467,40 @@ def _wait_for_process_exit(process: subprocess.Popen[str], *, timeout: float = 1
+         pass
+ 
+ 
++def extract_defs(code: str, names: list[str]) -> str:
++    """从一段代码里截出指定函数的完整定义源码。
++
++    沙箱每次调用都是全新子进程, 命名空间无法直接续命; 把定义的源码留在宿主侧,
++    下一轮再随 carried_defs 送回去重新 exec, 效果等同于函数活了下来。
++    由来: 实测 24.6% 的工具调用含 def, 模型平均每四次调用就要把同一个辅助函数重敲一遍,
++    重敲就写错, 于是 9.9% 的轮次花在自我纠错(坐标算错/框大小记错)上。
++    """
++    if not names:
++        return ""
++    import ast as _ast
++    try:
++        tree = _ast.parse(code)
++    except SyntaxError:
++        return ""
++    lines = code.split("\n")
++    out: list[str] = []
++    wanted = set(names)
++    for node in tree.body:
++        if isinstance(node, _ast.FunctionDef) and node.name in wanted:
++            end = getattr(node, "end_lineno", None)
++            if end is None:
++                continue
++            out.append("\n".join(lines[node.lineno - 1:end]))
++    return "\n\n".join(out)
++
++
+ def run_sandboxed_python(
+     *,
+     code: str,
+     timeout_seconds: int,
+     initial_state: dict[str, Any],
+     action_handler: Callable[[list[dict[str, Any]]], dict[str, Any]],
++    carried_defs: str = "",
+ ) -> dict[str, Any]:
+     with tempfile.TemporaryDirectory(prefix="rgb_python_tool_") as sandbox_dir:
+         host_action_results: list[dict[str, Any]] = []
+@@ -493,6 +543,7 @@ def run_sandboxed_python(
+                 "sandbox_cwd": sandbox_dir,
+                 "state": initial_state,
+                 "color_chars": ARC_COLOR_CHARS,
++                "carried_defs": carried_defs,
+             },
+         )
+ 
+@@ -566,6 +617,7 @@ def run_sandboxed_python(
+                     "result": message.get("result"),
+                     "error": str(message.get("error", "") or ""),
+                     "action_results": list(message.get("action_results") or host_action_results),
++                    "defined_names": list(message.get("defined_names") or []),
+                 }
+ 
+             _wait_for_process_exit(process)
+diff --git a/ARC3-Inference/inference/agent/tool_agent.py b/ARC3-Inference/inference/agent/tool_agent.py
+index 59655e9..d20e37e 100644
+--- a/ARC3-Inference/inference/agent/tool_agent.py
++++ b/ARC3-Inference/inference/agent/tool_agent.py
+@@ -1,5 +1,6 @@
+ """Direct OpenAI-compatible tool-calling analyzer for ARC puzzle runs."""
+ from __future__ import annotations
++import random
+ 
+ import json
+ import logging
+@@ -22,6 +23,7 @@ from inference.agent.prompts import (
+     MULTIMODAL_CONTEXT_ADDENDUM,
+     TOOL_CALL_FORMAT_GUIDANCE,
+     VISUAL_GAME_ADDENDUM,
++    FIELD_GUIDE_ADDENDUM,
+ )
+ 
+ from inference.agent.vision_context import (
+@@ -29,9 +31,11 @@ from inference.agent.vision_context import (
+     current_grid_image_part,
+ )
+ 
+-from inference.agent.python_tool_sandbox import run_sandboxed_python
++from inference.agent.python_tool_sandbox import run_sandboxed_python, extract_defs
+ from inference.agent.runtime_state import Frame, HistoryEntry, RUNTIME_STATE_FILENAME, load_runtime_state
++from inference.utils.grid_utils import ARC_COLOR_CHARS
+ from inference.utils.openai_compat import build_chat_payload, build_headers
++from inference.utils.segmentation import segment_layer
+ 
+ log = logging.getLogger(__name__)
+ 
+@@ -148,6 +152,91 @@ _LOCAL_ANALYZER_TOP_K = _get_env_int("LOCAL_ANALYZER_TOP_K", 20)
+ _LOCAL_ANALYZER_SEED = _get_env_int("LOCAL_ANALYZER_SEED", -1)
+ _REQUEST_SAFETY_MARGIN_TOKENS = 512
+ _CONTEXT_OVERFLOW_RETRY_TRIM_TOKENS = 512
++# 08-27: 把当前棋盘直接挂进最新一条 user 消息, 省掉模型专门开一轮去读它。
++# 实测(第六发 25 局): 57.8% 的轮次一步没走, 其中 2/3 花在读 ascii / segmentation 上,
++# 而一轮的代价是 168 秒生成, 一张 64x64 ascii 只有约 1200 token 的并行预填。
++# 只挂最新一条: 存进历史前用 _BOARD_BLOCK_RE 剥掉, 否则每轮累加会撑爆 32k 窗口。
++_DUCK_BOARD_IN_PROMPT = _get_env_bool("DUCK_BOARD_IN_PROMPT", False)
++# 08-27 归因表: 一张"哪个动作在什么状态下导致了什么"的滚动表, 挂在 user 消息里。
++# 由来: 手打 bp35/sp80/g50t/m0r0 四局, 四次差点错判都是同一个形状 ——
++# 拿一次观察直接当普适规则("屏幕没变=动作无效" / "state没变=没过关" / "试过没用=这动作没用")。
++# 把状态签名和结果并排摆着, 规律自己浮现, 省掉模型每轮花 6000 字重新回忆推理。
++_DUCK_CAUSAL_TABLE = _get_env_bool("DUCK_CAUSAL_TABLE", False)
++# 08-28 跨轮保留 python 工具里定义的函数。
++# 沙箱每次调用起全新子进程, 模型 def 的辅助函数活不过这一轮 —— 实测 24.6% 的工具调用含 def,
++# 平均每四次调用就要把同一个函数重敲一遍, 重敲写错又引出 9.9% 的自我纠错轮次。
++_DUCK_PERSIST_DEFS = _get_env_bool("DUCK_PERSIST_DEFS", False)
++_DUCK_DIVISION_OF_LABOUR = _get_env_bool("DUCK_DIVISION_OF_LABOUR", False)
++_PERSIST_DEFS_MAX_CHARS = _get_env_int("DUCK_PERSIST_DEFS_MAX_CHARS", 12000)
++_CAUSAL_TABLE_ROWS = _get_env_int("DUCK_CAUSAL_TABLE_ROWS", 24)
++_CAUSAL_BEGIN = "=== WHAT EACH ACTION DID (most recent last) ==="
++# 说明是固定文本, 属于"这个游戏怎么玩"的基础设定, 放 system prompt 发一次;
++# 每轮变化的只有数据行, 那部分留在 user 消息。
++# 08-27 教训: 把说明跟数据行捆在一起每轮重发, 等于每轮把说明书重新拍在模型面前,
++# 说明写得越细, 它每轮读得越久(实测思考字符 +398 → +2078)。
++# 08-28: 实测 255 轮长思考(348万字符)里有 1.8 万个坐标对、9 千次"columns 9-20"式逐行枚举,
++# 思考越长数字密度越高(短思考每千字符 22.3 个数字, 长思考 31.5)。模型在用自然语言做数组下标运算,
++# 一边算一边出错再回头重核。而代码只占思考量的 12.6% —— 本该交给 python 的活它写在了推理里。
++DIVISION_OF_LABOUR_ADDENDUM = (
++    "\n\nWhere to do the work:\n"
++    "- Anything mechanical belongs in the python tool, not in your reasoning: reading off coordinates, "
++    "counting cells, slicing a row into colour runs, comparing two frames, checking whether a shape "
++    "repeats. Write it as code and print the answer.\n"
++    "- Your reasoning is for what code cannot do: forming a hypothesis about the mechanic, deciding "
++    "which test would discriminate between two hypotheses, reading a result and concluding what it "
++    "means, choosing the next action.\n"
++    "- Enumerating positions or arithmetic in prose is where mistakes creep in, and a wrong index there "
++    "costs several turns to notice and undo. One `print` settles it.\n"
++    "- A good turn looks like: a short hypothesis, a few lines of python that measure the thing which "
++    "would confirm or kill it, then the action your code selected.\n"
++)
++
++PERSIST_DEFS_ADDENDUM = (
++    "\n\nHelper functions persist:\n"
++    "- Functions you define with `def` in the python tool stay available in every later tool call of "
++    "this run. Everything else (variables, imports, state) is still fresh each call.\n"
++    "- So write a helper once and call it by name from then on, instead of pasting the same body again. "
++    "A small library of your own -- rendering the board the way you find readable, converting pixel "
++    "coordinates to game cells, diffing two frames, testing a hypothesis -- pays for itself within a "
++    "few turns and removes the transcription errors that come from retyping it.\n"
++    "- Redefining a name replaces the old version, so you can improve a helper as you learn more.\n"
++)
++
++CAUSAL_TABLE_ADDENDUM = (
++    "\n\nAction log:\n"
++    "- Every user turn ends with a block marked `WHAT EACH ACTION DID`: your own record of cause and "
++    "effect, one row per action already executed, most recent last.\n"
++    "- It is there so you do not have to re-test an action to recall what it does. Reading a row costs "
++    "nothing; re-testing costs a turn and an in-game step.\n"
++    "- `frames` is how many frames the engine returned for that action. A value well above this game's "
++    "usual one marks a step where something large happened -- a fall, a chain reaction, a reset, a level change.\n"
++    "- `changed` is how many cells differ from the board before the action. 0 means the visible board is "
++    "identical, which is itself a finding about that action in that exact state.\n"
++    "- `where` is the bounding box of the change. A box spanning far more rows than usual means a second "
++    "part of the screen -- a counter, a panel, a legend -- moved along with your action.\n"
++    "- `what moved` lists colour transitions, e.g. `N>Sx21` means 21 cells went from N to S.\n"
++    "- When the same action appears twice with different `what moved`, its effect depends on the state it "
++    "was used in; what differed between those two moments is the mechanic.\n"
++    "- `LEVEL UP` in result marks real progress, and the lvl column is the trustworthy progress signal.\n"
++)
++_CAUSAL_END = "=== END ACTION LOG ==="
++_HELPERS_BLOCK_RE = re.compile(
++    r"\n*=== YOUR HELPER FUNCTIONS.*?=== END HELPERS ===\n*", re.S)
++_CAUSAL_BLOCK_RE = re.compile(
++    r"\n*" + re.escape(_CAUSAL_BEGIN) + r".*?" + re.escape(_CAUSAL_END) + r"\n*",
++    re.S,
++)
++# 同时给 ascii 和对象表: 08-27 第一次 A/B 显示只给 ascii 时, 模型把省下的轮次转去读
++# segmentation 了(读 ascii 的零动作轮 -59%, 读 segmentation 的从 5 涨到 12), 总零动作轮不降。
++# 对象表按像素数取前 N, 原 JSON 中位约 4000 字符/最大 24035, 精简后中位 858/最大 2095。
++_DUCK_BOARD_MAX_OBJECTS = _get_env_int("DUCK_BOARD_MAX_OBJECTS", 60)
++_BOARD_BEGIN = "=== CURRENT BOARD (latest frame) ==="
++_BOARD_END = "=== END CURRENT BOARD ==="
++_BOARD_BLOCK_RE = re.compile(
++    r"\n*" + re.escape(_BOARD_BEGIN) + r".*?" + re.escape(_BOARD_END) + r"\n*",
++    re.S,
++)
++
+ _PERSISTENT_HISTORY_ASSISTANT_TURNS = 30
+ _RESPONSE_META_MAX_CHARS = 4000
+ 
+@@ -354,6 +443,15 @@ def _build_system_prompt(*, tool_output_tokens: int) -> str:
+     if current_grid_image_enabled():
+         prompt += MULTIMODAL_CONTEXT_ADDENDUM
+     prompt += VISUAL_GAME_ADDENDUM
++    # 08-26: DUCK_FIELD_GUIDE_MODE=first 时手册不进 system, 只在首次行动前的 user 消息里给一次
++    if os.environ.get("DUCK_FIELD_GUIDE_MODE", "system") != "first":
++        prompt += FIELD_GUIDE_ADDENDUM
++    if _DUCK_DIVISION_OF_LABOUR:
++        prompt += DIVISION_OF_LABOUR_ADDENDUM
++    if _DUCK_PERSIST_DEFS:
++        prompt += PERSIST_DEFS_ADDENDUM
++    if _DUCK_CAUSAL_TABLE:
++        prompt += CAUSAL_TABLE_ADDENDUM
+     prompt += PYTHON_ADDENDUM
+     prompt += COMPACT_TOOL_SESSION_ADDENDUM.format(tool_output_tokens=tool_output_tokens)
+     return prompt
+@@ -947,6 +1045,8 @@ class ToolAgent:
+             _LOCAL_ANALYZER_CONTEXT_WINDOW - self._reply_reserve_tokens - self._request_safety_margin_tokens,
+         )
+         self._history_messages: list[dict[str, Any]] = []
++        self._causal_log: list[dict[str, Any]] = []
++        self._carried_defs: str = ""
+         self._session_runtime_dir: Path | None = None
+         self._session_total_tokens = 0
+         self._session_generated_tokens = 0
+@@ -1144,15 +1244,73 @@ class ToolAgent:
+             "- Revise any item above immediately if `current_frame` or `history` contradicts it.",
+         ]
+ 
++    def _build_board_block(self, current_frame: Frame | None) -> str:
++        """当前棋盘的 ascii, 夹在可识别的标记之间, 便于存历史时整块剥掉。"""
++        if not _DUCK_BOARD_IN_PROMPT or current_frame is None:
++            return ""
++        ascii_board = current_frame.ascii
++        if not ascii_board:
++            return ""
++        parts = [
++            _BOARD_BEGIN,
++            "Row/column indices are 0-based; row 0 is the top row.",
++            ascii_board,
++        ]
++        objects = self._compact_segmentation(current_frame)
++        if objects:
++            parts.append("")
++            parts.append(objects)
++        parts.append(_BOARD_END)
++        return "\n\n" + "\n".join(parts)
++
++    def _compact_segmentation(self, current_frame: Frame) -> str:
++        """当前帧的对象表, 压到几百字符 —— 完整 segmentation JSON 最大到 24k 字符, 放不进来。
++
++        保留 id/颜色/像素数/行列范围/包含关系/相邻关系, 丢掉 boundary 轮廓点与 hash;
++        对象过多时按像素数留最大的 N 个, 并注明省略了多少。
++        """
++        nodes_all = segment_layer([list(row) for row in current_frame.grid], ARC_COLOR_CHARS)
++        nodes = nodes_all.get("nodes") or []
++        if not nodes:
++            return ""
++        kept = sorted(nodes, key=lambda n: -int(n.get("pixels") or 0))[:_DUCK_BOARD_MAX_OBJECTS]
++        kept.sort(key=lambda n: int(n.get("id") or 0))
++        keep_ids = {int(n.get("id") or 0) for n in kept}
++        lines = ["objects (id color n=pixels rows cols in=encloses):"]
++        for node in kept:
++            boundary = node.get("boundary") or ()
++            if not boundary:
++                continue
++            rows = [int(point[0]) for point in boundary]
++            cols = [int(point[1]) for point in boundary]
++            line = (
++                f"{int(node.get('id') or 0)} {node.get('color')} n={int(node.get('pixels') or 0)} "
++                f"r{min(rows)}-{max(rows)} c{min(cols)}-{max(cols)}"
++            )
++            children = [c for c in (node.get("children") or ()) if int(c) in keep_ids]
++            if children:
++                line += " in=" + ",".join(str(int(c)) for c in children)
++            lines.append(line)
++        adjacency = [
++            pair for pair in (nodes_all.get("adjacency_list") or ())
++            if int(pair[0]) in keep_ids and int(pair[1]) in keep_ids
++        ]
++        if adjacency:
++            lines.append("touching: " + " ".join(f"{int(a)}-{int(b)}" for a, b in adjacency))
++        if len(nodes) > len(kept):
++            lines.append(f"({len(nodes) - len(kept)} smaller objects omitted; use current_frame.segmentation for the full list)")
++        return "\n".join(lines)
++
+     def _build_user_message(self, user_prompt: str, current_frame: Frame | None) -> dict[str, Any]:
+         image_part = current_grid_image_part(current_frame)
++        board_block = self._build_board_block(current_frame) + self._causal_table_block() + self._helpers_block()
+         if image_part is None:
+-            return {"role": "user", "content": user_prompt}
++            return {"role": "user", "content": user_prompt + board_block}
+ 
+         return {
+             "role": "user",
+             "content": [
+-                {"type": "text", "text": f"{user_prompt}\n\nCurrent grid image:"},
++                {"type": "text", "text": f"{user_prompt}{board_block}\n\nCurrent grid image:"},
+                 image_part,
+             ],
+         }
+@@ -1222,7 +1380,12 @@ class ToolAgent:
+                 f"Valid actions right now: {_format_valid_action_line(valid_actions)}.",
+                 "Only tool: `python`. It receives `current_frame`, `previous_frame`, `history`, `transitions`, `last_transition`, `valid_actions`, `last_action_result`, and `action(actions)`.",
+                 "Only letter-coded board views and lightweight metadata are exposed; raw numeric color IDs are not available.",
+-                "Keep tool output compact: use `current_frame.segmentation` as the primary view, and `current_frame.ascii` only for a small specific region; never print full boards.",
++                (
++                    "The current board is already printed for you below under CURRENT BOARD -- both the full ascii grid and the object table (id, colour, pixel count, row/col extent, containment, adjacency). "
++                    "Read them there instead of spending a whole turn fetching them. Call `current_frame.segmentation` only when you need something the table omits, such as cross-frame object hashes or objects below the size cutoff; never print full boards."
++                    if _DUCK_BOARD_IN_PROMPT else
++                    "Keep tool output compact: use `current_frame.segmentation` as the primary view, and `current_frame.ascii` only for a small specific region; never print full boards."
++                ),
+                 "For the most recent change, compare `previous_frame` to `current_frame`, or `last_transition.before_frame` to `last_transition.after_frame`; `history[-1].frame` is the current frame, not the previous one.",
+                 "Use Python to inspect the evidence, refine that world model from the newest history, and search or score candidate actions or short sequences against the current goal as you currently understand it.",
+                 "Maintain a compact working world model of what the current level seems to contain, what actions appear to do, what the goal seems to be, what is still uncertain, and what plan currently looks best.",
+@@ -1253,6 +1416,9 @@ class ToolAgent:
+         )
+         if "MOUSE" in _normalize_valid_actions(valid_actions):
+             lines.append("If you use MOUSE, include integer row and col arguments.")
++        if action_num == 0 and FIELD_GUIDE_ADDENDUM and os.environ.get("DUCK_FIELD_GUIDE_MODE", "system") == "first":
++            lines.append(FIELD_GUIDE_ADDENDUM.strip())
++            lines.append("This field guide is shown only now; fold whatever seems relevant into your own world model and trust what you observe over it.")
+         return "\n".join(lines)
+ 
+     def _tools(self, state_path: Path) -> list[dict[str, Any]]:
+@@ -1308,6 +1474,15 @@ class ToolAgent:
+             )
+ 
+         response = post_chat(payload)
++        # 本地对照(08-26): hub 上阿里模型按 project 限流, 429 时指数退避重试, 不在 transcript 里刷重试记录
++        if os.environ.get("HUB_429_BACKOFF", "") == "1":
++            _delay = 8.0
++            for _attempt in range(12):
++                if getattr(response, "status_code", 200) != 429:
++                    break
++                time.sleep(_delay + random.uniform(0, 4))
++                _delay = min(_delay * 1.6, 90.0)
++                response = post_chat(payload)
+         try:
+             response.raise_for_status()
+         except requests.HTTPError as exc:
+@@ -1448,8 +1623,112 @@ class ToolAgent:
+                 compact[timing_key] = payload.get(timing_key)
+         if payload.get("error"):
+             compact["error"] = payload.get("error")
++        self._record_causal(payload)
+         return compact
+ 
++    def _helpers_block(self) -> str:
++        """把已存在的辅助函数签名列给模型看。
++
++        只写说明不够: 真机冒烟里模型定义了 7 个函数、一个都没复用 —— 它不会去回忆自己
++        几轮前写过什么。把签名摆在眼前, 复用才有可能发生。
++        """
++        if not _DUCK_PERSIST_DEFS or not self._carried_defs:
++            return ""
++        sigs = []
++        for block in self._carried_defs.split("\n\n"):
++            head = block.strip().split("\n", 1)[0].rstrip(":")
++            if head.startswith("def "):
++                body = block.strip().split("\n", 1)[1] if "\n" in block.strip() else ""
++                first = body.strip().split("\n", 1)[0][:60] if body.strip() else ""
++                sigs.append(f"  {head[4:]}" + (f"   # {first}" if first.startswith("#") else ""))
++        if not sigs:
++            return ""
++        return ("\n\n=== YOUR HELPER FUNCTIONS (already defined, call them directly) ===\n"
++                + "\n".join(sigs) + "\n=== END HELPERS ===")
++
++    def _absorb_defs(self, code: str, names: list[str]) -> None:
++        """收下本轮定义的函数, 供后续轮次直接调用。
++
++        同名覆盖: 模型改进了某个函数就该用新版, 留旧版会让它调到一个自己已经修过的实现。
++        总量设上限, 免得几十轮下来把上下文之外的这块也撑大。
++        """
++        fresh = extract_defs(code, [n for n in names if isinstance(n, str)])
++        if not fresh:
++            return
++        kept: dict[str, str] = {}
++        for block in (self._carried_defs.split("\n\n") if self._carried_defs else []):
++            head = block.strip().split("(", 1)[0]
++            if head.startswith("def "):
++                kept[head[4:].strip()] = block
++        for block in fresh.split("\n\n"):
++            head = block.strip().split("(", 1)[0]
++            if head.startswith("def "):
++                kept[head[4:].strip()] = block
++        merged = "\n\n".join(kept.values())
++        if len(merged) > _PERSIST_DEFS_MAX_CHARS:
++            # 超限就只保留最近定义的那些, 老的丢掉
++            out: list[str] = []
++            for block in reversed(list(kept.values())):
++                if sum(len(x) for x in out) + len(block) > _PERSIST_DEFS_MAX_CHARS:
++                    break
++                out.insert(0, block)
++            merged = "\n\n".join(out)
++        self._carried_defs = merged
++
++    def _record_causal(self, payload: dict[str, Any]) -> None:
++        """把这次动作(或这批动作)的因果记进滚动日志。"""
++        if not _DUCK_CAUSAL_TABLE:
++            return
++        rows = payload.get("causal_rows")
++        if not isinstance(rows, list) or not rows:
++            single = payload.get("causal")
++            if not isinstance(single, dict):
++                return
++            rows = [{
++                "action": payload.get("action_display") or payload.get("action_name"),
++                "level": payload.get("level"),
++                "board_changed": bool(payload.get("board_changed")),
++                "level_completed": bool(payload.get("level_completed")),
++                "reward": payload.get("reward"),
++                **single,
++            }]
++        for row in rows:
++            if isinstance(row, dict):
++                self._causal_log.append(row)
++        del self._causal_log[:-_CAUSAL_TABLE_ROWS]
++
++    def _causal_table_block(self) -> str:
++        """渲染成一张表。同一动作在不同状态下的不同结果并排摆着, 规律自己浮现。"""
++        if not _DUCK_CAUSAL_TABLE or not self._causal_log:
++            return ""
++        header = f"{'#':>3}  {'action':<22}{'lvl':>4}{'frames':>7}{'changed':>8}  {'where':<18}{'what moved':<26}result"
++        lines = [_CAUSAL_BEGIN, header]
++        start = max(1, len(self._causal_log) - _CAUSAL_TABLE_ROWS + 1)
++        for offset, row in enumerate(self._causal_log):
++            changed = int(row.get("changed") or 0)
++            bbox = row.get("bbox")
++            where = f"r{bbox[0]}-{bbox[2]} c{bbox[1]}-{bbox[3]}" if bbox else "-"
++            note = []
++            if row.get("level_completed"):
++                note.append("LEVEL UP")
++            if changed == 0:
++                note.append("board identical")
++            try:
++                if float(row.get("reward") or 0) > 0:
++                    note.append("reward")
++            except (TypeError, ValueError):
++                pass
++            if row.get("clicked"):
++                note.append(f"clicked colour {row['clicked']}")
++            lines.append(
++                f"{start+offset:>3}  {str(row.get('action') or '?')[:21]:<22}"
++                f"{str(row.get('level') if row.get('level') is not None else '-'):>4}"
++                f"{int(row.get('frames') or 1):>7}{changed:>8}  {where:<18}"
++                f"{str(row.get('moves') or '-')[:25]:<26}{', '.join(note)}"
++            )
++        lines.append(_CAUSAL_END)
++        return "\n\n" + "\n".join(lines)
++
+     def _run_python_tool(self, state_path: Path, arguments: dict[str, Any]) -> _ToolDispatchResult:
+         self._ensure_session(state_path)
+         code = str(arguments.get("code", "")).rstrip()
+@@ -1549,7 +1828,10 @@ class ToolAgent:
+             timeout_seconds=self._python_timeout,
+             initial_state=_serialized_runtime_state(),
+             action_handler=_handle_action,
++            carried_defs=self._carried_defs if _DUCK_PERSIST_DEFS else "",
+         )
++        if _DUCK_PERSIST_DEFS:
++            self._absorb_defs(code, sandbox_result.get("defined_names") or [])
+ 
+         action_results = [
+             item
+@@ -1667,7 +1949,38 @@ class ToolAgent:
+             previous_message = trimmed_history[len(trimmed_history) - len(history) - 1]
+             if str(previous_message.get("role", "")).strip() == "user":
+                 history = [previous_message, *history]
+-        return self._drop_until_first_user_message(history)
++        return self._strip_board_blocks(self._drop_until_first_user_message(history))
++
++    def _strip_board_blocks(self, history: list[dict[str, Any]]) -> list[dict[str, Any]]:
++        """历史里的棋盘一律剥掉 —— 只有最新一条 user 消息带棋盘, 否则每轮累加会撑爆窗口。"""
++        if not (_DUCK_BOARD_IN_PROMPT or _DUCK_CAUSAL_TABLE or _DUCK_PERSIST_DEFS):
++            return history
++        cleaned: list[dict[str, Any]] = []
++        for message in history:
++            if str(message.get("role", "")).strip() != "user":
++                cleaned.append(message)
++                continue
++            content = message.get("content")
++            if isinstance(content, str):
++                stripped = _HELPERS_BLOCK_RE.sub("\n\n", _CAUSAL_BLOCK_RE.sub("\n\n", _BOARD_BLOCK_RE.sub("\n\n", content)))
++                cleaned.append({**message, "content": stripped} if stripped != content else message)
++                continue
++            if isinstance(content, list):
++                parts = []
++                changed = False
++                for part in content:
++                    if isinstance(part, dict) and part.get("type") == "text":
++                        text = str(part.get("text", ""))
++                        stripped = _HELPERS_BLOCK_RE.sub("\n\n", _CAUSAL_BLOCK_RE.sub("\n\n", _BOARD_BLOCK_RE.sub("\n\n", text)))
++                        if stripped != text:
++                            changed = True
++                            parts.append({**part, "text": stripped})
++                            continue
++                    parts.append(part)
++                cleaned.append({**message, "content": parts} if changed else message)
++                continue
++            cleaned.append(message)
++        return cleaned
+ 
+     def _trim_messages_for_context(
+         self,
+diff --git a/ARC3-Inference/inference/framework/solver.py b/ARC3-Inference/inference/framework/solver.py
+index 0b69d62..a779b21 100644
+--- a/ARC3-Inference/inference/framework/solver.py
++++ b/ARC3-Inference/inference/framework/solver.py
+@@ -21,6 +21,7 @@ from typing import Any, Callable
+ 
+ import arcengine
+ import taaf.game
++from inference.utils.grid_utils import ARC_COLOR_CHARS
+ from taaf.solver import Solver
+ 
+ from inference.agent.action_names import (
+@@ -55,6 +56,15 @@ from inference.utils.viewer_artifacts import (
+ 
+ AnalyzerFactory = Callable[[taaf.game.Game, int], Any]
+ 
++# 08-27 开局硬探测: 每关开始时 harness 自己把每类动作各走一遍, 模型还没看到一个 token。
++# 依据(polyphony 作者实测): Q3.8 中位要 9 步才试全所有动作类, 五局里有的局从头到尾没试全。
++# 探测走的是真步数, 会计入 RHAE 惩罚, 所以有上限; 结果自动进 history, 模型接手时能看到每个动作干了什么。
++_BOOTSTRAP_PROBE = os.environ.get("DUCK_BOOTSTRAP_PROBE", "").strip().lower() in {"1", "true", "yes", "on"}
++try:
++    _BOOTSTRAP_PROBE_CAP = max(1, int(os.environ.get("DUCK_BOOTSTRAP_PROBE_CAP", "") or 12))
++except ValueError:
++    _BOOTSTRAP_PROBE_CAP = 12
++
+ ANALYZER_RETRY_BACKOFF_SECONDS = 1.0
+ DEFAULT_CANCEL_DRAIN_TIMEOUT_SECONDS = 120.0
+ _LOCAL_SERVER_PROCESS_ENV_KEYS = (
+@@ -106,6 +116,48 @@ def _level_number(game: taaf.game.Game) -> int:
+     return max(1, min(int(game.number_of_levels), completed + 1))
+ 
+ 
++
++def _cell_color_char(grid: tuple, row: Any, col: Any) -> str:
++    """棋盘上某一格的颜色字符, 越界返回 '?'。"""
++    try:
++        r, c = int(row), int(col)
++    except (TypeError, ValueError):
++        return "?"
++    if r < 0 or r >= len(grid):
++        return "?"
++    line = grid[r]
++    if c < 0 or c >= len(line):
++        return "?"
++    return ARC_COLOR_CHARS[max(0, min(15, int(line[c])))]
++
++
++def _describe_change(before: tuple, after: tuple) -> dict[str, Any]:
++    """两帧之间变了什么: 格数、外框、主要颜色迁移。gp.py 里手打时用的就是这个视角。"""
++    cells: list[tuple[int, int, int, int]] = []
++    for r in range(max(len(before), len(after))):
++        row_b = before[r] if r < len(before) else ()
++        row_a = after[r] if r < len(after) else ()
++        for c in range(max(len(row_b), len(row_a))):
++            v_b = row_b[c] if c < len(row_b) else None
++            v_a = row_a[c] if c < len(row_a) else None
++            if v_b != v_a:
++                cells.append((r, c, v_b if v_b is not None else -1, v_a if v_a is not None else -1))
++    if not cells:
++        return {"changed": 0}
++    rows = [x[0] for x in cells]
++    cols = [x[1] for x in cells]
++    moves: dict[str, int] = {}
++    for _, _, v_b, v_a in cells:
++        key = f"{ARC_COLOR_CHARS[max(0, min(15, v_b))]}>{ARC_COLOR_CHARS[max(0, min(15, v_a))]}"
++        moves[key] = moves.get(key, 0) + 1
++    top = sorted(moves.items(), key=lambda kv: -kv[1])[:3]
++    return {
++        "changed": len(cells),
++        "bbox": [min(rows), min(cols), max(rows), max(cols)],
++        "moves": " ".join(f"{k}x{v}" for k, v in top),
++    }
++
++
+ def _engine_action_names(game: taaf.game.Game) -> list[str]:
+     names: list[str] = []
+     for action_id in game.current_state.available_actions:
+@@ -178,6 +230,8 @@ class _HarnessGameSession:
+     viewer_data_path: Path
+     started_at: float = field(default_factory=time.monotonic)
+     history_entries: list[HistoryEntry] = field(default_factory=list)
++    # 已做过开局硬探测的关卡号
++    _probed_levels: set[int] = field(default_factory=set)
+     viewer_events: list[dict[str, Any]] = field(default_factory=list)
+     analysis_step: int = 0
+     last_engine_action: str | None = None
+@@ -281,6 +335,8 @@ class _HarnessGameSession:
+                     self._execute_auto_reset()
+                     continue
+ 
++                self._bootstrap_probe_if_needed()
++
+                 if retry_analysis_step is None:
+                     self.analysis_step += 1
+                     analysis_step = self.analysis_step
+@@ -641,6 +697,18 @@ class _HarnessGameSession:
+             return self._error_payload("No action was executed.")
+ 
+         final_payload = dict(executed_payloads[-1])
++        # 归因表: 批量下发时每个动作各自的因果都要带出去, 只给最后一个等于把中间的都丢了
++        final_payload["causal_rows"] = [
++            {
++                "action": item.get("action_display") or item.get("action_name"),
++                "level": item.get("level"),
++                "board_changed": bool(item.get("board_changed")),
++                "level_completed": bool(item.get("level_completed")),
++                "reward": item.get("reward"),
++                **(item.get("causal") or {}),
++            }
++            for item in executed_payloads
++        ]
+         final_payload["reward"] = total_reward
+         final_payload["last_reward"] = executed_payloads[-1].get("reward", 0.0)
+         final_payload["batched"] = batch_size > 1
+@@ -664,6 +732,57 @@ class _HarnessGameSession:
+         action = arcengine.ActionInput(id=arcengine.GameAction.RESET, data={})
+         self._execute_action(action, batch_index=1, batch_size=1, generated_tokens=0)
+ 
++    def _bootstrap_probe_if_needed(self) -> None:
++        """本关还没探测过就先探一遍: 每个可用动作类各走一次, 模型未介入。
++
++        MOUSE 的取值空间是 64x64, 无法穷举, 只点棋盘中心一次当作"点击这一类做什么"的样本。
++        探测结果通过 history/transitions 自然传给模型, 不额外拼提示词。
++        """
++        if not _BOOTSTRAP_PROBE:
++            return
++        level = _level_number(self.game)
++        if level in self._probed_levels:
++            return
++        self._probed_levels.add(level)
++        if self.should_stop() or _is_engine_game_over(self.game):
++            return
++
++        available = set(self.game.current_state.available_actions)
++        probes: list[arcengine.ActionInput] = []
++        for action_id in arcengine.GameAction:
++            if len(probes) >= _BOOTSTRAP_PROBE_CAP:
++                break
++            if action_id.value not in available:
++                continue
++            name = action_id.name
++            if name == "RESET":
++                continue
++            if name == "ACTION6":  # MOUSE
++                probes.append(arcengine.ActionInput(id=action_id, data={"x": 32, "y": 32}))
++                continue
++            probes.append(arcengine.ActionInput(id=action_id, data={}))
++
++        for batch_index, action in enumerate(probes, start=1):
++            if self.should_stop() or _is_engine_game_over(self.game):
++                break
++            if action.id.value not in self.game.current_state.available_actions:
++                continue
++            try:
++                payload = self._execute_action(
++                    action,
++                    batch_index=batch_index,
++                    batch_size=len(probes),
++                    flush_viewer_payload=False,
++                )
++            except Exception as exc:
++                log.warning("bootstrap probe failed on %s: %s", action.id.name, exc)
++                break
++            # 探测撞到过关或终局就停下, 剩下的动作留给模型
++            if payload.get("level_completed") or payload.get("game_over") or payload.get("run_complete"):
++                break
++        self.write_runtime_state()
++        self.write_viewer_payload()
++
+     def _execute_action(
+         self,
+         action: arcengine.ActionInput,
+@@ -700,7 +819,15 @@ class _HarnessGameSession:
+             1.0, float(self.game.number_of_levels)
+         )
+         raw_state = new_state.raw.state
+-        board_changed = previous_grid != _grid_from_state(new_state)
++        new_grid = _grid_from_state(new_state)
++        board_changed = previous_grid != new_grid
++        # 08-27 归因表: 这三样 harness 本来就知道, 之前只把最后一帧棋盘给模型。
++        # 帧数是"这一步有没有出事"的白送信号(实测坠落/重置都是长动画, 平常 5 帧);
++        # 变化区域和被点格子的颜色, 是区分"同一动作在不同状态下效果不同"的状态签名。
++        _causal = _describe_change(previous_grid, new_grid)
++        _causal["frames"] = len(getattr(new_state.raw, "frame", None) or ()) or 1
++        if action.id == arcengine.GameAction.ACTION6:
++            _causal["clicked"] = _cell_color_char(previous_grid, action.data.get("y"), action.data.get("x"))
+         level_completed = bool(
+             new_state.just_won_level and raw_state != arcengine.GameState.WIN
+         )
+@@ -724,6 +851,7 @@ class _HarnessGameSession:
+                 else dict(action.data)
+             ),
+             "action_display": action_display,
++            "causal": _causal,
+             "batch_index": batch_index,
+             "batch_size": batch_size,
+             **self.timing_payload(),
+diff --git a/ARC3-Inference/inference/utils/openai_compat.py b/ARC3-Inference/inference/utils/openai_compat.py
+index 157e113..a20d64a 100644
+--- a/ARC3-Inference/inference/utils/openai_compat.py
++++ b/ARC3-Inference/inference/utils/openai_compat.py
+@@ -1,6 +1,7 @@
+ """Helpers for provider-specific OpenAI-compatible requests."""
+ from __future__ import annotations
+ 
++import os
+ from typing import Any
+ 
+ 
+@@ -62,6 +63,10 @@ def build_chat_payload(
+             payload["tool_choice"] = tool_choice
+ 
+     normalized = normalize_provider(provider)
++    # 本地对照(08-25): hub 上的 DeepSeek/Qwen 默认思考, OpenAI 兼容模式没有关思考的通道;
++    # 设 HUB_THINKING_DISABLED=1 则带 DeepSeek/阿里通道都认的 thinking 字段
++    if os.environ.get("HUB_THINKING_DISABLED", "") == "1":
++        payload["thinking"] = {"type": "disabled"}
+     if normalized == "vllm":
+         if top_k > 0:
+             payload["top_k"] = top_k
