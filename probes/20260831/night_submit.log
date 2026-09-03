@@ -1,0 +1,86 @@
+[18:28:48] 开始守夜: {'manual': ('jinbowang1/arc3-l1-manual', 3), 'both': ('jinbowang1/arc3-l1-both', 2)}
+[18:28:48] 开始守夜: {'manual': ('jinbowang1/arc3-l1-manual', 3), 'both': ('jinbowang1/arc3-l1-both', 2)}
+[18:28:54] 状态: {'manual': 'RUNNING', 'both': 'RUNNING'}
+[18:28:54] 状态: {'manual': 'RUNNING', 'both': 'RUNNING'}
+---- 18:35 重启: both换v3 ----
+[18:30:07] 开始守夜: {'manual': ('jinbowang1/arc3-l1-manual', 3), 'both': ('jinbowang1/arc3-l1-both', 3)}
+[18:30:07] 开始守夜: {'manual': ('jinbowang1/arc3-l1-manual', 3), 'both': ('jinbowang1/arc3-l1-both', 3)}
+[18:30:10] 状态: {'manual': 'RUNNING', 'both': 'ERROR'}
+[18:30:10] 状态: {'manual': 'RUNNING', 'both': 'ERROR'}
+[18:35:17] 状态: {'manual': 'RUNNING', 'both': 'ERROR'}
+[18:35:17] 状态: {'manual': 'RUNNING', 'both': 'ERROR'}
+[18:40:20] 状态: {'manual': 'RUNNING', 'both': 'ERROR'}
+[18:40:20] 状态: {'manual': 'RUNNING', 'both': 'ERROR'}
+---- 18:45 重启: 合并版换 combo v1 ----
+[18:44:51] 开始守夜: {'manual': ('jinbowang1/arc3-l1-manual', 3), 'combo': ('jinbowang1/arc3-l1-combo', 1)}
+[18:44:51] 开始守夜: {'manual': ('jinbowang1/arc3-l1-manual', 3), 'combo': ('jinbowang1/arc3-l1-combo', 1)}
+[18:44:55] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[18:44:55] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[18:49:58] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[18:49:58] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[18:55:02] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[18:55:02] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[19:00:05] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[19:00:05] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[19:05:10] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[19:05:10] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[19:10:12] 状态: {'manual': 'RUNNING', 'combo': 'UNKNOWN'}
+[19:10:12] 状态: {'manual': 'RUNNING', 'combo': 'UNKNOWN'}
+[19:15:15] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[19:15:15] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[19:20:18] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[19:20:18] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[19:25:32] 状态: {'manual': 'UNKNOWN', 'combo': 'RUNNING'}
+[19:25:32] 状态: {'manual': 'UNKNOWN', 'combo': 'RUNNING'}
+[19:30:35] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[19:30:35] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[19:35:38] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[19:35:38] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[19:40:41] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[19:40:41] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[19:45:44] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[19:45:44] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[19:50:48] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[19:50:48] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[19:56:07] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[19:56:07] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[20:01:10] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[20:01:10] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[20:06:12] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[20:06:12] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[20:11:16] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[20:11:16] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[20:16:21] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[20:16:21] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[20:21:25] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[20:21:25] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[20:26:28] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[20:26:28] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[20:31:43] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[20:31:43] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[20:36:46] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[20:36:46] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[20:42:17] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[20:42:17] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[20:47:20] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[20:47:20] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[20:52:24] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[20:52:24] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[20:57:27] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[20:57:27] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[21:02:31] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[21:02:31] 状态: {'manual': 'RUNNING', 'combo': 'RUNNING'}
+[21:07:34] 状态: {'manual': 'COMPLETE', 'combo': 'RUNNING'}
+[21:07:34] 状态: {'manual': 'COMPLETE', 'combo': 'RUNNING'}
+[21:12:37] 状态: {'manual': 'COMPLETE', 'combo': 'COMPLETE'}
+[21:12:37] 状态: {'manual': 'COMPLETE', 'combo': 'COMPLETE'}
+[21:12:41] manual: {'games': 25, 'crashed': 0, 'opened': 17, 'levels': 26, 'mean': 4.35}
+[21:12:41] manual: {'games': 25, 'crashed': 0, 'opened': 17, 'levels': 26, 'mean': 4.35}
+[21:12:47] combo: {'games': 25, 'crashed': 0, 'opened': 18, 'levels': 30, 'mean': 5.49}
+[21:12:47] combo: {'games': 25, 'crashed': 0, 'opened': 18, 'levels': 30, 'mean': 5.49}
+[21:12:49] 选中 combo (开张18/总关30/均分5.49) → 提交 jinbowang1/arc3-l1-combo v1
+[21:12:49] 选中 combo (开张18/总关30/均分5.49) → 提交 jinbowang1/arc3-l1-combo v1
+[21:13:34] 提交尝试1: 0 submissions remaining today.
+[21:13:34] 提交尝试1: 0 submissions remaining today.
+[21:14:22] SUBMITTED_OK: 提交列表已出现新记录: 55916246  submission.parquet  2026-08-31 13:13:31.930000  L1 combo fixed-wording: V31 stack + first-level patches (opened 18, levels 30, public mean 5.49)      
+[21:14:22] SUBMITTED_OK: 提交列表已出现新记录: 55916246  submission.parquet  2026-08-31 13:13:31.930000  L1 combo fixed-wording: V31 stack + first-level patches (opened 18, levels 30, public mean 5.49)      

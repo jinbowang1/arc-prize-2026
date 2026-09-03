@@ -1,0 +1,450 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8">
+<title>第十一发解剖 · 5.49 是怎么来的</title>
+<style>
+:root{--bg:#F6F7FD;--card:#FFF;--ink:#1B1B33;--ink2:#4C5271;--dim:#8B93B0;--line:#E7E9F5;
+--c1:#3B82F6;--c2:#06B6D4;--c3:#A855F7;--c4:#10B981;--c5:#F59E0B;--c6:#EC4899;--c8:#EF4444;
+--mono:ui-monospace,"SF Mono",Menlo,monospace;--sans:-apple-system,"PingFang SC",sans-serif;
+--sh:0 1px 2px rgba(27,27,51,.05),0 6px 20px rgba(99,102,241,.07)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.75 var(--sans);padding:32px 40px 60px;max-width:1500px;margin:0 auto}
+h1{font-size:30px;font-weight:800;letter-spacing:-.6px;margin-bottom:6px;
+background:linear-gradient(135deg,#6366F1,#A855F7,#EC4899);-webkit-background-clip:text;background-clip:text;color:transparent;display:inline-block}
+.sub{color:var(--dim);font-size:13.5px;margin-bottom:26px}
+h2{font-size:19px;font-weight:800;margin:34px 0 12px;padding-left:11px;border-left:4px solid var(--c1)}
+h2.c2{border-color:var(--c2)} h2.c3{border-color:var(--c3)} h2.c4{border-color:var(--c4)} h2.c5{border-color:var(--c5)} h2.c6{border-color:var(--c6)} h2.c8{border-color:var(--c8)}
+h3{font-size:15px;font-weight:700;margin:14px 0 6px;color:var(--ink)}
+.card{background:var(--card);border-radius:14px;padding:18px 22px;box-shadow:var(--sh);margin-bottom:14px}
+.card p{margin-bottom:8px;color:var(--ink2)} .card p:last-child{margin-bottom:0}
+pre{font-family:var(--mono);font-size:12px;line-height:1.65;overflow-x:auto;color:var(--ink2);white-space:pre}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+th{text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:1px;color:var(--dim);padding:7px 10px;background:#F5F6FD;font-weight:500}
+td{padding:7px 10px;border-top:1px solid var(--line);color:var(--ink2);vertical-align:top}
+td b,th b{color:var(--ink)} td.n{font-family:var(--mono);text-align:right;white-space:nowrap}
+code{font-family:var(--mono);font-size:11.5px;background:#F1F3FA;padding:1px 6px;border-radius:5px;color:#5B21B6}
+.warn{background:#FEF6E7;border-left:3px solid var(--c5);padding:11px 15px;border-radius:0 9px 9px 0;font-size:13px;color:#7C4A03;margin:10px 0}
+.bad{background:#FEF0F0;border-left:3px solid var(--c8);color:#9B1C1C}
+.ok{background:#ECFDF5;border-left:3px solid var(--c4);color:#065F46}
+.info{background:#EFF6FF;border-left:3px solid var(--c1);color:#1E3A8A}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px} .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.tag{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:5px;background:#EEF0FC;color:#4338CA;white-space:nowrap}
+.tag.ours{background:#FCE7F3;color:#9D174D} .tag.his{background:#DBEAFE;color:#1E40AF} .tag.tufa{background:#D1FAE5;color:#065F46} .tag.dead{background:#FEE2E2;color:#991B1B}
+.kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:8px 0 4px}
+.kpi div{background:#fff;border-radius:12px;padding:12px 14px;box-shadow:var(--sh)}
+.kpi b{display:block;font-size:26px;font-weight:800;letter-spacing:-.5px}
+.kpi span{font-size:12px;color:var(--dim)}
+.k1 b{color:var(--c1)} .k2 b{color:var(--c3)} .k3 b{color:var(--c4)} .k4 b{color:var(--c5)} .k5 b{color:var(--c8)}
+ul{padding-left:20px;color:var(--ink2)} li{margin-bottom:4px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.toc a{font-size:12px;padding:4px 10px;border-radius:99px;background:#fff;box-shadow:var(--sh);color:#4338CA;text-decoration:none}
+.small{font-size:12px;color:var(--dim)}
+</style></head><body>
+
+<h1>第十一发解剖：5.49 是怎么来的</h1>
+<p class="sub">提交 55955743 · kernel <code>jinbowang1/arc3-fnrep-run</code> 第 4 版 · 2026-09-02 投 / 09-03 出分 · 隐藏集 5.49 · 榜第 2（榜一 mostik.ai 7.51）· 读的是本机 <code>reference/fnrep-source-v4/</code>（与上传数据集同源）和公开跑 kernel 输出 · 2026-09-03</p>
+
+<div class="toc">
+<a href="#s0">一句话结论</a><a href="#s1">交的是什么</a><a href="#s2">模型与伺服</a><a href="#s3">一局怎么打</a><a href="#s4">Son 改了什么</a><a href="#s5">动画感知</a><a href="#s6">管家没干活</a><a href="#s7">公开跑成绩</a><a href="#s8">为什么 5.49</a><a href="#s9">跟 Son 本人的差别</a><a href="#s10">文件清单</a><a href="#s11">隐患</a><a href="#s12">接下来</a>
+</div>
+
+<h2 id="s0">〇、一句话结论</h2>
+<div class="kpi">
+<div class="k1"><b>5.49</b><span>隐藏集得分，榜第 2</span></div>
+<div class="k2"><b>9.11</b><span>公开 25 局均分（09-01 跑）</span></div>
+<div class="k3"><b>0</b><span>agent 代码改动行数（逐字节同 Son）</span></div>
+<div class="k4"><b>4 处</b><span>我们打的补丁，全在启动/收尾脚本</span></div>
+<div class="k5"><b>0 条</b><span>跨局管家整场产出的规律</span></div>
+</div>
+<div class="card">
+<p><b>交的是什么。</b>Son Pham 公开的整套东西原样复刻：他改过的 Tufa「鸭子」harness（agent）+ Qwen3.8-Flash-Next 大模型 + 他的 vLLM 伺服配方。我们只在「怎么在新版 Kaggle 镜像上把它跑起来」这一层打了四个补丁，agent 的四个核心文件和他的包逐字节一致（已 <code>cmp</code> 核对）。</p>
+<p><b>为什么分高。</b>两层叠加：换成 Flash-Next 模型让我们自己的 agent 从公开 4.73 涨到 7.28；再换成 Son 的 agent 涨到 9.11。它每局打的动作数是老配置的 1.9 倍（4902 对 2570），模型更强也更快。隐藏集对公开集的折算比也从过去的 0.38 抬到 0.60。</p>
+<p><b>发现一个没干活的部件。</b>Son 设计里的「跨局世界模型管家」（一个独立进程，把 28 局的经验提炼成规律再喂回每局）整场 2 小时收到 0 条证据，账本一直是空的，每一轮反而往提示词里塞了一段「暂无可用规律」。根因是它读的请求日志被关掉了，而且这个开关在 Son 打包的 pickle 里本来就是关的。</p>
+<p><b>接下来。</b>别再原样重投探方差。按一天改一样：先把管家喂活（半天，公开集验证），再叠我们自己正交的改动（计分说明、开局试按钮、通关画面转写），然后上可执行世界模型。伺服层还有一个提速口子（多词预测投机解码没开）。</p>
+</div>
+
+<h2 id="s1" class="c2">一、这一发到底交的是什么</h2>
+<div class="card"><pre>
+Kaggle kernel  jinbowang1/arc3-fnrep-run  v4              ← 我们的 notebook 壳（V31 底盘 + 挂载等待 + 看门狗）
+  │
+  ├─ 挂载 5 个数据集
+  │    jinbowang1/arc3-fnrep-source        2.9 MB   ← Son 的 source-bundle 逐字节 + 我们 4 个补丁   <span class="tag ours">ours</span>
+  │    sonphamorg/…serving-part-a/b/c-v1   136 GB   ← 模型权重三分片（420 个文件）                     <span class="tag his">his</span>
+  │    sonphamorg/…gcp-runtime-exact-v1      6 GB   ← vLLM 容器的 site-packages 打包（tar.zst）          <span class="tag his">his</span>
+  │
+  ├─ setup_commands.json → kaggle_flashnext_preconverted_setup.py
+  │    解包运行时 → 校验权重 → 起 vLLM(127.0.0.1:1234) → 起管家进程 → 把 60 多个环境变量写进 taaf_setup_env.json
+  │
+  ├─ 反序列化 benchmark_initial.pkl（HarnessSolver: 并发 28 / 每局 7920 s / 请求超时 900 s / 请求日志 关）
+  ├─ bm.run()  →  28 路并行打隐藏集所有局
+  └─ teardown_commands.json → kaggle_flashnext_teardown.py（杀进程 + 我们加的删大件）
+</pre></div>
+
+<div class="grid2">
+<div class="card">
+<h3>我们打的四个补丁（全在包装脚本，agent 未动）</h3>
+<table>
+<tr><th>文件</th><th>改了什么</th><th>为什么</th></tr>
+<tr><td><code>kaggle_flashnext_preconverted_setup.py</code></td><td>跨 <code>/kaggle/input</code> 全域找 <code>serving-part-*</code> 三个目录，软链接拼成一个模型目录</td><td>三分片分居三个挂载点，他的代码只认单目录，校验必失败</td></tr>
+<tr><td>同上</td><td><code>tail()</code> 120 行 → 4000 行</td><td>启动失败时原报错切掉根因</td></tr>
+<tr><td>同上</td><td><code>PYTORCH_ALLOC_CONF</code> 的 <code>expandable_segments</code> True → False</td><td>词表卸载进程接收共享显存要走 pidfd_getfd 系统调用，Kaggle 新沙箱禁了</td></tr>
+<tr><td>同上</td><td><code>CUDA_HOME</code> 指向容器自带的 CUDA 13.3 工具链，缺的 include/nvvm/lib64 现场软链补齐</td><td>系统 nvcc 太旧不认 Blackwell（SM120），flashinfer 现场编算子报错</td></tr>
+<tr><td><code>kaggle_flashnext_teardown.py</code></td><td>收尾删 <code>flashnext-gcp-runtime</code>（约 15 GB）和模型软链目录；<code>vllm.log</code> 只留 4000 行</td><td>不删的话 Kaggle 保存输出被撑死，parquet 丢失，整发作废</td></tr>
+</table>
+</div>
+<div class="card">
+<h3>逐字节核对结果</h3>
+<table>
+<tr><th>文件</th><th>对 Son 原包</th></tr>
+<tr><td><code>inference/agent/tool_agent.py</code>（2527 行）</td><td class="ok" style="background:none">identical</td></tr>
+<tr><td><code>inference/agent/python_tool_sandbox.py</code>（873 行）</td><td>identical</td></tr>
+<tr><td><code>inference/agent/prompts.py</code>（75 行）</td><td>identical</td></tr>
+<tr><td><code>inference/framework/solver.py</code>（2680 行）</td><td>identical</td></tr>
+<tr><td><code>nvfp4_cross_game_curator.py</code>（560 行）</td><td>identical</td></tr>
+<tr><td><code>kaggle_flashnext_setup.py</code>（809 行，伺服配方本体）</td><td>identical（补丁以字符串替换方式打在包装器里）</td></tr>
+</table>
+<p class="small" style="margin-top:8px">Son 原包本机副本已存到 <code>reference/fnrep-original-sonpham/</code>；我们上传版在 <code>reference/fnrep-source-v4/</code>。</p>
+<div class="warn" style="margin-top:10px">notebook 是我们旧的 V31 底盘。它带的「vLLM 看门狗」会在伺服连挂 3 次后按 <b>27B 的配方</b> 重启（读 <code>qwen38-model-provenance.json</code>，这个文件在 Flash-Next 包里不存在）。真挂了它救不回来，只会停掉 solver 保住已得分。公开跑和这一发都没触发。</div>
+</div>
+</div>
+
+<h2 id="s2" class="c3">二、模型与伺服：显卡上跑的是什么</h2>
+<div class="grid2">
+<div class="card">
+<h3>模型 RadixArk/Qwen3.8-Flash-Next-NVFP4（修订 7b71922）</h3>
+<table>
+<tr><th>项</th><th>值（读自包内模型卡与 FLASHNEXT_GCP_MODEL_INFO.json）</th></tr>
+<tr><td>体量</td><td>约 180B 参数，BF16 原版 360 GB；主体 125B 稀疏 MoE + 51B 词表 n-gram 表（PLE）+ 4B 多词预测层</td></tr>
+<tr><td>结构</td><td>48 层，每层 512 个路由专家取前 10 + 1 个共享专家；混合 GDN + QSA 稀疏注意力；多模态（图 / 视频 / 文）</td></tr>
+<tr><td>量化</td><td>只把路由专家压成 NVFP4（4 bit）；注意力 / 路由 / 词表 / 多词预测层全部保留 BF16。落盘 135 GB</td></tr>
+<tr><td>词表表怎么塞进 96 GB</td><td><code>VLLM_PLE_CPU_OFFLOAD=1</code> 把 51B 的 n-gram 表放主机内存（FP8 已预转 BF16，10 个文件约 102 GB）；显卡上只剩专家 + 注意力</td></tr>
+<tr><td>上下文</td><td>模型支持 262K；伺服只开 32768（显存换并发）</td></tr>
+<tr><td>许可</td><td>Qwen Community License 1.0</td></tr>
+</table>
+</div>
+<div class="card">
+<h3>vLLM 启动参数（<code>launch_server()</code>）</h3>
+<table>
+<tr><th>参数</th><th>值</th><th>含义</th></tr>
+<tr><td>运行时</td><td>vLLM 0.1.dev20073+g8e685d198 / torch 2.13.0+cu130 / transformers 5.15.1</td><td>钉死的容器版本，启动时校验字符串</td></tr>
+<tr><td><code>--gpu-memory-utilization</code></td><td>0.96</td><td>显存几乎吃满</td></tr>
+<tr><td><code>--max-model-len</code></td><td>32768</td><td>每路请求最长上下文</td></tr>
+<tr><td><code>--max-num-seqs</code></td><td>22</td><td>同时最多 22 路生成；客户端却有 28 局在跑，永远 6 局在排队</td></tr>
+<tr><td><code>--max-num-batched-tokens</code></td><td>6144</td><td>每步预填充上限</td></tr>
+<tr><td><code>--kv-cache-dtype</code></td><td>auto（BF16）</td><td>没压 KV</td></tr>
+<tr><td>投机解码</td><td><b>没开</b>（<code>mtp_enabled: false</code>）</td><td>模型自带多词预测层，这是个提速口子</td></tr>
+<tr><td>工具解析</td><td><code>qwen3_xml</code> + 推理解析 <code>qwen3</code>，<code>preserve_thinking</code></td><td>让模型的 thinking 与工具调用能被拆开</td></tr>
+<tr><td>热身</td><td>22 路并发 × 9000 词填充请求</td><td>先把 22 路并发跑通再放游戏</td></tr>
+</table>
+</div>
+</div>
+<div class="card">
+<h3>写进游戏进程的采样与预算旋钮（<code>persist_gameplay_environment()</code>）</h3>
+<table>
+<tr><th>旋钮</th><th>值</th><th>落在哪</th><th>效果</th></tr>
+<tr><td>温度 / top_p / top_k</td><td>1.0 / 0.95 / 20</td><td><code>tool_agent.py</code> 请求体</td><td>比 Tufa 默认温度 0.6 更散</td></tr>
+<tr><td>thinking</td><td>开</td><td><code>chat_template_kwargs</code></td><td>每轮先思考再出工具调用</td></tr>
+<tr><td>每轮工具调用步数</td><td>0（不限）</td><td><code>_tool_steps=None</code></td><td>一轮里可以反复调 python 直到出手</td></tr>
+<tr><td>每轮时间片</td><td>60 秒</td><td><code>_yield_seconds</code></td><td>一轮超 60 秒就把控制权交回外层，下轮接着来（我们 08-30 试过改 300，无收益）</td></tr>
+<tr><td>python 单次超时 / 输出上限</td><td>30 秒 / 1024 token</td><td>沙箱</td><td>超了就截断并告知</td></tr>
+<tr><td>上下文预算</td><td>32768 − 512 − 512</td><td><code>_context_budget_tokens</code></td><td>超了先丢最老的历史块，再不行硬砍</td></tr>
+<tr><td>图片</td><td>当前棋盘 PNG，每格放大 4 倍（256×256）</td><td><code>vision_context.py</code></td><td>每轮用户消息都附一张图；模型是多模态的</td></tr>
+<tr><td>每局时限</td><td>7920 秒</td><td><code>max_runtime_s_per_game</code></td><td>局不会自己结束，都是被这把闸刀切的</td></tr>
+<tr><td>并发</td><td>28</td><td><code>HarnessSolver.concurrency</code></td><td>信号量 + 28 线程池</td></tr>
+</table>
+</div>
+
+<h2 id="s3" class="c4">三、一局是怎么打的：从外层循环到沙箱</h2>
+<div class="card"><pre>
+taaf.Benchmark.run()  ─→  HarnessSolver._run_games()      28 路信号量, 每局一个线程
+                             └─ _play_one() → _HarnessGameSession.play()          <span class="tag tufa">Tufa</span>
+                                  while not should_stop():      ← 停的条件: 引擎不在 playing / 通关 / 7920 s 到 / 外部 stop
+                                      analyzer.analyze()  ───────────────────────── 一「轮」 <span class="tag tufa">Tufa</span>+<span class="tag his">Son</span>
+                                          ├─ 拼消息: system 提示词 + 保留历史(≤30 个助手轮) + 本轮用户消息 + 棋盘图
+                                          ├─ POST /chat/completions (temperature 1.0, thinking on, tools=[python])
+                                          ├─ 模型回: reasoning + 助手文本(可能带 World model:/Plan: 等标签) + tool_call python(code)
+                                          ├─ 沙箱子进程跑 code            <span class="tag tufa">Tufa</span>+<span class="tag his">Son</span>
+                                          │     code 里的 action([...]) ──→ 回到主进程 step_env()
+                                          │           ├─ 最多执行 8 个动作 (第 9 个起退回, stop_reason=batch_checkpoint)   <span class="tag his">Son</span>
+                                          │           ├─ 每个动作: game.execute_action() → 引擎返回 1~N 帧
+                                          │           ├─ 动画感知: 帧数异常且非 HUD → 中断队列, 塞故事板       <span class="tag his">Son</span>
+                                          │           └─ 过关 / 游戏结束 / 通关 / 非法动作 → 提前停
+                                          │     沙箱拿回 action_result 与刷新后的全部全局变量, 继续跑剩余 code
+                                          ├─ 只要有一个动作真的执行了 → 本轮结束 (step_executed)
+                                          └─ 没出手 → 追加一条「你还没行动，先调查」再来一遍 (不限次, 受 60 s 时间片)
+                                      写 runtime_state.json / transcript / viewer 事件
+</pre>
+<p><b>两个重要的时间行为。</b>请求超时取「900 秒、本局剩余时间、软截止剩余时间」三者的最小值，所以日志尾部那 38 条 <code>Read timed out</code> 全部出现在最后 150 行，就是各局时钟走到头了，伺服本身没出问题。每局都是 7920 秒到点被切（<code>state=gave_up</code>），公开 25 局总耗时 2 小时 12 分。</p>
+</div>
+
+<div class="grid2">
+<div class="card">
+<h3>每轮用户消息长什么样（<code>_build_user_prompt</code>）</h3>
+<pre>
+The code executed 3 actions in the previous sequence.
+Executed actions: LEFT, LEFT, UP.
+You are still on the same level.
+Why the previous sequence stopped: ...(动画中断/8 步封顶时才有)
+Current state: step 12, level 2.
+Valid actions right now: UP, DOWN, LEFT, RIGHT, MOUSE.
+
+World-model priors synthesized from other games (...):   ← 管家注入块
+Ledger revision 0, updated ...; observed evidence across 0 games; ...
+* No synthesized cross-game world models are available yet.     ← 整场都是这句
+End of synthesized cross-game world models.
+
+Working world model carried from earlier turns:           ← 随身世界模型
+- World model: ...     - Goal model: ...    - Action model: ...
+- Recent findings: ... - Open questions: ... - Plan: ...
+- Revise any item above immediately if current_frame or history contradicts it.
+End of carried world model.
+Inspect the newest transition in Python and distinguish gameplay change from HUD-only change.
+Use compact inspection/search code, ... then execute ... via `action(actions)`.
+If you use MOUSE, include integer row and col arguments.
+
+Current grid image:  [PNG 256×256]
+</pre>
+<p><b>随身世界模型</b>的来源：模型在助手文本里写的 <code>World model:</code> / <code>Goal model:</code> / <code>Action model:</code> / <code>Recent findings:</code> / <code>Open questions:</code> / <code>Plan:</code> / <code>Cross-level notes:</code> 这些标签行被 <code>_extract_scientist_note</code> 抓下来，下一轮塞回去；过关或游戏结束时清空（Cross-level notes 除外）。管家注入块只出现在当轮用户消息里，进入保留历史前会被剥掉（<code>_strip_common_themes_from_history</code>）。</p>
+</div>
+<div class="card">
+<h3>沙箱里模型能摸到什么（<code>python_tool_sandbox.py</code>）</h3>
+<table>
+<tr><th>名字</th><th>是什么</th></tr>
+<tr><td><code>current_frame</code></td><td>最新棋盘：<code>.ascii</code> 字母色板、<code>.segmentation</code>（4 连通同色块：id/颜色/形状哈希/像素数/边界/包含关系/邻接表）、<code>.step</code>、<code>.level</code>、<code>.shape</code>。<b>原始数字网格故意不给</b></td></tr>
+<tr><td><code>history</code> / <code>transitions</code> / <code>last_transition</code> / <code>previous_frame</code></td><td>动作前后帧对；<code>history[-1].frame</code> 就是当前帧</td></tr>
+<tr><td><code>last_action_result</code></td><td>上次 action 的压缩结果：board_changed / reward / level_completed / game_over / run_complete / valid_actions / stop_reason 等</td></tr>
+<tr><td><code>last_animation</code></td><td>只描述最近一次真实动作的动画：<code>.total_frames</code> <code>.changed_frames</code> <code>.outlier</code> <code>.regions</code>，<code>.region(i).inspect(rows=,cols=,max_frames=)</code> 按需放大局部（最多 12 帧留在内存）  <span class="tag his">Son</span></td></tr>
+<tr><td><code>valid_actions</code></td><td>当前合法动作名</td></tr>
+<tr><td><code>action(actions)</code></td><td>真出手。参数是字符串或 <code>{'action':'MOUSE','row':4,'col':7}</code>；传 x/y 直接报错</td></tr>
+<tr><td>可 import</td><td>只有 bisect collections copy fractions functools heapq itertools json math operator random re statistics string；builtins 白名单</td></tr>
+</table>
+<p class="small">沙箱是独立子进程，30 秒硬超时，通过管道和主进程来回传 JSON；每次调用从零开始，自定义函数不保留。</p>
+</div>
+</div>
+
+<div class="card">
+<h3>分数怎么算（<code>taaf/game.py::_compute_final_score</code>，与官方计分器一致）</h3>
+<p>每关：过了就得 <code>min(115, (基准步数 / 实际步数)² × 100)</code>，没过 0 分。关的权重 = 关号（第 1 关权 1，第 2 关权 2……）。局分 = 加权总分 / 总权重，再封顶到「已得分关的权重之和 / 总权重 × 100」。日志里 <code>per-level=82/54</code> 读作「用了 82 步，基准 54 步」，那一关得 (54/82)² × 100 = 43 分。</p>
+<p>三个推论：<b>步数多一倍分数掉到四分之一</b>；<b>越深的关越值钱</b>；<b>没过的关一分没有</b>，所以「第一关开张」仍是隐藏集得分的大头。</p>
+</div>
+
+<h2 id="s4" class="c5">四、Son 在 Tufa 官方底座上改了什么（对 Tufa 干净版 git HEAD 的 diff）</h2>
+<div class="card">
+<table>
+<tr><th>文件</th><th>删 / 增</th><th>改动内容</th></tr>
+<tr><td><code>inference/framework/solver.py</code></td><td class="n">0 / +1327</td><td>整套<b>动画感知</b>（阈值、空间门、8 连通区域追踪、故事板压缩、局部检查、检查点配额），<b>每次 action() 最多 8 步</b>，环境变量读取</td></tr>
+<tr><td><code>inference/agent/tool_agent.py</code></td><td class="n">−38 / +489</td><td>管家账本注入 / 剥离 / 记录，<code>last_animation</code> 视图转换，工具 schema 描述重写（把 <code>last_animation</code> 提为一等 API），跟进提示词改写</td></tr>
+<tr><td><code>inference/agent/python_tool_sandbox.py</code></td><td class="n">0 / +277</td><td><code>AnimationView</code> / <code>AnimationRegionView</code>：沙箱里的动画对象与 <code>inspect()</code></td></tr>
+<tr><td><code>inference/agent/prompts.py</code></td><td class="n">−57 / +19</td><td>系统提示词<b>做减法</b>：运行时变量说明从 29 条压到 10 条，Python 指引从 24 条压到 8 条；新增动画监控说明；删掉重复的 API 散文</td></tr>
+<tr><td><code>inference/framework/run.py</code></td><td class="n">−22 / +66</td><td>本地跑的游戏清单改从 re-arc 包读取；Kaggle 分享模式兼容</td></tr>
+<tr><td><code>taaf/competition_arcade.py</code> <code>taaf/game_api.py</code></td><td class="n">小</td><td>25 个公开局 ID 从硬编码改为 re-arc 动态读取；离线环境目录懒解析</td></tr>
+<tr><td>新增 <code>rearc_baselines.py</code> <code>rearc_version.py</code></td><td></td><td>本地评测用的基准步数表，Kaggle 上不用</td></tr>
+</table>
+<div class="info" style="margin-top:10px">他的实验记录（<code>EXPERIMENT_MANIFEST.json</code>）把这版叫 <b>q38-r6-champion-animation-reformed-tool-v7</b>：底子是 8 月 21 日 GCP 上四次公开跑均分 6.39 的「R6 冠军」，这一版唯一改动是工具描述与系统提示词的措辞（v7），动画行为与 v6 一致，8 步封顶与管家原样保留。</div>
+</div>
+
+<h2 id="s5" class="c6">五、动画感知：他加的 1300 行在干什么</h2>
+<div class="grid2">
+<div class="card">
+<h3>触发条件（<code>_animation_payload</code> + <code>_animation_threshold</code>）</h3>
+<ul>
+<li><b>热身</b>：每局前 5 个动作只记账不触发。记录的是每次动作引擎返回的帧里「真变了」的帧数。</li>
+<li><b>时间异常</b>：阈值 = max(2, 2×中位数, 中位数 + ⌈3×1.4826×MAD⌉)，历史窗口 32 次。优先用「本关同动作族」的历史，退而用本关、全局同动作族、全局。平时每动作 1 个变化帧，多出 1 帧就够触发。</li>
+<li><b>空间门</b>（防 HUD 抖动误报）：大动作门 = 变化帧 ≥4 且不同格子 ≥8 且累计变化 ≥32；或者局部门 = 至少一个「持续区域」（8 连通变化块，跨相邻两次转换都在）。只出现一次的孤立小块直接扔掉，不按位置猜 HUD。</li>
+<li><b>新颖性</b>：和本关已中断过的动画比（动作族、帧数、变化格子集合 Jaccard、包围盒 IoU、颜色转换集合），像的不再中断，只给一句提醒。</li>
+<li><b>配额</b>：每关最多硬中断 3 次，两次之间冷却 5 个动作；过关 / 结束 / RESET 这类终局动作从不中断。</li>
+</ul>
+</div>
+<div class="card">
+<h3>触发后模型看到什么</h3>
+<ul>
+<li>队列里没执行的动作退回（<code>unexecuted_actions</code>），本轮里再调 <code>action()</code> 一律不执行，逼模型下一轮重新看盘。</li>
+<li><b>大动作</b>：自动塞一张压缩故事板，用 4×4 到 8×8 里最大且不丢运动的方块把 64×64 缩小，超 2000 token 估算就抽帧。</li>
+<li><b>局部动作</b>：给文字描述（绝对包围盒、持续多少次转换、变化格数、尺寸范围、行为分类 blink / resize / translate / transform），最多 4 个区域各留 12 帧原生帧，模型要看再调 <code>inspect()</code>，缩放保持长宽比、方块不超过 8×8。</li>
+<li>工具结果里附一段说明，明确「这是观察检查点，动作本身已经执行了，与 8 步封顶、非法动作、游戏规则无关」。</li>
+</ul>
+<p class="small">FEATURE_ENV.ps1 里的 15 个 <code>ARC3_ANIMATION_*</code> 环境变量就是这些阈值，伺服脚本原样写进游戏进程。</p>
+</div>
+</div>
+
+<h2 id="s6" class="c8">六、跨局管家整场没干活：证据与根因</h2>
+<div class="grid2">
+<div class="card">
+<h3>设计（<code>nvfp4_cross_game_curator.py</code>，独立进程）</h3>
+<p>每 15 秒扫 <code>/kaggle/working/*_requests.jsonl</code>，从每局最新的请求消息里用正则抠出「Working world model carried from earlier turns … End of carried world model.」这段随身世界模型（抠不到就退而取最近 3 条助手分析），凑够 3 局就打包（一次最多 10 局）连同当前账本发给同一个 vLLM，让模型输出最多 6 条「跨局可迁移的规律」JSON（关思考、temperature 0.6、最多 3600 token），原子写回 <code>ledger.json</code>；每局每轮都把这本账（≤12 条、≤6000 字符）注入用户消息。</p>
+<h3>证据（公开跑 kernel 输出，09-03 拉回）</h3>
+<pre>
+world-model-curator/health.json   status=healthy  games_seen=0  evidence_seen=0
+                                  requests_started=0  requests_completed=0  revision=0
+world-model-curator/ledger.json   "themes": []
+gameplay-injections.jsonl         1799 行, 每行 ledger_theme_count=0, injected_theme_count=0
+                                  prompt_block_chars=352 ("No synthesized ... available yet")
+</pre>
+</div>
+<div class="card">
+<h3>根因链</h3>
+<ol style="padding-left:20px;color:var(--ink2)">
+<li><code>*_requests.jsonl</code> 只在 <code>ToolAgent._save_request_logs=True</code> 时写（<code>tool_agent.py:2275</code>）。</li>
+<li>这个值来自 <code>HarnessSolver.save_request_logs</code>，Son 打包进 <code>benchmark_initial.pkl</code> 的就是 <b>False</b>（<code>preamble.txt</code> 里印着）。</li>
+<li>我们的 notebook 第 12 单元又显式写了一遍 <code>bm.solver.save_request_logs = False</code>。</li>
+<li>于是 <code>collect_world_models()</code> 一个文件都 glob 不到，<code>pending</code> 永远空，永远凑不够 3 局。</li>
+</ol>
+<div class="warn">这意味着他 3.58 那发在 Kaggle 上大概率也是管家空转（除非他的 notebook 私下把开关拨开了，他的 kernel 不公开，查不到）。他 GCP 上四跑均分 6.39 的「R6 冠军」标着 persistent world-model-curator，那边可能是开着的。<b>管家有没有用，目前没有任何一份 Kaggle 数据能证明。</b></div>
+<h3>两种修法</h3>
+<ul>
+<li><b>拨开关</b>：<code>bm.solver.save_request_logs = True</code>。代价是每次请求把整段消息写盘（每局每轮几十 KB，25 局 2 小时估几百 MB 到 GB 级），收尾要一并删。</li>
+<li><b>换证据源</b>（改管家 20 行）：<code>prompts/&lt;局&gt;.log</code> 每轮都会覆盖写「最新一次模型输入」的渲染文本，随身世界模型那段原样在里面，正则能直接命中。零额外磁盘。</li>
+</ul>
+</div>
+</div>
+
+<h2 id="s7" class="c1">七、公开 25 局成绩（09-01 12:42–14:55 UTC，v4 原样）</h2>
+<div class="card">
+<div class="grid2">
+<table>
+<tr><th>局</th><th>分</th><th>关</th><th>步</th><th>token</th></tr>
+<tr><td>tr87</td><td class="n">47.62</td><td class="n">4/6</td><td class="n">187</td><td class="n">120.7k</td></tr>
+<tr><td>ar25</td><td class="n">27.78</td><td class="n">4/8</td><td class="n">166</td><td class="n">103.1k</td></tr>
+<tr><td>vc33</td><td class="n">21.43</td><td class="n">3/7</td><td class="n">180</td><td class="n">121.7k</td></tr>
+<tr><td>lp85</td><td class="n">15.34</td><td class="n">4/8</td><td class="n">144</td><td class="n">117.7k</td></tr>
+<tr><td>dc22</td><td class="n">14.29</td><td class="n">2/6</td><td class="n">234</td><td class="n">101.2k</td></tr>
+<tr><td>su15</td><td class="n">13.03</td><td class="n">3/9</td><td class="n">149</td><td class="n">106.8k</td></tr>
+<tr><td>sc25</td><td class="n">12.62</td><td class="n">3/6</td><td class="n">148</td><td class="n">103.1k</td></tr>
+<tr><td>ka59</td><td class="n">10.71</td><td class="n">2/7</td><td class="n">355</td><td class="n">115.8k</td></tr>
+<tr><td>tn36</td><td class="n">10.71</td><td class="n">2/7</td><td class="n">67</td><td class="n">122.8k</td></tr>
+<tr><td>re86</td><td class="n">8.33</td><td class="n">2/8</td><td class="n">101</td><td class="n">115.5k</td></tr>
+<tr><td>ft09</td><td class="n">6.59</td><td class="n">3/6</td><td class="n">221</td><td class="n">108.4k</td></tr>
+<tr><td>cd82</td><td class="n">5.53</td><td class="n">2/6</td><td class="n">147</td><td class="n">120.7k</td></tr>
+<tr><td>cn04</td><td class="n">4.76</td><td class="n">1/6</td><td class="n">50</td><td class="n">105.4k</td></tr>
+</table>
+<table>
+<tr><th>局</th><th>分</th><th>关</th><th>步</th><th>token</th></tr>
+<tr><td>r11l</td><td class="n">4.76</td><td class="n">1/6</td><td class="n">28</td><td class="n">124.7k</td></tr>
+<tr><td>sp80</td><td class="n">4.76</td><td class="n">1/6</td><td class="n">126</td><td class="n">127.1k</td></tr>
+<tr><td>tu93</td><td class="n">4.09</td><td class="n">3/9</td><td class="n">176</td><td class="n">124.6k</td></tr>
+<tr><td>ls20</td><td class="n">3.57</td><td class="n">1/7</td><td class="n">418</td><td class="n">109.6k</td></tr>
+<tr><td>sb26</td><td class="n">3.26</td><td class="n">2/8</td><td class="n">282</td><td class="n">104.3k</td></tr>
+<tr><td>sk48</td><td class="n">2.78</td><td class="n">1/8</td><td class="n">82</td><td class="n">113.9k</td></tr>
+<tr><td>wa30</td><td class="n">1.84</td><td class="n">1/9</td><td class="n">641</td><td class="n">105.2k</td></tr>
+<tr><td>lf52</td><td class="n">1.82</td><td class="n">1/10</td><td class="n">198</td><td class="n">102.6k</td></tr>
+<tr><td>s5i5</td><td class="n">1.23</td><td class="n">1/8</td><td class="n">228</td><td class="n">113.2k</td></tr>
+<tr><td>bp35</td><td class="n">0.85</td><td class="n">1/9</td><td class="n">320</td><td class="n">94.4k</td></tr>
+<tr><td>m0r0</td><td class="n">0.00</td><td class="n">0/6</td><td class="n">122</td><td class="n">121.7k</td></tr>
+<tr><td>g50t</td><td class="n">0.00</td><td class="n">0/7</td><td class="n">132</td><td class="n">126.5k</td></tr>
+<tr><td colspan="5"><b>合计</b>：均分 9.11 · 中位 4.76 · 48/174 关 · 23 局开张 · 4902 步 · 283 万 token · 合计生成 357 token/s · 2h12m</td></tr>
+</table>
+</div>
+<p style="margin-top:10px">每局 token 都在 10 万上下，说明各局都是在 32K 上下文里反复裁剪历史打满 2.2 小时的。tr87 一局贡献了均分里的 1.9 分，前 4 局贡献了均分的一半。</p>
+</div>
+
+<h2 id="s8" class="c3">八、为什么能到 5.49：把功劳拆开</h2>
+<div class="card">
+<table>
+<tr><th>配置</th><th>模型</th><th>agent</th><th>公开均分</th><th>关 / 开张</th><th>隐藏集</th><th>折算比</th></tr>
+<tr><td>第六发（LB-9 复刻）</td><td>Qwen3.8-27B FP8</td><td>Tufa 鸭子原版</td><td class="n">4.69</td><td class="n">— / 17</td><td class="n">1.92</td><td class="n">0.41</td></tr>
+<tr><td>第十发（第一关合并版）</td><td>Qwen3.8-27B FP8</td><td>鸭子 + 我们的补丁</td><td class="n">5.49</td><td class="n">30 / 18</td><td class="n">2.01</td><td class="n">0.37</td></tr>
+<tr><td>通关画面转写版（未投）</td><td>Qwen3.8-27B FP8</td><td>鸭子 + 我们的补丁 + winframe</td><td class="n">4.73</td><td class="n">29 / 19</td><td class="n">—</td><td class="n">—</td></tr>
+<tr><td>合体版（未投）</td><td><b>Flash-Next</b></td><td>鸭子 + 我们的补丁</td><td class="n">7.28</td><td class="n">36 / 21</td><td class="n">—</td><td class="n">—</td></tr>
+<tr><td><b>第十一发（本次）</b></td><td><b>Flash-Next</b></td><td><b>Son 的鸭子</b></td><td class="n"><b>9.11</b></td><td class="n"><b>48 / 23</b></td><td class="n"><b>5.49</b></td><td class="n"><b>0.60</b></td></tr>
+</table>
+<div class="grid3" style="margin-top:12px">
+<div class="info"><b>换模型 ≈ +2.5 公开分</b><br>同一套我们的 agent，27B → Flash-Next：4.73 → 7.28。开张 19 → 21，关数 29 → 36。这一刀是主力。</div>
+<div class="info"><b>换 agent ≈ +1.8 公开分</b><br>同一个模型，我们的 agent → Son 的：7.28 → 9.11。关数 36 → 48，开张只多 2。他的改动主要让「已开张的局走得更深」，与我们「第一关优先」正交。</div>
+<div class="info"><b>动作数翻倍</b><br>4902 步对第六发的 2570 步。Flash-Next 每次只激活约 6B 参数，出字快；8 步封顶让每轮出手更实。同样 2.2 小时能多试一倍。</div>
+</div>
+<div class="warn" style="margin-top:12px"><b>把话说在前面：5.49 里有运气成分。</b>Son 自己记录这套配置在 GCP 上四次公开跑均分 6.39，我们唯一一次公开跑 9.11 落在高端；隐藏集也只投了一次。过去同配置重投过一次（1.85 对 1.92），差 0.07；这次的方差没数据。榜上 Son 本人 4.52，可以当作这套配置的另一个采样点。<b>合理预期是 4.5 到 5.5 之间，5.49 是上沿。</b></div>
+<p style="margin-top:10px">折算比（隐藏 ÷ 公开）从 0.37～0.41 抬到 0.60 值得注意：Son 的 agent 是对着公开 25 局调出来的，按理更容易在公开集虚高，实际却是新配置在没见过的局上掉得更少。一个可能的解释是这套东西的收益主要来自「看懂动画、少走冤枉步」这类通用能力，而过去的手册、字段说明更像公开局的专属知识。</p>
+</div>
+
+<h2 id="s9" class="c4">九、跟 Son 本人的差别，以及他为什么只有 4.52</h2>
+<div class="card">
+<ul>
+<li><b>代码层零差别。</b>他 8 月 29 日公开的 Part A 里就是这套源码，我们一字未改；差别只有四个「让它在新版 Kaggle 镜像上活下来」的补丁。他自己在新镜像上大概率也撞了同样三堵墙（分片跨挂载、pidfd_getfd、旧 nvcc），怎么修的不知道。</li>
+<li><b>他 09-02 01:35 UTC 交的 4.52 是新东西。</b>他的公开数据集从 8 月 29 日起没更新过，kernel 全部私有；那一发用的什么版本没法查。他公开的这版是 8 月 27 日打包的「v7」，对应 3.58。</li>
+<li><b>Part A 的下载量是 948。</b>这套配方已经在全网复制，未来几天会有一批人用同样的东西上榜。我们现在的位置来自动手早，守不住；能守住的只有在 agent 侧叠出他没有的东西。</li>
+<li><b>他没做的、我们做过的：</b>第一关优先（告诉模型怎么计分 + 开局替模型试按钮）、通关画面转写、可执行世界模型。这三样与他的四样（动画感知 / 8 步封顶 / 薄提示词 / 管家）互不重叠。</li>
+</ul>
+</div>
+
+<h2 id="s10" class="c5">十、文件清单：包里 87 个文件各干什么</h2>
+<div class="card">
+<h3>包根目录（<code>reference/fnrep-source-v4/</code>）</h3>
+<table>
+<tr><th>文件</th><th>行数</th><th>作用</th><th>谁的</th></tr>
+<tr><td><code>taaf-kaggle-bundle.json</code></td><td class="n">—</td><td>notebook 用来定位包的标记文件（rglob 找它）</td><td><span class="tag tufa">Tufa</span></td></tr>
+<tr><td><code>benchmark_initial.pkl</code> / <code>deploy_target.pkl</code></td><td class="n">—</td><td>序列化的 Benchmark（25 局 + HarnessSolver 配置）与部署目标（max_runtime_s 等）；<b>save_request_logs=False 就腌在这里</b></td><td><span class="tag his">Son</span></td></tr>
+<tr><td><code>preamble.txt</code> / <code>git_status.txt</code></td><td class="n">—</td><td>开跑时打印的配置摘要；三个仓的 commit（ARC3-Inference aa69123 DIRTY / taaf fe9f7c4 / re-arc-3 57e46d6）</td><td></td></tr>
+<tr><td><code>setup_commands.json</code> / <code>teardown_commands.json</code></td><td class="n">—</td><td>各一条命令：跑预转换启动包装器 / 跑收尾脚本</td><td><span class="tag his">Son</span></td></tr>
+<tr><td><code>kaggle_flashnext_setup.py</code></td><td class="n">809</td><td>伺服配方本体：解包运行时、找/校验/拼装权重、词表 FP8→BF16 转换（冷路径）、起 vLLM、22 路热身、起管家、写 60 多个环境变量</td><td><span class="tag his">Son</span></td></tr>
+<tr><td><code>kaggle_flashnext_preconverted_setup.py</code></td><td class="n">247</td><td>包装器：读上面那个文件的源码，把「找模型 + 转换」两段函数替换成「校验已预转换的权重」，再 exec。<b>我们的三个补丁以字符串替换追加在这里</b></td><td><span class="tag his">Son</span>+<span class="tag ours">ours</span></td></tr>
+<tr><td><code>kaggle_flashnext_teardown.py</code></td><td class="n">47</td><td>杀管家和 vLLM 进程组；<b>我们加了删大件</b></td><td><span class="tag his">Son</span>+<span class="tag ours">ours</span></td></tr>
+<tr><td><code>nvfp4_cross_game_curator.py</code></td><td class="n">560</td><td>跨局世界模型管家（见第六节）</td><td><span class="tag his">Son</span> <span class="tag dead">本发空转</span></td></tr>
+<tr><td><code>convert_radix_ple.py</code></td><td class="n">178</td><td>把词表 n-gram 表从 FP8 乘 scale 转成 BF16 的脚本（冷路径用，本发权重已预转换，没跑）</td><td><span class="tag his">Son</span></td></tr>
+<tr><td><code>FLASHNEXT_GCP_MODEL_INFO.json</code></td><td class="n">—</td><td>模型身份 + 10 个 PLE 文件的期望字节数与 sha256（启动时逐一核对）</td><td><span class="tag his">Son</span></td></tr>
+<tr><td><code>FLASHNEXT_KAGGLE_EXPANDED_FILE_MANIFEST.json</code> / <code>FLASHNEXT_PACKAGE_LOCK.json</code></td><td class="n">—</td><td>分片包内每个文件的清单与哈希 / 依赖锁</td><td><span class="tag his">Son</span></td></tr>
+<tr><td><code>EXPERIMENT_MANIFEST.json</code> / <code>MANIFEST.md</code></td><td class="n">—</td><td>他的实验说明：变体名、底子、唯一改动、动画检测各项口径</td><td><span class="tag his">Son</span></td></tr>
+<tr><td><code>REVIEWED_THEMES_COMPACT_ENGLISH.json</code></td><td class="n">—</td><td>他 8 月 19 日某次合并的记录（主题注入 + 提示词精简的三方合并说明），无运行时作用</td><td><span class="tag his">Son</span></td></tr>
+<tr><td><code>FEATURE_ENV.ps1</code></td><td class="n">—</td><td>15 个动画环境变量的 PowerShell 版（本地用；Kaggle 上由伺服脚本写）</td><td><span class="tag his">Son</span></td></tr>
+<tr><td><code>zstd</code></td><td class="n">—</td><td>自带的解压器二进制（Kaggle 镜像没有 zstd 命令行），启动时先校 sha256</td><td><span class="tag his">Son</span></td></tr>
+<tr><td><code>README.dataset.md</code> / <code>dataset-metadata.json</code></td><td class="n">—</td><td>数据集说明与 Kaggle 元数据（id 改成了我们的）</td><td><span class="tag ours">ours</span></td></tr>
+</table>
+<h3 style="margin-top:14px">src/ARC3-Inference（鸭子 harness）</h3>
+<table>
+<tr><th>文件</th><th>行数</th><th>作用</th></tr>
+<tr><td><code>inference/framework/solver.py</code></td><td class="n">2680</td><td><b>核心</b>。<code>HarnessSolver</code>（并发调度、每局起一个 <code>ToolAgent</code>）；<code>_HarnessGameSession</code>（一局的循环、<code>step_env</code> 动作执行、8 步封顶、动画感知、runtime_state / transcript / viewer 落盘）</td></tr>
+<tr><td><code>inference/agent/tool_agent.py</code></td><td class="n">2527</td><td><b>核心</b>。<code>ToolAgent.analyze()</code> 一轮：拼消息、调模型、解析工具调用（含从 <code>&lt;tool_call&gt;</code> 文本里抢救）、跑沙箱、压缩结果、维护随身世界模型、上下文裁剪、管家块注入 / 剥离、prompt 与 request 日志</td></tr>
+<tr><td><code>inference/agent/python_tool_sandbox.py</code></td><td class="n">873</td><td>沙箱子进程的源码（<code>_SANDBOX_BOOTSTRAP</code> 字符串）+ 主进程侧的启动 / 管道 / 超时；<code>AnimationView</code></td></tr>
+<tr><td><code>inference/agent/prompts.py</code></td><td class="n">75</td><td>系统提示词的六段：游戏概览、视觉指引、运行时变量、多模态说明、Python 指引、工具会话规则</td></tr>
+<tr><td><code>inference/agent/runtime_state.py</code></td><td class="n">135</td><td><code>Frame</code> / <code>HistoryEntry</code> 与 runtime_state.json 的读写</td></tr>
+<tr><td><code>inference/agent/vision_context.py</code></td><td class="n">82</td><td>棋盘 → PNG data URL（16 色色板，按 MULTIMODAL_UPSCALE 放大）</td></tr>
+<tr><td><code>inference/agent/action_names.py</code></td><td class="n">40</td><td>引擎动作名（ACTION1…ACTION6）与模型动作名（UP/DOWN/…/MOUSE）互转</td></tr>
+<tr><td><code>inference/utils/segmentation.py</code></td><td class="n">203</td><td>4 连通同色分块、外轮廓角点、形状哈希；源码被整段塞进沙箱</td></tr>
+<tr><td><code>inference/utils/openai_compat.py</code></td><td class="n">72</td><td>请求体 / 请求头（vLLM 与 OpenRouter 两种）</td></tr>
+<tr><td><code>inference/utils/grid_utils.py</code></td><td class="n">—</td><td>ARC 16 色字母色板与图例</td></tr>
+<tr><td><code>inference/framework/run.py</code></td><td class="n">1422</td><td>本地 / Slurm / Kaggle 三种部署的命令行入口；Kaggle 上不跑</td></tr>
+<tr><td><code>inference/framework/kaggle.py</code></td><td class="n">432</td><td>Tufa 原版的 Kaggle vLLM 起停配置（本发被伺服脚本绕开）</td></tr>
+<tr><td><code>inference/tools/</code>（chat / eval / eval_plot / significance / traces / config_value / vllm_runtime_lora_guard）</td><td class="n">≈2400</td><td>本地评测与统计工具，Kaggle 上不跑</td></tr>
+<tr><td><code>inference/utils/run_artifacts.py</code> <code>viewer_artifacts.py</code> <code>rearc_*.py</code></td><td class="n">≈420</td><td>产物路径与查看器数据；本地基准表</td></tr>
+<tr><td><code>viewer/</code>（data.py 1927 行 / server.py / index.html）</td><td class="n">≈2200</td><td>回放查看器，本地看对局用</td></tr>
+<tr><td><code>configs/*.json</code> <code>Makefile</code> <code>pyproject.toml</code> <code>uv.lock</code> <code>scripts/*.sh</code></td><td class="n">—</td><td>本地配置与依赖</td></tr>
+</table>
+<h3 style="margin-top:14px">src/tufa-arc-agi-framework（TAAF 执行框架）</h3>
+<table>
+<tr><th>文件</th><th>行数</th><th>作用</th></tr>
+<tr><td><code>taaf/benchmark.py</code></td><td class="n">480</td><td><code>Benchmark.run()</code>：按 n_passes 深拷贝游戏、软截止定时取消、汇总打印、diagnostics 生成</td></tr>
+<tr><td><code>taaf/game.py</code></td><td class="n">688</td><td><code>Game</code> / <code>GameRun</code> / <code>GameState</code>：动作执行、每关步数账、<b>计分公式</b></td></tr>
+<tr><td><code>taaf/game_api.py</code></td><td class="n">322</td><td>对接 arc_agi 引擎（比赛模式连 gateway，离线模式读环境文件）</td></tr>
+<tr><td><code>taaf/competition_arcade.py</code></td><td class="n">266</td><td>比赛 Arcade 封装与 25 个公开局 ID</td></tr>
+<tr><td><code>taaf/solver.py</code></td><td class="n">83</td><td><code>Solver</code> 基类（soft_end_time、minimal_diagnostics 等字段）</td></tr>
+<tr><td><code>taaf/diagnostics.py</code></td><td class="n">2987</td><td>跑完生成 diagnostics.html（真提交时关闭）</td></tr>
+<tr><td><code>taaf/deploy*.py</code> <code>kaggle_random.py</code> <code>standard_benchmarks.py</code> <code>solver_examples.py</code> <code>game_examples.py</code> <code>support.py</code> <code>kaggle/*.ipynb</code></td><td class="n">≈2400</td><td>打包 / 部署 / 示例；<code>taaf_kaggle_run_share.ipynb</code> 是我们 notebook 的祖本</td></tr>
+</table>
+</div>
+
+<h2 id="s11" class="c8">十一、这一发里的隐患</h2>
+<div class="card">
+<table>
+<tr><th>#</th><th>隐患</th><th>后果</th><th>修法</th></tr>
+<tr><td>1</td><td>管家空转，每轮多塞 352 字符空块</td><td>设计的功能没生效；每轮白付约 90 token</td><td>第六节两种修法之一，先在公开集验证账本会填上</td></tr>
+<tr><td>2</td><td>看门狗重启配方是 27B 的（找不到 <code>qwen38-model-provenance.json</code>）</td><td>vLLM 真挂时无法复活，solver 停掉保住已得分</td><td>把重启命令换成调用 <code>launch_server()</code>，或干脆去掉重启只保留停机保分</td></tr>
+<tr><td>3</td><td>真提交 <code>soft_end=None</code></td><td>隐藏局数一旦超过 3 批（84 局），第 4 批跑到被 Kaggle 切，parquet 来不及写</td><td>给真提交分支也装软截止（开跑 + 9h − 余量）；本发已证明隐藏集 ≤3 批</td></tr>
+<tr><td>4</td><td>28 路客户端对 22 路伺服</td><td>永远 6 局在排队等 token</td><td>看显存余量调 <code>--max-num-seqs</code>，或把并发降到 22 对齐；要实测吞吐</td></tr>
+<tr><td>5</td><td>多词预测投机解码没开</td><td>吞吐可能有 1.3～1.5 倍空间（27B 上 MTP3 实测有效）</td><td>先在公开集试 <code>--speculative-config mtp</code>；vLLM 这个 nightly 对 qwen4_exp 支不支持要试</td></tr>
+<tr><td>6</td><td>每局 10 万 token 全靠裁剪历史活在 32K 里</td><td>早期发现被丢掉，随身世界模型是唯一的长期记忆</td><td>与管家、可执行世界模型同一个问题域，靠结构化记忆解</td></tr>
+</table>
+</div>
+
+<h2 id="s12" class="c4">十二、接下来怎么做</h2>
+<div class="card">
+<p><b>规矩先摆着：</b>一天只改一样；给模型看的改动先在公开集跑；提交由你拍板；别拿名额重投同配置探方差（5.49 已经挂在榜上，重投只可能更低）。</p>
+<table>
+<tr><th>顺序</th><th>做什么</th><th>估时</th><th>预期</th><th>怎么验</th></tr>
+<tr><td>1</td><td><b>把管家喂活</b>：改管家读 <code>prompts/*.log</code>（或拨开请求日志开关 + 收尾删日志），其余不动</td><td>半天</td><td>Son 自己的 GCP 记录暗示有收益，Kaggle 上零证据；先求「账本会填上、分数不掉」</td><td>公开跑 1 次：health.json 的 requests_completed &gt; 0，ledger 非空，均分不低于 9 上下</td></tr>
+<tr><td>2</td><td><b>叠我们的正交改动</b>：告诉模型怎么计分 + 开局替模型试按钮（第一关优先），通关画面转写视情况</td><td>1 天</td><td>计分公式是平方，模型越强越吃「少走步」这条；27B 上效果在噪声内，Flash-Next 上要重测</td><td>公开跑，看开张数（目标 23 → 25）与总步数</td></tr>
+<tr><td>3</td><td><b>伺服提速</b>：试多词预测投机解码；对齐并发与 max-num-seqs</td><td>半天到 1 天</td><td>同样 2.2 小时多打 30% 步</td><td>公开跑总步数与 token/s</td></tr>
+<tr><td>4</td><td><b>可执行世界模型</b>（arXiv 2605.05138 移植）：模型维护一段可运行的 Python 世界模型，历史回放验证过才拿来规划</td><td>2～3 天</td><td>榜一 7.51 的差距要靠这一刀；GPT-5.5 公开局通关 15/25</td><td>先本地 DeepSeek 跑通，再 27 上 Flash-Next（按三层框架）</td></tr>
+<tr><td>5</td><td>修隐患 2、3（看门狗、软截止）</td><td>1 小时</td><td>不涨分，防丢发</td><td>本地干跑</td></tr>
+</table>
+<div class="ok" style="margin-top:12px">今天（周三）GPU 额度周五早 8 点才刷新。1 和 5 可以先在本地改好、干跑验收，周五一开额度就跑公开集。</div>
+</div>
+
+<p class="small" style="margin-top:30px">材料来源：<code>reference/fnrep-source-v4/</code>（上传版）· <code>reference/fnrep-original-sonpham/</code>（Son 原版 + 公开跑日志）· kernel 输出 <code>world-model-curator/</code>（09-03 拉回）· <code>kaggle_agent/duck/kernels/k_fnrep_run/arc3-fnrep-run.ipynb</code> · Tufa 干净版 <code>reference/duck-harness</code> git HEAD · Kaggle CLI 09-03 早查的榜单与提交列表。</p>
+</body></html>

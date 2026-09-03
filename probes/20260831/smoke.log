@@ -1,0 +1,46 @@
+════════ 第一层(aiplat) 臂=smoke ════════
+  模型: aliyun/deepseek-v4-flash-0731@llm-model-hub-apis | 局: ft09 | 1遍 8min 并发1 | 思考: 开
+  本臂开关: DUCK_TASKBOOK=1 DUCK_PROBE_MANUAL=1
+════════════════════════
+2026-08-31 14:10:20,184 | INFO | probe manual (3 steps):
+== BUTTON MANUAL == (the harness already pressed each button at level start and then RESET restored the start state; these 3 probe steps are on this level's step account -- do NOT repeat these experiments, build on them)
+MOUSE(32,32): no effect; 5 animation frames, 80 transient px
+RESET: verified -- restores the exact level start
+2026-08-31 14:18:20,162 | WARNING | analyzer request failed at action 6: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=32.20458008395508)
+Run directory: /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260831_141019_ab-smoke
+Games: ft09-0d8bbf25
+Passes: 1; concurrency: 1; waves: 1
+Max runtime per game: 8.00 minutes (explicit)
+Deployment target: inline
+benchmark.label : ab-smoke
+benchmark.solver: HarnessSolver(label='inference', runtime_environment=None, job_dir=None, soft_end_time=None, minimal_diagnostics=False, model='aliyun/deepseek-v4-flash-0731', analyzer_timeout=300.0, max_actions_per_game=None, max_runtime_s_per_game=480.0, concurrency=1, save_request_logs=False, start_local_server=False, local_server_config='', local_server_api_key_file='', local_server_repo_dir='/Users/01450825/Desktop/project/arc-agi-3/reference/duck-harness/ARC3-Inference', local_server_port=None, local_server_tensor_parallel_size=None, local_server_count=1, cancel_drain_timeout_s=120.0)
+benchmark.passes: 1
+benchmark.games : 1
+git status:
+  ARC3-Inference                   7652836     DIRTY  main                      Refactor README for clarity and formatting
+  tufa-arc-agi-framework           7652836     DIRTY  main                      Refactor README for clarity and formatting
+deploy.inline: job_dir       = /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260831_141019_ab-smoke
+deploy.inline: soft_end_time = 2026-08-31T14:19:20.025040
+---
+[finished] ft09-0d8bbf25 state=gave_up level=0/6 score=0.00 actions=5 tokens=40362 per-level=5/43,0/12,0/23,0/28,0/65,0/37 note="tokens=40362"
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260831_141019_ab-smoke in 0.53s
+benchmark: ab-smoke
+solver:    inference
+games:     1
+passes:    1
+runs:      1 (won: 0)
+started:   2026-08-31 14:10:20
+ended:     2026-08-31 14:18:20
+duration:  8m 0s
+mean score:    0.00
+median score:  0.00
+total actions: 5
+total tokens:  40362
+generated tokens/sec: 84.08 (job wallclock)
+total wallclock: 480.0s
+
+per-game (mean across passes):
+  ft09-0d8bbf25: score=0.00, levels=0.0/6, actions=5, tokens=40362
+
+diagnostics: /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260831_141019_ab-smoke/diagnostics.html
+[14:18:20] DONE smoke

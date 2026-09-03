@@ -1,0 +1,272 @@
+════════ 第一层(aiplat) 臂=manual2 ════════
+  模型: aliyun/deepseek-v4-flash-0731@llm-model-hub-apis | 局: ft09,r11l,ls20,sb26,cd82,vc33 | 3遍 45min 并发18 | 思考: 开
+  本臂开关: DUCK_PROBE_MANUAL=1
+════════════════════════
+2026-08-31 17:41:38,386 | INFO | probe manual (2 steps):
+== BUTTON MANUAL == (before your first turn, the harness pressed each button once to sample its effect from the level start, then RESET restored the exact start state; the 2 probe steps, RESET included, are on this level's step account. Each line is a single sample from the starting state only -- effects may differ in other states or at other coordinates, so use these as a starting world model, not as final verdicts.)
+MOUSE(32,32): 103 cells changed in rows 0-57, cols 0-34 (B>px21 p>Bx21 B>wx17); 3 animation frames, 102 transient px
+RESET: verified -- restores the exact level start
+2026-08-31 17:41:38,434 | INFO | probe manual (2 steps):
+== BUTTON MANUAL == (before your first turn, the harness pressed each button once to sample its effect from the level start, then RESET restored the exact start state; the 2 probe steps, RESET included, are on this level's step account. Each line is a single sample from the starting state only -- effects may differ in other states or at other coordinates, so use these as a starting world model, not as final verdicts.)
+MOUSE(32,32): 1 cells changed in rows 0-0, cols 63-63 (P>cx1)
+RESET: verified -- restores the exact level start
+2026-08-31 17:41:38,451 | INFO | probe manual (2 steps):
+== BUTTON MANUAL == (before your first turn, the harness pressed each button once to sample its effect from the level start, then RESET restored the exact start state; the 2 probe steps, RESET included, are on this level's step account. Each line is a single sample from the starting state only -- effects may differ in other states or at other coordinates, so use these as a starting world model, not as final verdicts.)
+MOUSE(32,32): 1 cells changed in rows 0-0, cols 63-63 (P>cx1)
+RESET: verified -- restores the exact level start
+2026-08-31 17:41:38,501 | INFO | probe manual (2 steps):
+== BUTTON MANUAL == (before your first turn, the harness pressed each button once to sample its effect from the level start, then RESET restored the exact start state; the 2 probe steps, RESET included, are on this level's step account. Each line is a single sample from the starting state only -- effects may differ in other states or at other coordinates, so use these as a starting world model, not as final verdicts.)
+MOUSE(32,32): 103 cells changed in rows 0-57, cols 0-34 (B>px21 p>Bx21 B>wx17); 3 animation frames, 102 transient px
+RESET: verified -- restores the exact level start
+2026-08-31 17:41:38,502 | INFO | probe manual (2 steps):
+== BUTTON MANUAL == (before your first turn, the harness pressed each button once to sample its effect from the level start, then RESET restored the exact start state; the 2 probe steps, RESET included, are on this level's step account. Each line is a single sample from the starting state only -- effects may differ in other states or at other coordinates, so use these as a starting world model, not as final verdicts.)
+MOUSE(32,32): 103 cells changed in rows 0-57, cols 0-34 (B>px21 p>Bx21 B>wx17); 3 animation frames, 102 transient px
+RESET: verified -- restores the exact level start
+2026-08-31 17:41:38,550 | INFO | probe manual (2 steps):
+== BUTTON MANUAL == (before your first turn, the harness pressed each button once to sample its effect from the level start, then RESET restored the exact start state; the 2 probe steps, RESET included, are on this level's step account. Each line is a single sample from the starting state only -- effects may differ in other states or at other coordinates, so use these as a starting world model, not as final verdicts.)
+MOUSE(32,32): 1 cells changed in rows 0-0, cols 63-63 (P>cx1)
+RESET: verified -- restores the exact level start
+2026-08-31 17:41:38,582 | INFO | probe manual (4 steps):
+== BUTTON MANUAL == (before your first turn, the harness pressed each button once to sample its effect from the level start, then RESET restored the exact start state; the 4 probe steps, RESET included, are on this level's step account. Each line is a single sample from the starting state only -- effects may differ in other states or at other coordinates, so use these as a starting world model, not as final verdicts.)
+MOUSE(32,32): no effect (pressed 3x); 5 animation frames, 80 transient px
+RESET: verified -- restores the exact level start
+2026-08-31 17:41:38,682 | INFO | probe manual (5 steps):
+== BUTTON MANUAL == (before your first turn, the harness pressed each button once to sample its effect from the level start, then RESET restored the exact start state; the 5 probe steps, RESET included, are on this level's step account. Each line is a single sample from the starting state only -- effects may differ in other states or at other coordinates, so use these as a starting world model, not as final verdicts.)
+UP: 52 cells changed in rows 40-62, cols 13-38 (G>bx15 b>Gx15 G>Ox10)
+DOWN: 52 cells changed in rows 40-62, cols 14-38 (b>Gx15 G>bx15 O>Gx10)
+LEFT: 52 cells changed in rows 45-62, cols 15-38 (G>bx15 b>Gx15 G>Ox10)
+RIGHT: 52 cells changed in rows 45-62, cols 16-38 (b>Gx15 G>bx15 O>Gx10)
+RESET: verified -- restores the exact level start
+2026-08-31 17:41:38,690 | INFO | probe manual (5 steps):
+== BUTTON MANUAL == (before your first turn, the harness pressed each button once to sample its effect from the level start, then RESET restored the exact start state; the 5 probe steps, RESET included, are on this level's step account. Each line is a single sample from the starting state only -- effects may differ in other states or at other coordinates, so use these as a starting world model, not as final verdicts.)
+UP: 52 cells changed in rows 40-62, cols 13-38 (G>bx15 b>Gx15 G>Ox10)
+DOWN: 52 cells changed in rows 40-62, cols 14-38 (b>Gx15 G>bx15 O>Gx10)
+LEFT: 52 cells changed in rows 45-62, cols 15-38 (G>bx15 b>Gx15 G>Ox10)
+RIGHT: 52 cells changed in rows 45-62, cols 16-38 (b>Gx15 G>bx15 O>Gx10)
+RESET: verified -- restores the exact level start
+2026-08-31 17:41:38,697 | INFO | probe manual (4 steps):
+== BUTTON MANUAL == (before your first turn, the harness pressed each button once to sample its effect from the level start, then RESET restored the exact start state; the 4 probe steps, RESET included, are on this level's step account. Each line is a single sample from the starting state only -- effects may differ in other states or at other coordinates, so use these as a starting world model, not as final verdicts.)
+MOUSE(32,32): no effect (pressed 3x); 5 animation frames, 80 transient px
+RESET: verified -- restores the exact level start
+2026-08-31 17:41:38,755 | INFO | probe manual (5 steps):
+== BUTTON MANUAL == (before your first turn, the harness pressed each button once to sample its effect from the level start, then RESET restored the exact start state; the 5 probe steps, RESET included, are on this level's step account. Each line is a single sample from the starting state only -- effects may differ in other states or at other coordinates, so use these as a starting world model, not as final verdicts.)
+UP: 52 cells changed in rows 40-62, cols 13-38 (G>bx15 b>Gx15 G>Ox10)
+DOWN: 52 cells changed in rows 40-62, cols 14-38 (b>Gx15 G>bx15 O>Gx10)
+LEFT: 52 cells changed in rows 45-62, cols 15-38 (G>bx15 b>Gx15 G>Ox10)
+RIGHT: 52 cells changed in rows 45-62, cols 16-38 (b>Gx15 G>bx15 O>Gx10)
+RESET: verified -- restores the exact level start
+2026-08-31 17:41:38,784 | INFO | probe manual (4 steps):
+== BUTTON MANUAL == (before your first turn, the harness pressed each button once to sample its effect from the level start, then RESET restored the exact start state; the 4 probe steps, RESET included, are on this level's step account. Each line is a single sample from the starting state only -- effects may differ in other states or at other coordinates, so use these as a starting world model, not as final verdicts.)
+MOUSE(32,32): no effect (pressed 3x); 5 animation frames, 80 transient px
+RESET: verified -- restores the exact level start
+2026-08-31 17:41:38,808 | INFO | probe manual (9 steps):
+== BUTTON MANUAL == (before your first turn, the harness pressed each button once to sample its effect from the level start, then RESET restored the exact start state; the 9 probe steps, RESET included, are on this level's step account. Each line is a single sample from the starting state only -- effects may differ in other states or at other coordinates, so use these as a starting world model, not as final verdicts.)
+UP: object in rows 63-63, cols 63-63 moved down 1
+DOWN: object in rows 63-63, cols 62-62 moved left 1
+LEFT: 201 cells changed in rows 21-63, cols 14-61 (p>Bx66 B>px65 B>gx35)
+RIGHT: 200 cells changed in rows 21-37, cols 14-38 (B>px66 p>Bx65 g>Bx35)
+SPACE: 51 cells changed in rows 34-63, cols 27-60 (W>px50 c>Bx1); 15 animation frames, 208 transient px
+MOUSE(32,32): object in rows 63-63, cols 59-59 moved left 1
+RESET: verified -- restores the exact level start
+2026-08-31 17:41:38,868 | INFO | probe manual (9 steps):
+== BUTTON MANUAL == (before your first turn, the harness pressed each button once to sample its effect from the level start, then RESET restored the exact start state; the 9 probe steps, RESET included, are on this level's step account. Each line is a single sample from the starting state only -- effects may differ in other states or at other coordinates, so use these as a starting world model, not as final verdicts.)
+UP: object in rows 63-63, cols 63-63 moved down 1
+DOWN: object in rows 63-63, cols 62-62 moved left 1
+LEFT: 201 cells changed in rows 21-63, cols 14-61 (p>Bx66 B>px65 B>gx35)
+RIGHT: 200 cells changed in rows 21-37, cols 14-38 (B>px66 p>Bx65 g>Bx35)
+SPACE: 51 cells changed in rows 34-63, cols 27-60 (W>px50 c>Bx1); 15 animation frames, 208 transient px
+MOUSE(32,32): object in rows 63-63, cols 59-59 moved left 1
+RESET: verified -- restores the exact level start
+2026-08-31 17:41:39,065 | INFO | probe manual (9 steps):
+== BUTTON MANUAL == (before your first turn, the harness pressed each button once to sample its effect from the level start, then RESET restored the exact start state; the 9 probe steps, RESET included, are on this level's step account. Each line is a single sample from the starting state only -- effects may differ in other states or at other coordinates, so use these as a starting world model, not as final verdicts.)
+UP: object in rows 63-63, cols 63-63 moved down 1
+DOWN: object in rows 63-63, cols 62-62 moved left 1
+LEFT: 201 cells changed in rows 21-63, cols 14-61 (p>Bx66 B>px65 B>gx35)
+RIGHT: 200 cells changed in rows 21-37, cols 14-38 (B>px66 p>Bx65 g>Bx35)
+SPACE: 51 cells changed in rows 34-63, cols 27-60 (W>px50 c>Bx1); 15 animation frames, 208 transient px
+MOUSE(32,32): object in rows 63-63, cols 59-59 moved left 1
+RESET: verified -- restores the exact level start
+2026-08-31 17:41:39,086 | INFO | probe manual (8 steps):
+== BUTTON MANUAL == (before your first turn, the harness pressed each button once to sample its effect from the level start, then RESET restored the exact start state; the 8 probe steps, RESET included, are on this level's step account. Each line is a single sample from the starting state only -- effects may differ in other states or at other coordinates, so use these as a starting world model, not as final verdicts.)
+SPACE: 1 cells changed in rows 53-53, cols 63-63 (g>Gx1); 42 animation frames, 48 transient px
+MOUSE(32,32): no effect (pressed 3x)
+ACTION7: no effect (pressed 3x)
+RESET: verified -- restores the exact level start
+2026-08-31 17:41:39,101 | INFO | probe manual (8 steps):
+== BUTTON MANUAL == (before your first turn, the harness pressed each button once to sample its effect from the level start, then RESET restored the exact start state; the 8 probe steps, RESET included, are on this level's step account. Each line is a single sample from the starting state only -- effects may differ in other states or at other coordinates, so use these as a starting world model, not as final verdicts.)
+SPACE: 1 cells changed in rows 53-53, cols 63-63 (g>Gx1); 42 animation frames, 48 transient px
+MOUSE(32,32): no effect (pressed 3x)
+ACTION7: no effect (pressed 3x)
+RESET: verified -- restores the exact level start
+2026-08-31 17:41:39,162 | INFO | probe manual (8 steps):
+== BUTTON MANUAL == (before your first turn, the harness pressed each button once to sample its effect from the level start, then RESET restored the exact start state; the 8 probe steps, RESET included, are on this level's step account. Each line is a single sample from the starting state only -- effects may differ in other states or at other coordinates, so use these as a starting world model, not as final verdicts.)
+SPACE: 1 cells changed in rows 53-53, cols 63-63 (g>Gx1); 42 animation frames, 48 transient px
+MOUSE(32,32): no effect (pressed 3x)
+ACTION7: no effect (pressed 3x)
+RESET: verified -- restores the exact level start
+2026-08-31 18:08:10,570 | WARNING | analyzer request failed at action 20: 500 Server Error: Internal Server Error for url: http://llm-model-hub-apis.sf-express.com/v1/chat/completions | response: {"error":{"code":500,"message":"统一网关服务调用失败","request_id":"6db80c9e8a7f16fde312a96f4206d6b9","type":"gateway_service_error"}}
+2026-08-31 18:26:37,930 | WARNING | analyzer request failed at action 20: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=8.364996)
+2026-08-31 18:26:37,966 | WARNING | analyzer request failed at action 28: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=71.457426)
+2026-08-31 18:26:37,966 | WARNING | analyzer request failed at action 6: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=66.399869)
+2026-08-31 18:26:37,984 | WARNING | analyzer request failed at action 4: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=23.76275)
+2026-08-31 18:26:37,984 | WARNING | analyzer request failed at action 31: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=4.379013)
+2026-08-31 18:26:38,005 | WARNING | analyzer request failed at action 74: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=3.970421)
+2026-08-31 18:26:38,005 | WARNING | analyzer request failed at action 25: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=4.561852)
+2026-08-31 18:26:38,011 | WARNING | analyzer request failed at action 41: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=18.716523)
+2026-08-31 18:26:38,171 | WARNING | analyzer request failed at action 87: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=40.719309)
+2026-08-31 18:26:38,338 | WARNING | analyzer request failed at action 30: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=51.811303)
+2026-08-31 18:26:42,612 | WARNING | analyzer request failed at action 20: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=27.245624)
+2026-08-31 18:26:44,666 | WARNING | analyzer request failed at action 24: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=52.06)
+2026-08-31 18:27:12,837 | WARNING | analyzer request failed at action 27: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=46.449674)
+2026-08-31 18:27:25,631 | WARNING | analyzer request failed at action 8: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=79.794895)
+Run directory: /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260831_174137_ab-manual2
+Games: ft09-0d8bbf25, r11l-495a7899, ls20-9607627b, sb26-7fbdac44, cd82-fb555c5d, vc33-5430563c
+Passes: 3; concurrency: 18; waves: 1
+Max runtime per game: 45.00 minutes (explicit)
+Deployment target: inline
+benchmark.label : ab-manual2
+benchmark.solver: HarnessSolver(label='inference', runtime_environment=None, job_dir=None, soft_end_time=None, minimal_diagnostics=False, model='aliyun/deepseek-v4-flash-0731', analyzer_timeout=300.0, max_actions_per_game=None, max_runtime_s_per_game=2700.0, concurrency=18, save_request_logs=False, start_local_server=False, local_server_config='', local_server_api_key_file='', local_server_repo_dir='/Users/01450825/Desktop/project/arc-agi-3/reference/duck-harness/ARC3-Inference', local_server_port=None, local_server_tensor_parallel_size=None, local_server_count=1, cancel_drain_timeout_s=120.0)
+benchmark.passes: 3
+benchmark.games : 6
+git status:
+  ARC3-Inference                   7652836     DIRTY  main                      Refactor README for clarity and formatting
+  tufa-arc-agi-framework           7652836     DIRTY  main                      Refactor README for clarity and formatting
+deploy.inline: job_dir       = /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260831_174137_ab-manual2
+deploy.inline: soft_end_time = 2026-08-31T18:26:37.859265
+---
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260831_174137_ab-manual2 in 0.61s
+benchmark: ab-manual2
+solver:    inference
+games:     6
+passes:    3
+runs:      18 (won: 0)
+started:   2026-08-31 17:41:38
+ended:     in progress
+mean score:    0.34
+median score:  0.00
+total actions: 247
+total tokens:  646836
+generated tokens/sec: 1076.72 (job wallclock)
+total wallclock: 7386.9s
+
+per-game (mean across passes):
+  cd82-fb555c5d: score=0.00, levels=0.0/6, actions=14, tokens=43110
+  ft09-0d8bbf25: score=0.00, levels=0.0/6, actions=17, tokens=38864
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=6, tokens=30693
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=2, tokens=18930
+  sb26-7fbdac44: score=1.13, levels=0.7/8, actions=25, tokens=40481
+  vc33-5430563c: score=0.89, levels=0.7/7, actions=16, tokens=43532
+
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260831_174137_ab-manual2 in 0.58s
+benchmark: ab-manual2
+solver:    inference
+games:     6
+passes:    3
+runs:      18 (won: 0)
+started:   2026-08-31 17:41:38
+ended:     in progress
+mean score:    0.68
+median score:  0.00
+total actions: 432
+total tokens:  1339945
+generated tokens/sec: 1115.42 (job wallclock)
+total wallclock: 15171.6s
+
+per-game (mean across passes):
+  cd82-fb555c5d: score=0.00, levels=0.0/6, actions=37, tokens=79453
+  ft09-0d8bbf25: score=0.00, levels=0.0/6, actions=26, tokens=77018
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=11, tokens=81148
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=4, tokens=75399
+  sb26-7fbdac44: score=1.13, levels=0.7/8, actions=29, tokens=59977
+  vc33-5430563c: score=2.93, levels=1.3/7, actions=35, tokens=73652
+
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260831_174137_ab-manual2 in 5.68s
+benchmark: ab-manual2
+solver:    inference
+games:     6
+passes:    3
+runs:      18 (won: 0)
+started:   2026-08-31 17:41:38
+ended:     in progress
+mean score:    0.94
+median score:  0.00
+total actions: 730
+total tokens:  1796375
+generated tokens/sec: 994.09 (job wallclock)
+total wallclock: 20497.5s
+
+per-game (mean across passes):
+  cd82-fb555c5d: score=1.59, levels=0.3/6, actions=111, tokens=115989
+  ft09-0d8bbf25: score=0.00, levels=0.0/6, actions=38, tokens=90659
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=20, tokens=142672
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=4, tokens=75399
+  sb26-7fbdac44: score=1.13, levels=0.7/8, actions=29, tokens=59977
+  vc33-5430563c: score=2.93, levels=1.3/7, actions=40, tokens=114093
+
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260831_174137_ab-manual2 in 0.63s
+benchmark: ab-manual2
+solver:    inference
+games:     6
+passes:    3
+runs:      18 (won: 0)
+started:   2026-08-31 17:41:38
+ended:     in progress
+mean score:    1.39
+median score:  0.00
+total actions: 949
+total tokens:  2521579
+generated tokens/sec: 1047.29 (job wallclock)
+total wallclock: 28872.7s
+
+per-game (mean across passes):
+  cd82-fb555c5d: score=1.59, levels=0.3/6, actions=174, tokens=184400
+  ft09-0d8bbf25: score=0.00, levels=0.0/6, actions=43, tokens=153413
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=20, tokens=154273
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=5, tokens=113317
+  sb26-7fbdac44: score=1.13, levels=0.7/8, actions=29, tokens=88604
+  vc33-5430563c: score=5.60, levels=1.7/7, actions=44, tokens=146517
+
+[finished] ft09-0d8bbf25 state=cancelled level=0/6 score=0.00 actions=19 tokens=77985 per-level=19/43,0/12,0/23,0/28,0/65,0/37 note="tokens=248799"
+[finished] ft09-0d8bbf25 state=cancelled level=0/6 score=0.00 actions=27 tokens=220539 per-level=27/43,0/12,0/23,0/28,0/65,0/37 note="tokens=232194"
+[finished] r11l-495a7899 state=cancelled level=0/6 score=0.00 actions=3 tokens=72155 per-level=3/22,0/33,0/51,0/26,0/52,0/49 note="tokens=240488"
+[finished] vc33-5430563c state=cancelled level=2/7 score=9.45 actions=30 tokens=198688 per-level=11/7,17/18,2/44,0/61,0/131,0/34,0/152 note="tokens=234397"
+[finished] r11l-495a7899 state=cancelled level=0/6 score=0.00 actions=5 tokens=70017 per-level=5/22,0/33,0/51,0/26,0/52,0/49 note="tokens=235789"
+[finished] vc33-5430563c state=cancelled level=2/7 score=6.12 actions=73 tokens=164691 per-level=23/7,20/18,30/44,0/61,0/131,0/34,0/152 note="tokens=235383"
+[finished] ls20-9607627b state=cancelled level=0/7 score=0.00 actions=24 tokens=152210 per-level=24/22,0/123,0/73,0/84,0/96,0/192,0/186 note="tokens=232632"
+[finished] sb26-7fbdac44 state=cancelled level=1/8 score=1.70 actions=40 tokens=222628 per-level=23/18,17/28,0/18,0/19,0/31,0/23,0/58,0/18 note="tokens=231582"
+[finished] ft09-0d8bbf25 state=cancelled level=0/6 score=0.00 actions=86 tokens=192938 per-level=86/43,0/12,0/23,0/28,0/65,0/37 note="tokens=236665"
+[finished] cd82-fb555c5d state=cancelled level=0/6 score=0.00 actions=29 tokens=171160 per-level=29/55,0/8,0/41,0/21,0/23,0/23 note="tokens=224699"
+[finished] ls20-9607627b state=cancelled level=0/7 score=0.00 actions=18 tokens=183539 per-level=18/22,0/123,0/73,0/84,0/96,0/192,0/186 note="tokens=238848"
+[finished] cd82-fb555c5d state=cancelled level=0/6 score=0.00 actions=524 tokens=210258 per-level=524/55,0/8,0/41,0/21,0/23,0/23 note="tokens=210258"
+[finished] ls20-9607627b state=cancelled level=0/7 score=0.00 actions=19 tokens=127071 per-level=19/22,0/123,0/73,0/84,0/96,0/192,0/186 note="tokens=226282"
+[finished] cd82-fb555c5d state=cancelled level=1/6 score=4.76 actions=41 tokens=193816 per-level=34/55,7/8,0/41,0/21,0/23,0/23 note="tokens=233575"
+[finished] sb26-7fbdac44 state=cancelled level=0/8 score=0.00 actions=23 tokens=164503 per-level=23/18,0/28,0/18,0/19,0/31,0/23,0/58,0/18 note="tokens=231200"
+[finished] vc33-5430563c state=cancelled level=1/7 score=1.22 actions=29 tokens=76173 per-level=12/7,17/18,0/44,0/61,0/131,0/34,0/152 note="tokens=236115"
+[finished] sb26-7fbdac44 state=cancelled level=1/8 score=1.70 actions=26 tokens=55790 per-level=23/18,3/28,0/18,0/19,0/31,0/23,0/58,0/18 note="tokens=230306"
+[finished] r11l-495a7899 state=cancelled level=0/6 score=0.00 actions=7 tokens=197781 per-level=7/22,0/33,0/51,0/26,0/52,0/49 note="tokens=235928"
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260831_174137_ab-manual2 in 1.75s
+benchmark: ab-manual2
+solver:    inference
+games:     6
+passes:    3
+runs:      18 (won: 0)
+started:   2026-08-31 17:41:38
+ended:     2026-08-31 18:27:25
+duration:  45m 47s
+mean score:    1.39
+median score:  0.00
+total actions: 1023
+total tokens:  2751942
+generated tokens/sec: 1001.58 (job wallclock)
+total wallclock: 48718.0s
+
+per-game (mean across passes):
+  cd82-fb555c5d: score=1.59, levels=0.3/6, actions=198, tokens=191744
+  ft09-0d8bbf25: score=0.00, levels=0.0/6, actions=44, tokens=163820
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=20, tokens=154273
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=5, tokens=113317
+  sb26-7fbdac44: score=1.13, levels=0.7/8, actions=29, tokens=147640
+  vc33-5430563c: score=5.60, levels=1.7/7, actions=44, tokens=146517
+
+diagnostics: /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260831_174137_ab-manual2/diagnostics.html
+[18:27:27] DONE manual2

@@ -62,3 +62,13 @@ probes/*/lb9_out/
 probes/*/lb9_v2_out/
 # 手打游戏时的临时脚本
 _tmp_*.py
+
+# 大体积跑测产物(单目录 20MB~700MB, 只留结论与日志, 原始树留在本机)
+probes/20260827/y300_out/
+probes/20260830/v31_out/
+probes/20260830/v31rep_out/
+probes/20260831/aiplat_ab/
+# 09-03 对照实验正在跑, 跑完再单独入库
+probes/20260903/harness_compare/
+# 第1刀代码目录自带 git 历史, 改动以 patch 形式入库(kaggle_agent/duck/patches/)
+build_v12_curator/

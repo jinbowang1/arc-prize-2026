@@ -1,0 +1,307 @@
+From cc48489677f6e18cd3745fd04a88798abf891d82 Mon Sep 17 00:00:00 2001
+From: w <w@x>
+Date: Thu, 3 Sep 2026 17:45:18 +0800
+Subject: [PATCH] =?UTF-8?q?v12=20=E7=AC=AC1=E5=88=80:=20=E7=AE=A1=E5=AE=B6?=
+ =?UTF-8?q?=E8=AF=81=E6=8D=AE=E6=BA=90=E6=94=B9=E8=AF=BB=20prompts/*.log;?=
+ =?UTF-8?q?=20=E2=89=A52=E5=B1=80=E7=A1=AC=E9=97=A8;=20=E6=9C=AC=E5=9C=B0?=
+ =?UTF-8?q?=E6=B5=8B=E8=AF=95=E5=8F=82=E6=95=B0?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ .gitignore                  |   2 +
+ dataset-metadata.json       |  10 +-
+ nvfp4_cross_game_curator.py | 187 ++++++++++++++++++++++++++----------
+ 3 files changed, 145 insertions(+), 54 deletions(-)
+ create mode 100644 .gitignore
+
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..7a60b85
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,2 @@
++__pycache__/
++*.pyc
+diff --git a/dataset-metadata.json b/dataset-metadata.json
+index 629a5be..1d45879 100644
+--- a/dataset-metadata.json
++++ b/dataset-metadata.json
+@@ -1,5 +1,9 @@
+ {
+-  "title": "arc3-fnrep-source",
+-  "id": "jinbowang1/arc3-fnrep-source",
+-  "licenses": [{"name": "CC0-1.0"}]
++  "title": "arc3-fnrep-v12-curator",
++  "id": "jinbowang1/arc3-fnrep-v12-curator",
++  "licenses": [
++    {
++      "name": "CC0-1.0"
++    }
++  ]
+ }
+diff --git a/nvfp4_cross_game_curator.py b/nvfp4_cross_game_curator.py
+index f1e805b..e1a3d06 100644
+--- a/nvfp4_cross_game_curator.py
++++ b/nvfp4_cross_game_curator.py
+@@ -50,6 +50,14 @@ WORLD_MODEL_RE = re.compile(
+     flags=re.DOTALL,
+ )
+ 
++# Rendered prompt-log snapshot written by tool_agent._write_prompt_log_snapshot every
++# model call (prompts/<game>_p0.log). It is always present, unlike *_requests.jsonl
++# which only exists when save_request_logs=True.
++PROMPT_LOG_MESSAGE_HEADER_RE = re.compile(r"^\[(SYSTEM|USER|ASSISTANT|TOOL|UNKNOWN|TOOL RESULT: [^\]]*)\]$")
++PROMPT_LOG_SUBBLOCK_RE = re.compile(r"^\[(REASONING|ASSISTANT TOOL CALL: [^\]]*)\]$")
++PROMPT_LOG_INPUT_MARKER = "[MODEL INPUT]"
++PROMPT_LOG_TRANSCRIPT_MARKER = "[TURN TRANSCRIPT SO FAR]"
++
+ 
+ def utc_now() -> str:
+     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+@@ -113,7 +121,7 @@ def extract_json_object(text: str) -> dict[str, Any]:
+ 
+ def game_id_from_path(path: Path) -> str:
+     name = path.name
+-    for suffix in ("_events.jsonl", "_requests.jsonl"):
++    for suffix in ("_events.jsonl",):
+         if name.endswith(suffix):
+             return name[: -len(suffix)]
+     return path.stem
+@@ -132,6 +140,56 @@ def message_text(message: dict[str, Any]) -> str:
+     return ""
+ 
+ 
++def parse_prompt_log(text: str) -> tuple[dict[str, str], list[dict[str, str]]]:
++    """Split a rendered prompt-log snapshot into header fields and messages.
++
++    Each message is {"role", "content", "reasoning"}; role is lowercase and
++    tool results are folded into role "tool". Only the [MODEL INPUT] section is
++    parsed; the trailing turn transcript is ignored.
++    """
++    header: dict[str, str] = {}
++    start = text.find(PROMPT_LOG_INPUT_MARKER)
++    if start < 0:
++        return header, []
++    for line in text[:start].splitlines():
++        key, sep, value = line.partition(":")
++        if sep and key and " " not in key.strip():
++            header[key.strip()] = value.strip()
++    body = text[start + len(PROMPT_LOG_INPUT_MARKER):]
++    end = body.find("\n" + PROMPT_LOG_TRANSCRIPT_MARKER)
++    if end >= 0:
++        body = body[:end]
++    messages: list[dict[str, str]] = []
++    current: dict[str, Any] | None = None
++    target = "content"
++    for line in body.splitlines():
++        match = PROMPT_LOG_MESSAGE_HEADER_RE.match(line)
++        if match:
++            role = match.group(1).lower()
++            if role.startswith("tool result:"):
++                role = "tool"
++            current = {"role": role, "content": [], "reasoning": []}
++            messages.append(current)
++            target = "content"
++            continue
++        if current is None:
++            continue
++        sub = PROMPT_LOG_SUBBLOCK_RE.match(line)
++        if sub:
++            target = "reasoning" if sub.group(1) == "REASONING" else "skip"
++            continue
++        if target != "skip":
++            current[target].append(line)
++    return header, [
++        {
++            "role": str(message["role"]),
++            "content": "\n".join(message["content"]).strip(),
++            "reasoning": "\n".join(message["reasoning"]).strip(),
++        }
++        for message in messages
++    ]
++
++
+ class JsonlTail:
+     def __init__(self) -> None:
+         self.offsets: dict[str, int] = {}
+@@ -171,6 +229,7 @@ class Curator:
+         self.request_log = self.output_dir / "curator-requests.jsonl"
+         self.revision_log = self.output_dir / "ledger-revisions.jsonl"
+         self.tail = JsonlTail()
++        self.prompt_log_stamps: dict[str, tuple[float, int]] = {}
+         self.pending: dict[str, dict[str, Any]] = {}
+         self.last_evidence_hash: dict[str, str] = {}
+         self.messages: list[dict[str, str]] = [
+@@ -268,60 +327,67 @@ class Curator:
+                 self._queue(game_id, latest)
+ 
+     def collect_world_models(self) -> None:
+-        for path in sorted(self.args.events_dir.glob("*_requests.jsonl")):
+-            game_id = game_id_from_path(path)
+-            latest: dict[str, Any] | None = None
+-            for row in self.tail.read(path):
+-                if row.get("event") not in {"request", "response"}:
+-                    continue
+-                messages = row.get("messages")
+-                if not isinstance(messages, list):
++        prompt_dir = self.args.prompt_logs_dir or (self.args.events_dir / "prompts")
++        for path in sorted(prompt_dir.glob("*.log")):
++            key = str(path)
++            try:
++                stat = path.stat()
++            except OSError:
++                continue
++            stamp = (stat.st_mtime, stat.st_size)
++            if self.prompt_log_stamps.get(key) == stamp:
++                continue
++            self.prompt_log_stamps[key] = stamp
++            try:
++                text = path.read_text(encoding="utf-8", errors="replace")
++            except OSError:
++                continue
++            header, messages = parse_prompt_log(text)
++            if not messages:
++                continue
++            game_id = path.stem
++            carried = ""
++            state_line = ""
++            for message in reversed(messages):
++                if message["role"] != "user":
+                     continue
+-                carried = ""
+-                state_line = ""
+-                for message in reversed(messages):
+-                    if not isinstance(message, dict) or message.get("role") != "user":
+-                        continue
+-                    text = message_text(message)
+-                    match = WORLD_MODEL_RE.search(text)
+-                    if match:
+-                        carried = match.group(1).strip()
+-                        break
+-                for message in reversed(messages):
+-                    if not isinstance(message, dict) or message.get("role") != "user":
+-                        continue
+-                    state_match = re.search(r"Current state:[^\n]+", message_text(message))
+-                    if state_match:
+-                        state_line = state_match.group(0)
+-                        break
+-                # The compact-English gameplay model often expresses its current
+-                # world model as ordinary assistant analysis instead of emitting
+-                # the optional structured scientist-note headings. In that case,
+-                # summarize the latest narrative analyses rather than falling back
+-                # to raw frames. This keeps the 29th thread grounded in what each
+-                # gameplay agent actually believes.
+-                if not carried or "No carried world model" in carried:
+-                    analyses: list[str] = []
+-                    for message in reversed(messages):
+-                        if not isinstance(message, dict) or message.get("role") != "assistant":
+-                            continue
+-                        text = message_text(message).strip()
+-                        if text:
+-                            analyses.append(text)
+-                        if len(analyses) >= 3:
+-                            break
+-                    carried = "\n\n".join(reversed(analyses))[-6000:]
+-                if not carried:
++                match = WORLD_MODEL_RE.search(message["content"])
++                if match:
++                    carried = match.group(1).strip()
++                    break
++            for message in reversed(messages):
++                if message["role"] != "user":
+                     continue
+-                latest = {
++                state_match = re.search(r"Current state:[^\n]+", message["content"])
++                if state_match:
++                    state_line = state_match.group(0)
++                    break
++            # Observed on Flash-Next (public run 2026-09-01, 16/16 logs): the model
++            # never fills the structured carried-world-model headings, so the block
++            # is empty. Its actual beliefs live in short assistant notes before each
++            # tool call plus the latest reasoning text. Use both as evidence.
++            if not carried or "No carried world model" in carried:
++                notes = [m["content"] for m in reversed(messages) if m["role"] == "assistant" and m["content"]][:3]
++                reasoning = next((m["reasoning"] for m in reversed(messages) if m["role"] == "assistant" and m["reasoning"]), "")
++                parts = []
++                if notes:
++                    parts.append("Latest assistant notes (oldest first):\n" + "\n".join(reversed(notes)))
++                if reasoning:
++                    parts.append("Tail of latest reasoning:\n" + reasoning[-3000:])
++                carried = "\n\n".join(parts)
++            if not carried:
++                continue
++            analysis_step = header.get("analysis_step")
++            self._queue(
++                game_id,
++                {
+                     "game_id": game_id,
+-                    "action": row.get("action"),
+-                    "analysis_step": row.get("analysis_step"),
++                    "action": header.get("action"),
++                    "analysis_step": None if analysis_step in (None, "n/a") else analysis_step,
+                     "state": state_line,
+                     "working_world_model": carried[:6000],
+-                }
+-            if latest is not None:
+-                self._queue(game_id, latest)
++                },
++            )
+ 
+     def collect(self) -> None:
+         if self.args.mode == "themes":
+@@ -370,11 +436,20 @@ class Curator:
+             # empty final content field, which produces no usable ledger.
+             "chat_template_kwargs": {"enable_thinking": False, "preserve_thinking": True},
+         }
++        if self.args.plain_openai:
++            # Local testing against DeepSeek's official API: same "thinking off"
++            # intent as the vLLM chat_template_kwargs above.
++            payload.pop("top_k", None)
++            payload.pop("chat_template_kwargs", None)
++            payload["thinking"] = {"type": "disabled"}
+         encoded = json.dumps(payload).encode("utf-8")
++        headers = {"Content-Type": "application/json"}
++        if self.args.api_key:
++            headers["Authorization"] = f"Bearer {self.args.api_key}"
+         request = urllib.request.Request(
+             self.args.base_url.rstrip("/") + "/chat/completions",
+             data=encoded,
+-            headers={"Content-Type": "application/json"},
++            headers=headers,
+         )
+         started = time.time()
+         with urllib.request.urlopen(request, timeout=self.args.request_timeout) as response:
+@@ -422,6 +497,12 @@ class Curator:
+             if not isinstance(games, list):
+                 games = []
+             games = sorted({str(game).strip() for game in games if str(game).strip()})[:25]
++            # v12: the ledger is broadcast to every gameplay agent, so a claim
++            # backed by a single game is game-specific noise for the other 27.
++            # Enforce the cross-game requirement structurally instead of trusting
++            # the curator prompt (observed: DeepSeek returned 6/6 single-game entries).
++            if len(games) < self.args.min_support_games:
++                continue
+             confidence = str(raw.get("confidence") or "low").lower()
+             if confidence not in {"low", "medium", "high"}:
+                 confidence = "low"
+@@ -538,11 +619,15 @@ def parse_args() -> argparse.Namespace:
+     parser.add_argument("--mode", choices=("themes", "world_models"), required=True)
+     parser.add_argument("--events-dir", type=Path, required=True)
+     parser.add_argument("--output-dir", type=Path, required=True)
++    parser.add_argument("--prompt-logs-dir", type=Path, default=None, help="default: <events-dir>/prompts")
++    parser.add_argument("--api-key", default=os.environ.get("CURATOR_API_KEY", ""), help="local testing only")
++    parser.add_argument("--plain-openai", action="store_true", help="drop vLLM-only fields (local testing only)")
+     parser.add_argument("--base-url", default="http://127.0.0.1:1234/v1")
+     parser.add_argument("--model", default="unsloth/Qwen3.8-27B-NVFP4")
+     parser.add_argument("--max-evidence", type=int, default=10)
+     parser.add_argument("--min-games", type=int, default=3)
+     parser.add_argument("--max-entries", type=int, default=6)
++    parser.add_argument("--min-support-games", type=int, default=2, help="drop ledger entries backed by fewer games")
+     parser.add_argument("--poll-seconds", type=float, default=15.0)
+     parser.add_argument("--request-timeout", type=float, default=900.0)
+     parser.add_argument("--max-tokens", type=int, default=3600)
+-- 
+2.39.5 (Apple Git-154)
+

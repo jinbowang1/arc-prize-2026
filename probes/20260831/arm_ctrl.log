@@ -1,0 +1,170 @@
+════════ 第一层(aiplat) 臂=ctrl ════════
+  模型: aliyun/deepseek-v4-flash-0731@llm-model-hub-apis | 局: ft09,r11l,ls20,sb26,cd82,vc33 | 3遍 45min 并发18 | 思考: 开
+  本臂开关: (无 = 对照臂)
+════════════════════════
+2026-08-31 15:04:43,745 | WARNING | analyzer request failed at action 3: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=143.75269)
+2026-08-31 15:04:43,745 | WARNING | analyzer request failed at action 7: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=57.007535)
+2026-08-31 15:04:43,745 | WARNING | analyzer request failed at action 11: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=16.756674)
+2026-08-31 15:04:43,745 | WARNING | analyzer request failed at action 8: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=52.912263)
+2026-08-31 15:04:43,747 | WARNING | analyzer request failed at action 30: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=7.866956)
+2026-08-31 15:04:43,758 | WARNING | analyzer request failed at action 27: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=115.076037)
+2026-08-31 15:04:43,759 | WARNING | analyzer request failed at action 34: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=77.252628)
+2026-08-31 15:04:43,759 | WARNING | analyzer request failed at action 27: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=94.083216)
+2026-08-31 15:04:43,759 | WARNING | analyzer request failed at action 43: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=21.428796)
+2026-08-31 15:04:43,760 | WARNING | analyzer request failed at action 22: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=65.085552)
+2026-08-31 15:04:43,760 | WARNING | analyzer request failed at action 40: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=61.994645)
+2026-08-31 15:04:43,773 | WARNING | analyzer request failed at action 18: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=56.120769)
+2026-08-31 15:04:43,775 | WARNING | analyzer request failed at action 99: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=26.267711)
+2026-08-31 15:04:49,162 | WARNING | analyzer request failed at action 36: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=116.605852)
+2026-08-31 15:05:40,237 | WARNING | analyzer request failed at action 31: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=115.775612)
+Run directory: /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260831_141943_ab-ctrl
+Games: ft09-0d8bbf25, r11l-495a7899, ls20-9607627b, sb26-7fbdac44, cd82-fb555c5d, vc33-5430563c
+Passes: 3; concurrency: 18; waves: 1
+Max runtime per game: 45.00 minutes (explicit)
+Deployment target: inline
+benchmark.label : ab-ctrl
+benchmark.solver: HarnessSolver(label='inference', runtime_environment=None, job_dir=None, soft_end_time=None, minimal_diagnostics=False, model='aliyun/deepseek-v4-flash-0731', analyzer_timeout=300.0, max_actions_per_game=None, max_runtime_s_per_game=2700.0, concurrency=18, save_request_logs=False, start_local_server=False, local_server_config='', local_server_api_key_file='', local_server_repo_dir='/Users/01450825/Desktop/project/arc-agi-3/reference/duck-harness/ARC3-Inference', local_server_port=None, local_server_tensor_parallel_size=None, local_server_count=1, cancel_drain_timeout_s=120.0)
+benchmark.passes: 3
+benchmark.games : 6
+git status:
+  ARC3-Inference                   7652836     DIRTY  main                      Refactor README for clarity and formatting
+  tufa-arc-agi-framework           7652836     DIRTY  main                      Refactor README for clarity and formatting
+deploy.inline: job_dir       = /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260831_141943_ab-ctrl
+deploy.inline: soft_end_time = 2026-08-31T15:04:43.734482
+---
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260831_141943_ab-ctrl in 0.64s
+benchmark: ab-ctrl
+solver:    inference
+games:     6
+passes:    3
+runs:      18 (won: 0)
+started:   2026-08-31 14:19:43
+ended:     in progress
+mean score:    1.13
+median score:  0.00
+total actions: 202
+total tokens:  647769
+generated tokens/sec: 1078.19 (job wallclock)
+total wallclock: 8028.2s
+
+per-game (mean across passes):
+  cd82-fb555c5d: score=0.00, levels=0.0/6, actions=10, tokens=35031
+  ft09-0d8bbf25: score=3.17, levels=0.7/6, actions=21, tokens=46752
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=3, tokens=25716
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=2, tokens=36520
+  sb26-7fbdac44: score=1.85, levels=0.7/8, actions=11, tokens=26018
+  vc33-5430563c: score=1.77, levels=0.7/7, actions=18, tokens=45883
+
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260831_141943_ab-ctrl in 0.57s
+benchmark: ab-ctrl
+solver:    inference
+games:     6
+passes:    3
+runs:      18 (won: 0)
+started:   2026-08-31 14:19:43
+ended:     in progress
+mean score:    2.40
+median score:  0.00
+total actions: 399
+total tokens:  1343878
+generated tokens/sec: 1118.56 (job wallclock)
+total wallclock: 16955.3s
+
+per-game (mean across passes):
+  cd82-fb555c5d: score=0.00, levels=0.0/6, actions=18, tokens=77842
+  ft09-0d8bbf25: score=8.39, levels=1.3/6, actions=36, tokens=79504
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=14, tokens=82842
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=4, tokens=51177
+  sb26-7fbdac44: score=1.85, levels=0.7/8, actions=19, tokens=82310
+  vc33-5430563c: score=4.15, levels=1.0/7, actions=41, tokens=74283
+
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260831_141943_ab-ctrl in 0.58s
+benchmark: ab-ctrl
+solver:    inference
+games:     6
+passes:    3
+runs:      18 (won: 0)
+started:   2026-08-31 14:19:43
+ended:     in progress
+mean score:    2.40
+median score:  0.00
+total actions: 466
+total tokens:  1695547
+generated tokens/sec: 940.91 (job wallclock)
+total wallclock: 21440.2s
+
+per-game (mean across passes):
+  cd82-fb555c5d: score=0.00, levels=0.0/6, actions=24, tokens=90332
+  ft09-0d8bbf25: score=8.39, levels=1.3/6, actions=38, tokens=113639
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=17, tokens=96293
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=4, tokens=51177
+  sb26-7fbdac44: score=1.85, levels=0.7/8, actions=23, tokens=114368
+  vc33-5430563c: score=4.15, levels=1.0/7, actions=47, tokens=99371
+
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260831_141943_ab-ctrl in 0.58s
+benchmark: ab-ctrl
+solver:    inference
+games:     6
+passes:    3
+runs:      18 (won: 0)
+started:   2026-08-31 14:19:43
+ended:     in progress
+mean score:    2.53
+median score:  0.00
+total actions: 526
+total tokens:  2248172
+generated tokens/sec: 935.69 (job wallclock)
+total wallclock: 28489.8s
+
+per-game (mean across passes):
+  cd82-fb555c5d: score=0.00, levels=0.0/6, actions=29, tokens=158179
+  ft09-0d8bbf25: score=9.20, levels=1.7/6, actions=50, tokens=133336
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=18, tokens=136794
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=4, tokens=51177
+  sb26-7fbdac44: score=1.85, levels=0.7/8, actions=24, tokens=145610
+  vc33-5430563c: score=4.15, levels=1.0/7, actions=49, tokens=124292
+
+[finished] r11l-495a7899 state=cancelled level=0/6 score=0.00 actions=6 tokens=212549 per-level=6/22,0/33,0/51,0/26,0/52,0/49 note="tokens=217650"
+[finished] vc33-5430563c state=cancelled level=1/7 score=0.21 actions=29 tokens=212192 per-level=29/7,0/18,0/44,0/61,0/131,0/34,0/152 note="tokens=212192"
+[finished] ls20-9607627b state=cancelled level=0/7 score=0.00 actions=7 tokens=94721 per-level=7/22,0/123,0/73,0/84,0/96,0/192,0/186 note="tokens=211406"
+[finished] r11l-495a7899 state=cancelled level=0/6 score=0.00 actions=2 tokens=35755 per-level=2/22,0/33,0/51,0/26,0/52,0/49 note="tokens=209669"
+[finished] ls20-9607627b state=cancelled level=0/7 score=0.00 actions=10 tokens=193483 per-level=10/22,0/123,0/73,0/84,0/96,0/192,0/186 note="tokens=208012"
+[finished] ls20-9607627b state=cancelled level=0/7 score=0.00 actions=42 tokens=207698 per-level=42/22,0/123,0/73,0/84,0/96,0/192,0/186 note="tokens=207698"
+[finished] vc33-5430563c state=cancelled level=1/7 score=3.57 actions=26 tokens=81922 per-level=7/7,19/18,0/44,0/61,0/131,0/34,0/152 note="tokens=206704"
+[finished] cd82-fb555c5d state=cancelled level=0/6 score=0.00 actions=33 tokens=190768 per-level=33/55,0/8,0/41,0/21,0/23,0/23 note="tokens=200004"
+[finished] ft09-0d8bbf25 state=cancelled level=2/6 score=13.59 actions=39 tokens=62992 per-level=25/43,13/12,1/23,0/28,0/65,0/37 note="tokens=217289"
+[finished] cd82-fb555c5d state=cancelled level=0/6 score=0.00 actions=21 tokens=182982 per-level=21/55,0/8,0/41,0/21,0/23,0/23 note="tokens=206820"
+[finished] sb26-7fbdac44 state=cancelled level=1/8 score=2.78 actions=26 tokens=137700 per-level=12/18,14/28,0/18,0/19,0/31,0/23,0/58,0/18 note="tokens=203276"
+[finished] sb26-7fbdac44 state=cancelled level=0/8 score=0.00 actions=17 tokens=174489 per-level=17/18,0/28,0/18,0/19,0/31,0/23,0/58,0/18 note="tokens=203735"
+[finished] vc33-5430563c state=cancelled level=2/7 score=8.89 actions=98 tokens=110717 per-level=10/7,18/18,70/44,0/61,0/131,0/34,0/152 note="tokens=216184"
+[finished] cd82-fb555c5d state=cancelled level=0/6 score=0.00 actions=35 tokens=114487 per-level=35/55,0/8,0/41,0/21,0/23,0/23 note="tokens=203518"
+[finished] ft09-0d8bbf25 state=cancelled level=1/6 score=2.45 actions=86 tokens=180285 per-level=60/43,26/12,0/23,0/28,0/65,0/37 note="tokens=214672"
+[finished] r11l-495a7899 state=cancelled level=0/6 score=0.00 actions=7 tokens=88240 per-level=7/22,0/33,0/51,0/26,0/52,0/49 note="tokens=223225"
+[finished] ft09-0d8bbf25 state=cancelled level=2/6 score=11.57 actions=26 tokens=156732 per-level=6/43,15/12,5/23,0/28,0/65,0/37 note="tokens=229169"
+[finished] sb26-7fbdac44 state=cancelled level=1/8 score=2.78 actions=30 tokens=124641 per-level=12/18,18/28,0/18,0/19,0/31,0/23,0/58,0/18 note="tokens=207617"
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260831_141943_ab-ctrl in 1.57s
+benchmark: ab-ctrl
+solver:    inference
+games:     6
+passes:    3
+runs:      18 (won: 0)
+started:   2026-08-31 14:19:43
+ended:     2026-08-31 15:05:40
+duration:  45m 56s
+mean score:    2.55
+median score:  0.00
+total actions: 540
+total tokens:  2562353
+generated tokens/sec: 929.59 (job wallclock)
+total wallclock: 48752.4s
+
+per-game (mean across passes):
+  cd82-fb555c5d: score=0.00, levels=0.0/6, actions=29, tokens=162745
+  ft09-0d8bbf25: score=9.20, levels=1.7/6, actions=50, tokens=133336
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=19, tokens=165300
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=5, tokens=112181
+  sb26-7fbdac44: score=1.85, levels=0.7/8, actions=24, tokens=145610
+  vc33-5430563c: score=4.22, levels=1.3/7, actions=51, tokens=134943
+
+diagnostics: /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260831_141943_ab-ctrl/diagnostics.html
+[15:05:42] DONE ctrl

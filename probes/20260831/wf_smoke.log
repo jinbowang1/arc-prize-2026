@@ -1,0 +1,60 @@
+════════ 第一层(aiplat) 臂=wf-smoke ════════
+  模型: aliyun/deepseek-v4-flash-0731@llm-model-hub-apis | 局: vc33 | 1遍 12min 并发1 | 思考: 开
+  本臂开关: DUCK_WINFRAME=1
+════════════════════════
+2026-09-01 09:57:54,307 | WARNING | analyzer request failed at action 52: HTTPConnectionPool(host='127.0.0.1', port=12639): Read timed out. (read timeout=152.561215)
+Run directory: /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260901_094554_ab-wf-smoke
+Games: vc33-5430563c
+Passes: 1; concurrency: 1; waves: 1
+Max runtime per game: 12.00 minutes (explicit)
+Deployment target: inline
+benchmark.label : ab-wf-smoke
+benchmark.solver: HarnessSolver(label='inference', runtime_environment=None, job_dir=None, soft_end_time=None, minimal_diagnostics=False, model='aliyun/deepseek-v4-flash-0731', analyzer_timeout=300.0, max_actions_per_game=None, max_runtime_s_per_game=720.0, concurrency=1, save_request_logs=False, start_local_server=False, local_server_config='', local_server_api_key_file='', local_server_repo_dir='/Users/01450825/Desktop/project/arc-agi-3/reference/duck-harness/ARC3-Inference', local_server_port=None, local_server_tensor_parallel_size=None, local_server_count=1, cancel_drain_timeout_s=120.0)
+benchmark.passes: 1
+benchmark.games : 1
+git status:
+  ARC3-Inference                   7652836     DIRTY  main                      Refactor README for clarity and formatting
+  tufa-arc-agi-framework           7652836     DIRTY  main                      Refactor README for clarity and formatting
+deploy.inline: job_dir       = /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260901_094554_ab-wf-smoke
+deploy.inline: soft_end_time = 2026-09-01T09:57:54.275040
+---
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260901_094554_ab-wf-smoke in 0.31s
+benchmark: ab-wf-smoke
+solver:    inference
+games:     1
+passes:    1
+runs:      1 (won: 0)
+started:   2026-09-01 09:45:54
+ended:     in progress
+mean score:    0.00
+median score:  0.00
+total actions: 51
+total tokens:  24793
+generated tokens/sec: 41.30 (job wallclock)
+total wallclock: 334.2s
+
+per-game (mean across passes):
+  vc33-5430563c: score=0.00, levels=0.0/7, actions=51, tokens=24793
+
+[finished] vc33-5430563c state=cancelled level=0/7 score=0.00 actions=51 tokens=24793 per-level=51/7,0/18,0/44,0/61,0/131,0/34,0/152 note="tokens=41997"
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260901_094554_ab-wf-smoke in 0.61s
+benchmark: ab-wf-smoke
+solver:    inference
+games:     1
+passes:    1
+runs:      1 (won: 0)
+started:   2026-09-01 09:45:54
+ended:     2026-09-01 09:57:54
+duration:  11m 59s
+mean score:    0.00
+median score:  0.00
+total actions: 51
+total tokens:  24793
+generated tokens/sec: 34.44 (job wallclock)
+total wallclock: 719.8s
+
+per-game (mean across passes):
+  vc33-5430563c: score=0.00, levels=0.0/7, actions=51, tokens=24793
+
+diagnostics: /Users/01450825/Desktop/project/arc-agi-3/probes/20260831/aiplat_ab/20260901_094554_ab-wf-smoke/diagnostics.html
+[09:57:55] DONE wf-smoke

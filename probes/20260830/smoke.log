@@ -1,0 +1,5 @@
+════════ 第一层(官方直连) 臂=smoke ════════
+  模型: deepseek-v4-flash@api.deepseek.com | 局: ft09 | 1遍 4min 并发1 | 思考: 开
+  本臂开关: DUCK_BOOTSTRAP_PROBE=1
+════════════════════════
+make: *** [_taaf-run] Killed: 9
