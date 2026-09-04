@@ -1,0 +1,223 @@
+[2026-09-03 21:12:27] START side=duck game=- run=main-duck mrm=15 n_passes=3 cj=3 cwd=/Users/01450825/Desktop/project/arc-agi-3/reference/duck-harness/ARC3-Inference
+2026-09-03 21:27:31,089 | WARNING | analyzer request failed at action 30: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Read timed out. (read timeout=10.644863582914695)
+2026-09-03 21:27:37,449 | WARNING | analyzer request failed at action 17: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Read timed out. (read timeout=139.02876591682434)
+2026-09-03 21:27:48,464 | WARNING | analyzer request failed at action 23: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Read timed out. (read timeout=113.7906247919891)
+2026-09-03 21:34:13,844 | WARNING | analyzer request failed at action 40: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Max retries exceeded with url: /v1/chat/completions (Caused by ConnectTimeoutError(<HTTPConnection(host='llm-model-hub-apis.sf-express.com', port=80) at 0x12fb027e0>, 'Connection to llm-model-hub-apis.sf-express.com timed out. (connect timeout=300.0)'))
+2026-09-03 21:42:31,229 | WARNING | analyzer request failed at action 150: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Read timed out. (read timeout=11.542872000019997)
+2026-09-03 21:42:37,565 | WARNING | analyzer request failed at action 88: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Read timed out. (read timeout=3.1683389160316437)
+2026-09-03 21:42:48,612 | WARNING | analyzer request failed at action 86: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Read timed out. (read timeout=50.26468383404426)
+2026-09-03 21:57:46,725 | WARNING | analyzer request failed at action 9: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Read timed out. (read timeout=124.01331883412786)
+2026-09-03 21:58:26,108 | WARNING | analyzer request failed at action 9: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Read timed out. (read timeout=63.935380457900465)
+2026-09-03 22:12:46,905 | WARNING | analyzer request failed at action 98: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Read timed out. (read timeout=27.74302316713147)
+2026-09-03 22:12:59,935 | WARNING | analyzer request failed at action 112: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Read timed out. (read timeout=9.450346541125327)
+Run directory: /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/duck_runs/20260903_211230_main-duck
+Games: vc33-5430563c, ft09-0d8bbf25, ls20-9607627b, r11l-495a7899, sc25-635fd71a
+Passes: 3; concurrency: 3; waves: 5
+Max runtime per game: 15.00 minutes (explicit)
+Deployment target: inline
+benchmark.label : main-duck
+benchmark.solver: HarnessSolver(label='inference', runtime_environment=None, job_dir=None, soft_end_time=None, minimal_diagnostics=False, model='aliyun/deepseek-v4-flash-0731', analyzer_timeout=300.0, max_actions_per_game=None, max_runtime_s_per_game=900.0, concurrency=3, save_request_logs=True, start_local_server=False, local_server_config='', local_server_api_key_file='', local_server_repo_dir='/Users/01450825/Desktop/project/arc-agi-3/reference/duck-harness/ARC3-Inference', local_server_port=None, local_server_tensor_parallel_size=None, local_server_count=1, cancel_drain_timeout_s=120.0)
+benchmark.passes: 3
+benchmark.games : 5
+git status:
+  ARC3-Inference                   7652836     DIRTY  main                      Refactor README for clarity and formatting
+  tufa-arc-agi-framework           7652836     DIRTY  main                      Refactor README for clarity and formatting
+deploy.inline: job_dir       = /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/duck_runs/20260903_211230_main-duck
+deploy.inline: soft_end_time = 2026-09-03T22:27:30.741581
+---
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/duck_runs/20260903_211230_main-duck in 0.57s
+benchmark: main-duck
+solver:    inference
+games:     5
+passes:    3
+runs:      15 (won: 0)
+started:   2026-09-03 21:12:30
+ended:     in progress
+mean score:    1.13
+median score:  0.00
+total actions: 59
+total tokens:  149228
+generated tokens/sec: 248.41 (job wallclock)
+total wallclock: 1542.6s
+
+per-game (mean across passes):
+  ft09-0d8bbf25: score=4.76, levels=0.7/6, actions=7, tokens=15694
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=5, tokens=13327
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=0, tokens=0
+  sc25-635fd71a: score=0.00, levels=0.0/6, actions=0, tokens=0
+  vc33-5430563c: score=0.91, levels=0.3/7, actions=7, tokens=20720
+
+[finished] vc33-5430563c state=gave_up level=2/7 score=7.98 actions=29 tokens=79955 per-level=8/7,21/18,0/44,0/61,0/131,0/34,0/152 note="tokens=89816"
+[finished] ls20-9607627b state=gave_up level=0/7 score=0.00 actions=16 tokens=39983 per-level=16/22,0/123,0/73,0/84,0/96,0/192,0/186 note="tokens=71748"
+[finished] ft09-0d8bbf25 state=gave_up level=2/6 score=14.29 actions=22 tokens=47083 per-level=5/43,9/12,8/23,0/28,0/65,0/37 note="tokens=80880"
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/duck_runs/20260903_211230_main-duck in 0.68s
+benchmark: main-duck
+solver:    inference
+games:     5
+passes:    3
+runs:      15 (won: 0)
+started:   2026-09-03 21:12:30
+ended:     in progress
+mean score:    1.88
+median score:  0.00
+total actions: 196
+total tokens:  239618
+generated tokens/sec: 199.44 (job wallclock)
+total wallclock: 6224.8s
+
+per-game (mean across passes):
+  ft09-0d8bbf25: score=4.76, levels=0.7/6, actions=7, tokens=15694
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=5, tokens=13327
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=20, tokens=7081
+  sc25-635fd71a: score=1.59, levels=0.3/6, actions=12, tokens=9254
+  vc33-5430563c: score=3.07, levels=1.0/7, actions=20, tokens=34515
+
+[finished] r11l-495a7899 state=gave_up level=0/6 score=0.00 actions=149 tokens=65374 per-level=149/22,0/33,0/51,0/26,0/52,0/49 note="tokens=70423"
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/duck_runs/20260903_211230_main-duck in 0.53s
+benchmark: main-duck
+solver:    inference
+games:     5
+passes:    3
+runs:      15 (won: 0)
+started:   2026-09-03 21:12:30
+ended:     in progress
+mean score:    1.97
+median score:  0.00
+total actions: 387
+total tokens:  363937
+generated tokens/sec: 201.96 (job wallclock)
+total wallclock: 8087.4s
+
+per-game (mean across passes):
+  ft09-0d8bbf25: score=4.76, levels=0.7/6, actions=7, tokens=15694
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=5, tokens=13327
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=49, tokens=21791
+  sc25-635fd71a: score=1.86, levels=0.7/6, actions=28, tokens=21308
+  vc33-5430563c: score=3.25, levels=1.3/7, actions=38, tokens=49191
+
+[finished] sc25-635fd71a state=gave_up level=2/6 score=5.59 actions=87 tokens=64326 per-level=28/36,54/6,5/32,0/83,0/143,0/50 note="tokens=64326"
+[finished] vc33-5430563c state=gave_up level=2/7 score=1.76 actions=85 tokens=67618 per-level=12/7,65/18,8/44,0/61,0/131,0/34,0/152 note="tokens=67618"
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/duck_runs/20260903_211230_main-duck in 0.69s
+benchmark: main-duck
+solver:    inference
+games:     5
+passes:    3
+runs:      15 (won: 0)
+started:   2026-09-03 21:12:30
+ended:     in progress
+mean score:    1.97
+median score:  0.00
+total actions: 415
+total tokens:  453405
+generated tokens/sec: 188.71 (job wallclock)
+total wallclock: 14705.8s
+
+per-game (mean across passes):
+  ft09-0d8bbf25: score=4.76, levels=0.7/6, actions=9, tokens=19729
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=8, tokens=25519
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=54, tokens=35253
+  sc25-635fd71a: score=1.86, levels=0.7/6, actions=29, tokens=21442
+  vc33-5430563c: score=3.25, levels=1.3/7, actions=38, tokens=49191
+
+[finished] ls20-9607627b state=gave_up level=0/7 score=0.00 actions=8 tokens=36576 per-level=8/22,0/123,0/73,0/84,0/96,0/192,0/186 note="tokens=58602"
+[finished] r11l-495a7899 state=gave_up level=0/6 score=0.00 actions=13 tokens=40386 per-level=13/22,0/33,0/51,0/26,0/52,0/49 note="tokens=79357"
+[finished] ft09-0d8bbf25 state=gave_up level=0/6 score=0.00 actions=8 tokens=73387 per-level=8/43,0/12,0/23,0/28,0/65,0/37 note="tokens=94797"
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/duck_runs/20260903_211230_main-duck in 0.69s
+benchmark: main-duck
+solver:    inference
+games:     5
+passes:    3
+runs:      15 (won: 0)
+started:   2026-09-03 21:12:30
+ended:     in progress
+mean score:    1.98
+median score:  0.00
+total actions: 524
+total tokens:  571720
+generated tokens/sec: 190.36 (job wallclock)
+total wallclock: 25263.2s
+
+per-game (mean across passes):
+  ft09-0d8bbf25: score=4.76, levels=0.7/6, actions=13, tokens=45749
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=8, tokens=25519
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=54, tokens=35253
+  sc25-635fd71a: score=1.86, levels=0.7/6, actions=41, tokens=28460
+  vc33-5430563c: score=3.26, levels=1.7/7, actions=58, tokens=55590
+
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/duck_runs/20260903_211230_main-duck in 0.45s
+benchmark: main-duck
+solver:    inference
+games:     5
+passes:    3
+runs:      15 (won: 0)
+started:   2026-09-03 21:12:30
+ended:     in progress
+mean score:    2.07
+median score:  0.00
+total actions: 635
+total tokens:  645453
+generated tokens/sec: 179.10 (job wallclock)
+total wallclock: 26569.1s
+
+per-game (mean across passes):
+  ft09-0d8bbf25: score=4.76, levels=0.7/6, actions=14, tokens=47733
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=8, tokens=25519
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=54, tokens=35253
+  sc25-635fd71a: score=1.86, levels=0.7/6, actions=61, tokens=39519
+  vc33-5430563c: score=3.70, levels=2.0/7, actions=74, tokens=67125
+
+[finished] sc25-635fd71a state=gave_up level=0/6 score=0.00 actions=97 tokens=54231 per-level=97/36,0/6,0/32,0/83,0/143,0/50 note="tokens=54231"
+[finished] vc33-5430563c state=gave_up level=2/7 score=1.36 actions=111 tokens=54981 per-level=61/7,42/18,8/44,0/61,0/131,0/34,0/152 note="tokens=54981"
+[finished] ft09-0d8bbf25 state=gave_up level=0/6 score=0.00 actions=13 tokens=22731 per-level=13/43,0/12,0/23,0/28,0/65,0/37 note="tokens=77507"
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/duck_runs/20260903_211230_main-duck in 0.77s2026-09-03 22:27:30,896 | WARNING | analyzer request failed at action 22: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Read timed out. (read timeout=0.231774)
+2026-09-03 22:27:41,121 | WARNING | analyzer request failed at action 32: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Read timed out. (read timeout=13.130439)
+
+benchmark: main-duck
+solver:    inference
+games:     5
+passes:    3
+runs:      15 (won: 0)
+started:   2026-09-03 21:12:30
+ended:     in progress
+mean score:    2.07
+median score:  0.00
+total actions: 711
+total tokens:  750493
+generated tokens/sec: 178.49 (job wallclock)
+total wallclock: 39721.8s
+
+per-game (mean across passes):
+  ft09-0d8bbf25: score=4.76, levels=0.7/6, actions=14, tokens=47733
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=14, tokens=35691
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=64, tokens=46843
+  sc25-635fd71a: score=1.86, levels=0.7/6, actions=69, tokens=52377
+  vc33-5430563c: score=3.70, levels=2.0/7, actions=75, tokens=67518
+
+[finished] ls20-9607627b state=cancelled level=0/7 score=0.00 actions=21 tokens=59073 per-level=21/22,0/123,0/73,0/84,0/96,0/192,0/186 note="tokens=59073"
+[finished] sc25-635fd71a state=cancelled level=0/6 score=0.00 actions=31 tokens=56835 per-level=31/36,0/6,0/32,0/83,0/143,0/50 note="tokens=57435"
+[finished] r11l-495a7899 state=cancelled level=1/6 score=1.44 actions=49 tokens=49316 per-level=40/22,9/33,0/51,0/26,0/52,0/49 note="tokens=51880"
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/duck_runs/20260903_211230_main-duck in 0.95s
+benchmark: main-duck
+solver:    inference
+games:     5
+passes:    3
+runs:      15 (won: 0)
+started:   2026-09-03 21:12:30
+ended:     2026-09-03 22:27:44
+duration:  1h 15m 13s
+mean score:    2.16
+median score:  0.00
+total actions: 739
+total tokens:  811855
+generated tokens/sec: 179.86 (job wallclock)
+total wallclock: 40786.4s
+
+per-game (mean across passes):
+  ft09-0d8bbf25: score=4.76, levels=0.7/6, actions=14, tokens=47733
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=15, tokens=45210
+  r11l-495a7899: score=0.48, levels=0.3/6, actions=70, tokens=51692
+  sc25-635fd71a: score=1.86, levels=0.7/6, actions=71, tokens=58464
+  vc33-5430563c: score=3.70, levels=2.0/7, actions=75, tokens=67518
+
+diagnostics: /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/duck_runs/20260903_211230_main-duck/diagnostics.html
+[2026-09-03 22:27:45] DONE side=duck game=- rc=0

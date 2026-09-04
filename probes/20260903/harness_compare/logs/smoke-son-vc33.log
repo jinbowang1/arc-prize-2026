@@ -1,0 +1,39 @@
+[2026-09-03 21:01:01] START side=son game=vc33 run=smoke-son-vc33 mrm=4 n_passes=1 cj=1 cwd=/Users/01450825/Desktop/project/arc-agi-3/reference/fnrep-source-v4/src/ARC3-Inference
+2026-09-03 21:05:04,650 | WARNING | analyzer request failed at action 21: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Read timed out. (read timeout=0.28745449986308813)
+Run directory: /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/son_runs/20260903_210104_smoke-son-vc33
+Games: vc33-5430563c
+Passes: 1; concurrency: 1; waves: 1
+Max runtime per game: 4.00 minutes (explicit)
+Deployment target: inline
+benchmark.label : smoke-son-vc33
+benchmark.solver: HarnessSolver(label='inference', runtime_environment=None, job_dir=None, soft_end_time=None, minimal_diagnostics=False, model='aliyun/deepseek-v4-flash-0731', analyzer_timeout=300.0, max_actions_per_game=None, max_runtime_s_per_game=240.0, concurrency=1, save_request_logs=True, start_local_server=False, local_server_config='', local_server_api_key_file='', local_server_repo_dir='/Users/01450825/Desktop/project/arc-agi-3/reference/fnrep-source-v4/src/ARC3-Inference', local_server_port=None, local_server_tensor_parallel_size=None, local_server_count=1, cancel_drain_timeout_s=120.0)
+benchmark.passes: 1
+benchmark.games : 1
+git status:
+  ARC3-Inference                   153827b     DIRTY  main                      08-30 第九发已交: V31+y300 (55884242); 出分轮询
+  tufa-arc-agi-framework           153827b     DIRTY  main                      08-30 第九发已交: V31+y300 (55884242); 出分轮询
+deploy.inline: job_dir       = /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/son_runs/20260903_210104_smoke-son-vc33
+deploy.inline: soft_end_time = 2026-09-03T21:08:04.420650
+---
+[finished] vc33-5430563c state=gave_up level=0/7 score=0.00 actions=20 tokens=19234 per-level=20/7,0/18,0/44,0/61,0/131,0/34,0/152 note="tokens=19234"
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/son_runs/20260903_210104_smoke-son-vc33 in 0.55s
+benchmark: smoke-son-vc33
+solver:    inference
+games:     1
+passes:    1
+runs:      1 (won: 0)
+started:   2026-09-03 21:01:04
+ended:     2026-09-03 21:05:04
+duration:  4m 0s
+mean score:    0.00
+median score:  0.00
+total actions: 20
+total tokens:  19234
+generated tokens/sec: 80.10 (job wallclock)
+total wallclock: 240.1s
+
+per-game (mean across passes):
+  vc33-5430563c: score=0.00, levels=0.0/7, actions=20, tokens=19234
+
+diagnostics: /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/son_runs/20260903_210104_smoke-son-vc33/diagnostics.html
+[2026-09-03 21:05:05] DONE side=son game=vc33 rc=0

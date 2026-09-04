@@ -1,0 +1,39 @@
+[2026-09-03 21:06:01] START side=duck game=vc33 run=smoke-duck-vc33 mrm=4 n_passes=1 cj=1 cwd=/Users/01450825/Desktop/project/arc-agi-3/reference/duck-harness/ARC3-Inference
+2026-09-03 21:10:04,188 | WARNING | analyzer request failed at action 26: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Read timed out. (read timeout=0.9752490839455277)
+Run directory: /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/duck_runs/20260903_210603_smoke-duck-vc33
+Games: vc33-5430563c
+Passes: 1; concurrency: 1; waves: 1
+Max runtime per game: 4.00 minutes (explicit)
+Deployment target: inline
+benchmark.label : smoke-duck-vc33
+benchmark.solver: HarnessSolver(label='inference', runtime_environment=None, job_dir=None, soft_end_time=None, minimal_diagnostics=False, model='aliyun/deepseek-v4-flash-0731', analyzer_timeout=300.0, max_actions_per_game=None, max_runtime_s_per_game=240.0, concurrency=1, save_request_logs=True, start_local_server=False, local_server_config='', local_server_api_key_file='', local_server_repo_dir='/Users/01450825/Desktop/project/arc-agi-3/reference/duck-harness/ARC3-Inference', local_server_port=None, local_server_tensor_parallel_size=None, local_server_count=1, cancel_drain_timeout_s=120.0)
+benchmark.passes: 1
+benchmark.games : 1
+git status:
+  ARC3-Inference                   7652836     DIRTY  main                      Refactor README for clarity and formatting
+  tufa-arc-agi-framework           7652836     DIRTY  main                      Refactor README for clarity and formatting
+deploy.inline: job_dir       = /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/duck_runs/20260903_210603_smoke-duck-vc33
+deploy.inline: soft_end_time = 2026-09-03T21:13:03.971386
+---
+[finished] vc33-5430563c state=gave_up level=1/7 score=0.68 actions=25 tokens=17772 per-level=16/7,9/18,0/44,0/61,0/131,0/34,0/152 note="tokens=17772"
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/duck_runs/20260903_210603_smoke-duck-vc33 in 0.56s
+benchmark: smoke-duck-vc33
+solver:    inference
+games:     1
+passes:    1
+runs:      1 (won: 0)
+started:   2026-09-03 21:06:04
+ended:     2026-09-03 21:10:04
+duration:  4m 0s
+mean score:    0.68
+median score:  0.68
+total actions: 25
+total tokens:  17772
+generated tokens/sec: 74.01 (job wallclock)
+total wallclock: 240.1s
+
+per-game (mean across passes):
+  vc33-5430563c: score=0.68, levels=1.0/7, actions=25, tokens=17772
+
+diagnostics: /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/duck_runs/20260903_210603_smoke-duck-vc33/diagnostics.html
+[2026-09-03 21:10:04] DONE side=duck game=vc33 rc=0

@@ -1,0 +1,7 @@
+No previous sequence has been executed yet.
+Current state: step 1, level 1.
+Valid actions right now: MOUSE.
+End of carried world model.
+Ground on `current_frame` in Python before acting.
+Use compact inspection/search code, revise the carried world model in brief assistant text when needed, then execute the shortest reliable valid action or batch via `action(actions)`. Stop on any terminal result.
+If you use MOUSE, include integer row and col arguments.

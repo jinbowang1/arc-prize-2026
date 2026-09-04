@@ -1,0 +1,199 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8">
+<title>同题对照 · 两套 harness 差在哪</title>
+<style>
+:root{--bg:#F6F7FD;--card:#FFF;--ink:#1B1B33;--ink2:#4C5271;--dim:#8B93B0;--line:#E7E9F5;
+--c1:#3B82F6;--c2:#06B6D4;--c3:#A855F7;--c4:#10B981;--c5:#F59E0B;--c6:#EC4899;--c8:#EF4444;
+--mono:ui-monospace,"SF Mono",Menlo,monospace;--sans:-apple-system,"PingFang SC",sans-serif;
+--sh:0 1px 2px rgba(27,27,51,.05),0 6px 20px rgba(99,102,241,.07)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.75 var(--sans);padding:32px 40px 60px;max-width:1500px;margin:0 auto}
+h1{font-size:30px;font-weight:800;letter-spacing:-.6px;margin-bottom:6px;
+background:linear-gradient(135deg,#6366F1,#A855F7,#EC4899);-webkit-background-clip:text;background-clip:text;color:transparent;display:inline-block}
+.sub{color:var(--dim);font-size:13.5px;margin-bottom:26px}
+h2{font-size:19px;font-weight:800;margin:34px 0 12px;padding-left:11px;border-left:4px solid var(--c1)}
+h2.c2{border-color:var(--c2)} h2.c3{border-color:var(--c3)} h2.c4{border-color:var(--c4)} h2.c5{border-color:var(--c5)} h2.c6{border-color:var(--c6)} h2.c8{border-color:var(--c8)}
+h3{font-size:15px;font-weight:700;margin:14px 0 6px;color:var(--ink)}
+.card{background:var(--card);border-radius:14px;padding:18px 22px;box-shadow:var(--sh);margin-bottom:14px}
+.card p{margin-bottom:8px;color:var(--ink2)} .card p:last-child{margin-bottom:0}
+pre{font-family:var(--mono);font-size:12px;line-height:1.65;overflow-x:auto;color:var(--ink2);white-space:pre}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+th{text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:1px;color:var(--dim);padding:7px 10px;background:#F5F6FD;font-weight:500}
+td{padding:7px 10px;border-top:1px solid var(--line);color:var(--ink2);vertical-align:top}
+td b,th b{color:var(--ink)} td.n{font-family:var(--mono);text-align:right;white-space:nowrap}
+code{font-family:var(--mono);font-size:11.5px;background:#F1F3FA;padding:1px 6px;border-radius:5px;color:#5B21B6}
+.warn{background:#FEF6E7;border-left:3px solid var(--c5);padding:11px 15px;border-radius:0 9px 9px 0;font-size:13px;color:#7C4A03;margin:10px 0}
+.bad{background:#FEF0F0;border-left:3px solid var(--c8);color:#9B1C1C}
+.ok{background:#ECFDF5;border-left:3px solid var(--c4);color:#065F46}
+.info{background:#EFF6FF;border-left:3px solid var(--c1);color:#1E3A8A}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px} .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.tag{font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:5px;background:#EEF0FC;color:#4338CA;white-space:nowrap}
+.tag.ours{background:#FCE7F3;color:#9D174D} .tag.his{background:#DBEAFE;color:#1E40AF} .tag.tufa{background:#D1FAE5;color:#065F46} .tag.dead{background:#FEE2E2;color:#991B1B}
+.kpi{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:8px 0 4px}
+.kpi div{background:#fff;border-radius:12px;padding:12px 14px;box-shadow:var(--sh)}
+.kpi b{display:block;font-size:26px;font-weight:800;letter-spacing:-.5px}
+.kpi span{font-size:12px;color:var(--dim)}
+.k1 b{color:var(--c1)} .k2 b{color:var(--c3)} .k3 b{color:var(--c4)} .k4 b{color:var(--c5)} .k5 b{color:var(--c8)}
+ul{padding-left:20px;color:var(--ink2)} li{margin-bottom:4px}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.toc a{font-size:12px;padding:4px 10px;border-radius:99px;background:#fff;box-shadow:var(--sh);color:#4338CA;text-decoration:none}
+.small{font-size:12px;color:var(--dim)}
+</style></head><body><h1>同题对照：两套 harness 到底差在哪</h1>
+<div class="sub">2026-09-03 夜 · 同一个模型（hub 上的 DeepSeek V4 Flash）· 5 局 × 3 种子 × 两套 harness = 30 路 · 零 GPU</div>
+
+<div class="toc">
+<a href="#s1">① 结论</a><a href="#s2">② 怎么比的</a><a href="#s3">③ 成绩：分不出高下</a>
+<a href="#s4">④ 上下文预算：便宜 22% 却更费</a><a href="#s5">⑤ 每轮重复的指令块</a>
+<a href="#s6">⑥ 系统提示词整篇重写</a><a href="#s7">⑦ 动画感知层没干活</a>
+<a href="#s8">⑧ 这次实验的边界</a><a href="#s9">⑨ 能搬什么</a>
+</div>
+
+<h2 id="s1">① 一句话结论</h2>
+<div class="card">
+<p>把模型固定成 DeepSeek 之后，两套 harness 的成绩<b>分不出高下</b>：30 路配对下来，我们那套赢 4 路、Son 那套赢 4 路、打平 7 路，总过关数 11 比 10，置换检验 p 值到 1.00。</p>
+<p>所以第十一发从 2.01 跳到 5.49，按这次证据看，<b>功劳主要在换模型，不在换 harness</b>。Son 的 harness 带来的是另一类改变：他把每次请求的上下文压掉两成二，换来单位时间里更多的观察与动作。</p>
+<p>这个结论有一条明确的边界，写在第八节：本次每路只给 15 分钟，线上每局给 132 分钟。Son 有几处机制要跑够动作数才会启动，在 15 分钟里根本没机会露面。</p>
+</div>
+
+<div class="kpi">
+<div class="k1"><b>4 : 4 : 7</b><span>逐路胜负平（过关数）</span></div>
+<div class="k2"><b>p = 1.00</b><span>总过关差的置换检验</span></div>
+<div class="k3"><b>−22%</b><span>Son 每次请求的输入字符</span></div>
+<div class="k4"><b>+74%</b><span>Son 的模型调用次数</span></div>
+<div class="k5"><b>0 次</b><span>动画故事板在本地触发</span></div>
+</div>
+
+<h2 class="c2" id="s2">② 怎么比的</h2>
+<div class="card">
+<table>
+<tr><th>项</th><th>设置</th></tr>
+<tr><td>模型</td><td class="n">aliyun/deepseek-v4-flash-0731（公司大模型网关），两侧同一个，关思考</td></tr>
+<tr><td>局</td><td class="n">vc33 · ft09 · ls20 · r11l · sc25，各 3 个种子，两侧同一批</td></tr>
+<tr><td>时长闸刀</td><td class="n">每路 15 分钟，两侧同值；整场 21:12:30 起、22:27:44 止，两侧同时开跑</td></tr>
+<tr><td>并发</td><td class="n">每侧 3，本地压低以避开网关按「密钥×模型」分桶的限流</td></tr>
+<tr><td>旧版那棵树</td><td class="n">Tufa 公开版。我们八月底加的六个开关（第一关探测、winframe、归因表、持久函数、棋盘进上下文、跨关先验）默认全关，脚本里也没打开，本次不参与</td></tr>
+<tr><td>Son 那棵树</td><td class="n">fnrep-source-v4，即第十一发上线的那一版，只补了一处五行的关思考补丁</td></tr>
+</table>
+<div class="info warn" style="margin-top:12px">两侧唯一的变量就是 harness 本身。模型、局、种子数、时长、并发、关思考开关全部一致，两侧的系统提示词、首条用户消息、工具 schema 都各自导出存档，可逐字核对。</div>
+</div>
+
+<h2 class="c3" id="s3">③ 成绩：分不出高下</h2>
+<div class="card">
+<table>
+<tr><th>局</th><th>套</th><th>三个种子的过关数</th><th class="n">均过关</th><th>三个种子的分</th><th class="n">均分</th><th class="n">均动作</th><th class="n">变盘率</th></tr>
+<tr><td rowspan="2"><b>ft09</b></td><td><span class="tag ours">旧版</span></td><td class="n">2 · 0 · 0</td><td class="n">0.67</td><td class="n">14.29 · 0 · 0</td><td class="n">4.76</td><td class="n">14.3</td><td class="n">48.8%</td></tr>
+<tr><td><span class="tag his">Son</span></td><td class="n">0 · 0 · 1</td><td class="n">0.33</td><td class="n">0 · 0 · 4.76</td><td class="n">1.59</td><td class="n">29.3</td><td class="n">73.9%</td></tr>
+<tr><td rowspan="2"><b>ls20</b></td><td><span class="tag ours">旧版</span></td><td class="n">0 · 0 · 0</td><td class="n">0.00</td><td class="n">0 · 0 · 0</td><td class="n">0.00</td><td class="n">15.0</td><td class="n">97.8%</td></tr>
+<tr><td><span class="tag his">Son</span></td><td class="n">0 · 0 · 1</td><td class="n">0.33</td><td class="n">0 · 0 · 1.03</td><td class="n">0.34</td><td class="n">46.3</td><td class="n">97.1%</td></tr>
+<tr><td rowspan="2"><b>r11l</b></td><td><span class="tag ours">旧版</span></td><td class="n">0 · 0 · 1</td><td class="n">0.33</td><td class="n">0 · 0 · 1.44</td><td class="n">0.48</td><td class="n">70.3</td><td class="n">100%</td></tr>
+<tr><td><span class="tag his">Son</span></td><td class="n">0 · 0 · 0</td><td class="n">0.00</td><td class="n">0 · 0 · 0</td><td class="n">0.00</td><td class="n">34.0</td><td class="n">100%</td></tr>
+<tr><td rowspan="2"><b>sc25</b></td><td><span class="tag ours">旧版</span></td><td class="n">2 · 0 · 0</td><td class="n">0.67</td><td class="n">5.59 · 0 · 0</td><td class="n">1.86</td><td class="n">71.7</td><td class="n">81.4%</td></tr>
+<tr><td><span class="tag his">Son</span></td><td class="n">0 · 2 · 1</td><td class="n">1.00</td><td class="n">0 · 1.40 · 2.92</td><td class="n">1.44</td><td class="n">114.7</td><td class="n">89.8%</td></tr>
+<tr><td rowspan="2"><b>vc33</b></td><td><span class="tag ours">旧版</span></td><td class="n">2 · 2 · 2</td><td class="n">2.00</td><td class="n">7.98 · 1.76 · 1.36</td><td class="n">3.70</td><td class="n">75.0</td><td class="n">100%</td></tr>
+<tr><td><span class="tag his">Son</span></td><td class="n">2 · 2 · 1</td><td class="n">1.67</td><td class="n">8.59 · 5.15 · 1.04</td><td class="n">4.93</td><td class="n">73.3</td><td class="n">98.2%</td></tr>
+</table>
+</div>
+<div class="grid2">
+<div class="card"><h3>配对来看</h3>
+<p>15 组配对（同局同种子），逐组算过关数之差：旧版赢 4 组，Son 赢 4 组，打平 7 组。</p>
+<p>总过关数 11 比 10，把每组的正负号随机翻转两万次做置换检验，<b>p = 1.00</b>。按分数算，总差 7.54，<b>p = 0.76</b>。</p>
+<p>两个数都离显著差得很远。这不是「Son 更弱」，是「这个样本量下测不出差别」。</p>
+</div>
+<div class="card"><h3>判据写死在脚本里</h3>
+<p>过关数与分数直接取 taaf 自己记的 <code>levels_completed</code> 和 <code>final_score</code>，两侧同一份 <code>score_compare.py</code>、同一套定义。</p>
+<p>变盘率是动作事件里 <code>board_changed</code> 为真的比例，倒计时条变化也算，所以它是上限口径，不等于「有用动作」。</p>
+</div>
+</div>
+
+<h2 class="c4" id="s4">④ 上下文预算：单次便宜两成二，总账反而更贵</h2>
+<div class="card">
+<table>
+<tr><th>口径</th><th class="n">旧版</th><th class="n">Son</th><th>差</th></tr>
+<tr><td>每次请求的输入字符</td><td class="n">87,713</td><td class="n">68,545</td><td>Son 少 22%</td></tr>
+<tr><td>模型调用次数（15 路合计）</td><td class="n">901</td><td class="n">1,569</td><td>Son 多 74%</td></tr>
+<tr><td>对环境下的动作数</td><td class="n">739</td><td class="n">893</td><td>Son 多 21%</td></tr>
+<tr><td>每个动作花掉几次调用</td><td class="n">1.22</td><td class="n">1.76</td><td>Son 多 44%</td></tr>
+<tr><td>总输入字符</td><td class="n">81.3 M</td><td class="n">103.1 M</td><td>Son 多 27%</td></tr>
+<tr><td>每个动作的输入字符</td><td class="n">110,044</td><td class="n">115,483</td><td>Son 多 5%</td></tr>
+<tr><td>生成 token</td><td class="n">811,855</td><td class="n">958,334</td><td>Son 多 18%</td></tr>
+<tr><td>每路平均动作数</td><td class="n">49.3</td><td class="n">59.5</td><td>Son 多 21%</td></tr>
+</table>
+<div class="ok warn" style="margin-top:12px">这张表是这次实验最实的收获。Son 把单次请求压瘦，省下的预算没有拿去省钱，而是<b>换成了更多次观察</b>：同样 15 分钟，他多问模型 74%，多走 21% 的动作。总花费反而比旧版高 27%。</div>
+</div>
+
+<h2 class="c5" id="s5">⑤ 差距的主因：每轮重复的那段指令</h2>
+<div class="card">
+<p>每一轮的用户消息，前几行是状态（上一步执行了什么、第几步第几关、当前哪些动作合法），后面跟一段固定的操作说明。这段说明的长度是这样的：</p>
+<table>
+<tr><th></th><th class="n">首轮</th><th class="n">之后每轮</th></tr>
+<tr><td><span class="tag ours">旧版</span></td><td class="n">2,747 字符</td><td class="n">2,856 字符</td></tr>
+<tr><td><span class="tag his">Son</span></td><td class="n">456 字符</td><td class="n">582 字符</td></tr>
+</table>
+<p style="margin-top:10px">一次请求的上下文里带着 9 到 10 轮历史，这一项单独就摊出约 <b>2 万 3 千字符</b>的差距。冒烟局按角色拆开的账（同局同模型，旧版 43 次请求、Son 53 次请求）：</p>
+<table>
+<tr><th>角色</th><th class="n">Son 均值/次</th><th class="n">旧版 均值/次</th><th>谁更费</th></tr>
+<tr><td>user（每轮重复的指令块在这里）</td><td class="n">4,770</td><td class="n">25,537</td><td>旧版多 20,767</td></tr>
+<tr><td>tool（Python 工具的返回）</td><td class="n">15,764</td><td class="n">23,456</td><td>旧版多 7,692</td></tr>
+<tr><td>system（系统提示词）</td><td class="n">7,758</td><td class="n">12,358</td><td>旧版多 4,600</td></tr>
+<tr><td>assistant（模型自己写的）</td><td class="n">12,790</td><td class="n">11,151</td><td>Son 多 1,639</td></tr>
+<tr><td>工具 schema</td><td class="n">1,292</td><td class="n">1,144</td><td>Son 多 148</td></tr>
+<tr><td><b>合计</b></td><td class="n"><b>42,374</b></td><td class="n"><b>73,646</b></td><td><b>旧版多 74%</b></td></tr>
+</table>
+<p style="margin-top:10px">工具返回那一项也值得看一眼：单条均长旧版 1,293 字符、Son 756 字符。两边的输出上限配置都是 1024 token，所以这不是截断口径的差别，是提示词对「该打印什么」的要求不同，模型自己打得更省。</p>
+</div>
+
+<h2 class="c6" id="s6">⑥ 系统提示词：同样六节，整篇重写</h2>
+<div class="card">
+<table>
+<tr><th>小节</th><th class="n">Son</th><th class="n">旧版</th><th>发生了什么</th></tr>
+<tr><td>开场白</td><td class="n">56</td><td class="n">56</td><td>逐字一致</td></tr>
+<tr><td>Game overview</td><td class="n">991</td><td class="n">991</td><td>逐字一致</td></tr>
+<tr><td>Runtime variables</td><td class="n">2,164</td><td class="n">4,150</td><td>26 行压成 9 行，还新加了三行讲动画</td></tr>
+<tr><td>Visual-game guidance</td><td class="n">2,031</td><td class="n">2,031</td><td>逐字一致</td></tr>
+<tr><td>Python tool guidance</td><td class="n">1,725</td><td class="n">3,814</td><td>23 行压成 7 行</td></tr>
+<tr><td>Tool session rules</td><td class="n">776</td><td class="n">1,301</td><td>7 行压成 3 行</td></tr>
+</table>
+<p style="margin-top:10px">压缩的手法是把「一个变量一行」改成「一行讲三个变量」，讲的是同一批东西，没有删掉能力说明。三节完全没动，两节全部重写。</p>
+<div class="warn">内容上唯一值得记一笔的取舍：旧版有一条 IMPORTANT 明写「让 agent 走到目标时，写 BFS 这类显式搜索更稳」，Son 把它压进一句「机制搞清楚之后用打分器或 BFS 最短路搜索」。语气从必须降到建议。要搬提示词的话，这一条得单独拿出来判断。</div>
+</div>
+
+<h2 class="c8" id="s7">⑦ 他那 1300 行动画感知，在这五局上没干活</h2>
+<div class="card">
+<table>
+<tr><th>局</th><th class="n">唯一工具返回数</th><th class="n">提到 animation 的</th><th class="n">出现自动故事板的</th></tr>
+<tr><td>ft09</td><td class="n">55</td><td class="n">2</td><td class="n">0</td></tr>
+<tr><td>ls20</td><td class="n">158</td><td class="n">1</td><td class="n">0</td></tr>
+<tr><td>r11l</td><td class="n">156</td><td class="n">20</td><td class="n">0</td></tr>
+<tr><td>sc25</td><td class="n">125</td><td class="n">3</td><td class="n">0</td></tr>
+<tr><td>vc33</td><td class="n">91</td><td class="n">15</td><td class="n">0</td></tr>
+</table>
+<p style="margin-top:10px">自动故事板一次都没有送到模型面前，用户消息里 0 次，工具返回里 0 次。那些提到 animation 的返回，内容是动作结果字典里顺带的统计字段，以及模型自己打印的 <code>Animation info: total_frames 3, changed_frames 2, regions: []</code>。运动区域始终是空列表。</p>
+<div class="info warn">但线上那一跑不是这样。第十一发的 22 份 prompt 快照里，<b>有 5 局真的触发了</b>（cd82、r11l、re86、su15、tn36），模型还在推理里主动说「用故事板回看第 5 关到第 6 关的转场」。同一个局 r11l，线上触发、本地没触发。</div>
+<p style="margin-top:10px">差别最可能在动作数。这层机制自己写着「前五个动作是热身期」，之后靠出现新的大范围运动才触发。本地每路 15 分钟、每路平均 60 个动作；线上每局 132 分钟。15 分钟里它没机会启动。</p>
+</div>
+
+<h2 id="s8">⑧ 这次实验的边界，四条</h2>
+<div class="card">
+<ul>
+<li><b>时长差了近九倍。</b>本地每路 15 分钟，线上每局 132 分钟。凡是要跑够动作数才启动的机制，本次都测不到，动画感知层已经确认是其中之一。</li>
+<li><b>模型不是赛场那个。</b>本次用 DeepSeek，线上是 Flash-Next。Son 的提示词是照着他的模型调的，换个模型不一定还占便宜。</li>
+<li><b>网关中途不稳。</b>21:27 之后两侧都出现读超时，Son 侧还吃了一次网关 500。最终无回包的比例是旧版 14/901（1.6%）、Son 14/1569（0.9%），<b>两侧量级接近</b>，所以这一轮的可比性保住了。这个数写在这里，不是可以忽略，是核过之后确认对称。</li>
+<li><b>样本只有 15 组配对。</b>p 值 1.00 的意思是测不出差别，不是证明没有差别。要把「差 0.5 关」这种量级测出来，样本得再大一个数量级。</li>
+</ul>
+</div>
+
+<h2 class="c4" id="s9">⑨ 能搬什么，按性价比排</h2>
+<div class="card">
+<table>
+<tr><th class="n">序</th><th>搬什么</th><th>代价</th><th>预期收益</th><th>判断</th></tr>
+<tr><td class="n">1</td><td>把每轮重复的指令块从 2,856 字符压到 582</td><td>改 <code>prompts.py</code> 一处，半天</td><td>每次请求省约 2 万 3 千字符，等于把省下的上下文换成更多轮历史或更多次观察</td><td><span class="tag tufa">建议做</span> 本次没测出分数收益，但代价极低，且线上局长得多，省下的预算更值钱</td></tr>
+<tr><td class="n">2</td><td>系统提示词按他的压缩版重写三节</td><td>同上，同一次改完</td><td>每次再省 4,600 字符</td><td><span class="tag tufa">建议做</span> 注意单独保留 BFS 那条 IMPORTANT 的强制语气</td></tr>
+<tr><td class="n">3</td><td>提高每个动作的观察密度（他 1.76 次调用，我们 1.22）</td><td>这是提示词带出来的行为，跟着 1、2 一起变</td><td>同样时间里多走 21% 动作</td><td><span class="tag tufa">顺带发生</span> 不用单独改代码，但要盯住总花费会涨 27%</td></tr>
+<tr><td class="n">4</td><td>动画感知层 1300 行</td><td>大，且要连着沙箱的 <code>AnimationView</code> 一起搬</td><td>本地五局触发 0 次，线上 22 局触发 5 局</td><td><span class="tag dead">先别搬</span> 触发条件苛刻，收益还没被任何一次对照证实</td></tr>
+</table>
+<div class="warn" style="margin-top:12px">最重要的一条不在表里：这次证据指向<b>换模型才是第十一发涨分的原因</b>。所以下一步的重心应该继续放在 agent 侧真正能改变行为的东西上（可执行世界模型、跨局管家），提示词瘦身是顺手做掉的低价改动，别指望它单独带来零点几分。</div>
+</div>
+
+<div class="card" style="margin-top:22px">
+<p class="small">原始跑数：<code>probes/20260903/harness_compare/</code>（两侧 15 路的 run 目录、逐局请求日志、两侧系统提示词与首条用户消息存档）。统计脚本 <code>score_compare.py</code>，判据写在文件头。上下文预算的详细拆解另见同目录 <code>prompt_budget_analysis.md</code>。</p>
+</div>
+</body></html>

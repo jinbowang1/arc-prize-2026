@@ -1,0 +1,223 @@
+[2026-09-03 21:12:27] START side=son game=- run=main-son mrm=15 n_passes=3 cj=3 cwd=/Users/01450825/Desktop/project/arc-agi-3/reference/fnrep-source-v4/src/ARC3-Inference
+2026-09-03 21:27:31,133 | WARNING | analyzer request failed at action 39: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Read timed out. (read timeout=8.232305082958192)
+2026-09-03 21:27:31,138 | WARNING | analyzer request failed at action 45: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Read timed out. (read timeout=104.75647262507118)
+2026-09-03 21:28:56,583 | WARNING | analyzer request failed at action 2: 500 Server Error: Internal Server Error for url: http://llm-model-hub-apis.sf-express.com/v1/chat/completions | response: {"error":{"code":500,"message":"统一网关服务调用失败","request_id":"520f5d04517d8d29d2840c1693ecc80c","type":"gateway_service_error"}}
+2026-09-03 21:42:31,287 | WARNING | analyzer request failed at action 72: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Read timed out. (read timeout=4.301556250080466)
+2026-09-03 21:42:34,911 | WARNING | analyzer request failed at action 106: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Read timed out. (read timeout=6.654145208885893)
+2026-09-03 21:57:31,399 | WARNING | analyzer request failed at action 20: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Read timed out. (read timeout=4.342518457910046)
+2026-09-03 21:57:33,126 | WARNING | analyzer request failed at action 34: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Read timed out. (read timeout=42.73258666717447)
+2026-09-03 22:12:33,252 | WARNING | analyzer request failed at action 72: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Read timed out. (read timeout=30.35395145812072)
+2026-09-03 22:12:40,904 | WARNING | analyzer request failed at action 32: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Read timed out. (read timeout=17.413741167169064)
+Run directory: /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/son_runs/20260903_211230_main-son
+Games: vc33-5430563c, ft09-0d8bbf25, ls20-9607627b, r11l-495a7899, sc25-635fd71a
+Passes: 3; concurrency: 3; waves: 5
+Max runtime per game: 15.00 minutes (explicit)
+Deployment target: inline
+benchmark.label : main-son
+benchmark.solver: HarnessSolver(label='inference', runtime_environment=None, job_dir=None, soft_end_time=None, minimal_diagnostics=False, model='aliyun/deepseek-v4-flash-0731', analyzer_timeout=300.0, max_actions_per_game=None, max_runtime_s_per_game=900.0, concurrency=3, save_request_logs=True, start_local_server=False, local_server_config='', local_server_api_key_file='', local_server_repo_dir='/Users/01450825/Desktop/project/arc-agi-3/reference/fnrep-source-v4/src/ARC3-Inference', local_server_port=None, local_server_tensor_parallel_size=None, local_server_count=1, cancel_drain_timeout_s=120.0)
+benchmark.passes: 3
+benchmark.games : 5
+git status:
+  ARC3-Inference                   9b0e938     clean  main                      08-31~09-03 第十~十二发的经验存档: 解剖报告 + 五刀计划 + 对照任务书 + 第1刀 patch
+  tufa-arc-agi-framework           9b0e938     clean  main                      08-31~09-03 第十~十二发的经验存档: 解剖报告 + 五刀计划 + 对照任务书 + 第1刀 patch
+deploy.inline: job_dir       = /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/son_runs/20260903_211230_main-son
+deploy.inline: soft_end_time = 2026-09-03T22:27:30.770875
+---
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/son_runs/20260903_211230_main-son in 0.56s
+benchmark: main-son
+solver:    inference
+games:     5
+passes:    3
+runs:      15 (won: 0)
+started:   2026-09-03 21:12:30
+ended:     in progress
+mean score:    0.57
+median score:  0.00
+total actions: 103
+total tokens:  94193
+generated tokens/sec: 156.80 (job wallclock)
+total wallclock: 1115.4s
+
+per-game (mean across passes):
+  ft09-0d8bbf25: score=0.00, levels=0.0/6, actions=6, tokens=8699
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=15, tokens=12032
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=0, tokens=0
+  sc25-635fd71a: score=0.00, levels=0.0/6, actions=0, tokens=0
+  vc33-5430563c: score=2.86, levels=0.7/7, actions=12, tokens=10666
+
+[finished] ft09-0d8bbf25 state=gave_up level=0/6 score=0.00 actions=38 tokens=87739 per-level=38/43,0/12,0/23,0/28,0/65,0/37 note="tokens=87739"
+[finished] vc33-5430563c state=gave_up level=2/7 score=8.59 actions=44 tokens=70778 per-level=11/7,18/18,15/44,0/61,0/131,0/34,0/152 note="tokens=70778"
+[finished] ls20-9607627b state=gave_up level=0/7 score=0.00 actions=64 tokens=73402 per-level=64/22,0/123,0/73,0/84,0/96,0/192,0/186 note="tokens=74895"
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/son_runs/20260903_211230_main-son in 0.71s
+benchmark: main-son
+solver:    inference
+games:     5
+passes:    3
+runs:      15 (won: 0)
+started:   2026-09-03 21:12:30
+ended:     in progress
+mean score:    0.81
+median score:  0.00
+total actions: 201
+total tokens:  301763
+generated tokens/sec: 251.17 (job wallclock)
+total wallclock: 6290.2s
+
+per-game (mean across passes):
+  ft09-0d8bbf25: score=0.00, levels=0.0/6, actions=12, tokens=29246
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=21, tokens=24467
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=3, tokens=6925
+  sc25-635fd71a: score=0.00, levels=0.0/6, actions=6, tokens=8062
+  vc33-5430563c: score=4.05, levels=1.0/7, actions=23, tokens=31886
+
+[finished] sc25-635fd71a state=gave_up level=0/6 score=0.00 actions=71 tokens=70768 per-level=71/36,0/6,0/32,0/83,0/143,0/50 note="tokens=70768"
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/son_runs/20260903_211230_main-son in 0.54s
+benchmark: main-son
+solver:    inference
+games:     5
+passes:    3
+runs:      15 (won: 0)
+started:   2026-09-03 21:12:30
+ended:     in progress
+mean score:    0.92
+median score:  0.00
+total actions: 383
+total tokens:  431884
+generated tokens/sec: 239.67 (job wallclock)
+total wallclock: 8086.7s
+
+per-game (mean across passes):
+  ft09-0d8bbf25: score=0.00, levels=0.0/6, actions=12, tokens=29246
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=21, tokens=24467
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=20, tokens=20745
+  sc25-635fd71a: score=0.00, levels=0.0/6, actions=23, tokens=23589
+  vc33-5430563c: score=4.58, levels=1.3/7, actions=49, tokens=45913
+
+[finished] r11l-495a7899 state=gave_up level=0/6 score=0.00 actions=61 tokens=62236 per-level=61/22,0/33,0/51,0/26,0/52,0/49 note="tokens=63531"
+[finished] vc33-5430563c state=gave_up level=2/7 score=5.15 actions=105 tokens=66961 per-level=6/7,47/18,52/44,0/61,0/131,0/34,0/152 note="tokens=66961"
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/son_runs/20260903_211230_main-son in 0.59s
+benchmark: main-son
+solver:    inference
+games:     5
+passes:    3
+runs:      15 (won: 0)
+started:   2026-09-03 21:12:30
+ended:     in progress
+mean score:    0.92
+median score:  0.00
+total actions: 440
+total tokens:  545864
+generated tokens/sec: 227.20 (job wallclock)
+total wallclock: 15043.4s
+
+per-game (mean across passes):
+  ft09-0d8bbf25: score=0.00, levels=0.0/6, actions=15, tokens=40355
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=31, tokens=37401
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=27, tokens=34696
+  sc25-635fd71a: score=0.00, levels=0.0/6, actions=23, tokens=23589
+  vc33-5430563c: score=4.58, levels=1.3/7, actions=49, tokens=45913
+
+[finished] ft09-0d8bbf25 state=gave_up level=0/6 score=0.00 actions=19 tokens=67589 per-level=19/43,0/12,0/23,0/28,0/65,0/37 note="tokens=67589"
+[finished] ls20-9607627b state=gave_up level=0/7 score=0.00 actions=33 tokens=59505 per-level=33/22,0/123,0/73,0/84,0/96,0/192,0/186 note="tokens=59505"
+[finished] r11l-495a7899 state=gave_up level=0/6 score=0.00 actions=25 tokens=53599 per-level=25/22,0/33,0/51,0/26,0/52,0/49 note="tokens=60354"
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/son_runs/20260903_211230_main-son in 0.72s
+benchmark: main-son
+solver:    inference
+games:     5
+passes:    3
+runs:      15 (won: 0)
+started:   2026-09-03 21:12:30
+ended:     in progress
+mean score:    0.99
+median score:  0.00
+total actions: 530
+total tokens:  678050
+generated tokens/sec: 225.77 (job wallclock)
+total wallclock: 25165.5s
+
+per-game (mean across passes):
+  ft09-0d8bbf25: score=0.00, levels=0.0/6, actions=26, tokens=60620
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=32, tokens=44302
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=28, tokens=38611
+  sc25-635fd71a: score=0.00, levels=0.0/6, actions=34, tokens=31183
+  vc33-5430563c: score=4.93, levels=1.7/7, actions=55, tokens=51299
+
+[finished] sc25-635fd71a state=gave_up level=2/6 score=1.40 actions=144 tokens=56354 per-level=77/36,31/6,36/32,0/83,0/143,0/50 note="tokens=57190"
+[finished] vc33-5430563c state=gave_up level=1/7 score=1.04 actions=71 tokens=50856 per-level=13/7,58/18,0/44,0/61,0/131,0/34,0/152 note="tokens=50856"
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/son_runs/20260903_211230_main-son in 0.62s
+benchmark: main-son
+solver:    inference
+games:     5
+passes:    3
+runs:      15 (won: 0)
+started:   2026-09-03 21:12:30
+ended:     in progress
+mean score:    1.40
+median score:  0.00
+total actions: 706
+total tokens:  784639
+generated tokens/sec: 217.71 (job wallclock)
+total wallclock: 27017.5s
+
+per-game (mean across passes):
+  ft09-0d8bbf25: score=1.59, levels=0.3/6, actions=29, tokens=73393
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=32, tokens=44302
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=28, tokens=38611
+  sc25-635fd71a: score=0.47, levels=0.7/6, actions=71, tokens=42374
+  vc33-5430563c: score=4.93, levels=1.7/7, actions=73, tokens=62865
+
+[finished] ft09-0d8bbf25 state=gave_up level=1/6 score=4.76 actions=31 tokens=64852 per-level=29/43,2/12,0/23,0/28,0/65,0/37 note="tokens=64852"2026-09-03 22:21:20,971 | WARNING | analyzer request failed at action 12: 500 Server Error: Internal Server Error for url: http://llm-model-hub-apis.sf-express.com/v1/chat/completions | response: {"error":{"code":500,"message":"统一网关服务调用失败","request_id":"7422dd462d66fc6186670724bb9e063e","type":"gateway_service_error"}}
+2026-09-03 22:21:41,967 | WARNING | analyzer request failed at action 83: 500 Server Error: Internal Server Error for url: http://llm-model-hub-apis.sf-express.com/v1/chat/completions | response: {"error":{"code":500,"message":"统一网关服务调用失败","request_id":"ad6e77cde13a45739a4887dc1414d1e1","type":"gateway_service_error"}}
+2026-09-03 22:27:30,869 | WARNING | analyzer request failed at action 43: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Read timed out. (read timeout=39.541987)
+2026-09-03 22:27:34,640 | WARNING | analyzer request failed at action 17: HTTPConnectionPool(host='llm-model-hub-apis.sf-express.com', port=80): Read timed out. (read timeout=30.773852)
+
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/son_runs/20260903_211230_main-son in 0.65s
+benchmark: main-son
+solver:    inference
+games:     5
+passes:    3
+runs:      15 (won: 0)
+started:   2026-09-03 21:12:30
+ended:     in progress
+mean score:    1.66
+median score:  0.00
+total actions: 842
+total tokens:  898731
+generated tokens/sec: 213.75 (job wallclock)
+total wallclock: 39464.9s
+
+per-game (mean across passes):
+  ft09-0d8bbf25: score=1.59, levels=0.3/6, actions=29, tokens=73393
+  ls20-9607627b: score=0.34, levels=0.3/7, actions=46, tokens=57648
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=32, tokens=51138
+  sc25-635fd71a: score=1.44, levels=1.0/6, actions=99, tokens=54532
+  vc33-5430563c: score=4.93, levels=1.7/7, actions=73, tokens=62865
+
+[finished] ls20-9607627b state=cancelled level=1/7 score=1.03 actions=42 tokens=60424 per-level=41/22,1/123,0/73,0/84,0/96,0/192,0/186 note="tokens=60424"
+[finished] r11l-495a7899 state=cancelled level=0/6 score=0.00 actions=16 tokens=59746 per-level=16/22,0/33,0/51,0/26,0/52,0/49 note="tokens=59931"
+[finished] sc25-635fd71a state=cancelled level=1/6 score=2.92 actions=129 tokens=53525 per-level=46/36,83/6,0/32,0/83,0/143,0/50 note="tokens=55954"
+benchmark: regenerated diagnostics in /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/son_runs/20260903_211230_main-son in 1.03s
+benchmark: main-son
+solver:    inference
+games:     5
+passes:    3
+runs:      15 (won: 0)
+started:   2026-09-03 21:12:30
+ended:     2026-09-03 22:27:38
+duration:  1h 15m 7s
+mean score:    1.66
+median score:  0.00
+total actions: 893
+total tokens:  958334
+generated tokens/sec: 212.60 (job wallclock)
+total wallclock: 40546.1s
+
+per-game (mean across passes):
+  ft09-0d8bbf25: score=1.59, levels=0.3/6, actions=29, tokens=73393
+  ls20-9607627b: score=0.34, levels=0.3/7, actions=46, tokens=64443
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=34, tokens=58527
+  sc25-635fd71a: score=1.44, levels=1.0/6, actions=114, tokens=60215
+  vc33-5430563c: score=4.93, levels=1.7/7, actions=73, tokens=62865
+
+diagnostics: /Users/01450825/Desktop/project/arc-agi-3/probes/20260903/harness_compare/son_runs/20260903_211230_main-son/diagnostics.html
+[2026-09-03 22:27:39] DONE side=son game=- rc=0
