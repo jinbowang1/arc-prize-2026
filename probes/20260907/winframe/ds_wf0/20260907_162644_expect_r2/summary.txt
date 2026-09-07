@@ -1,0 +1,17 @@
+benchmark: expect_r2
+solver:    inference
+games:     1
+passes:    1
+runs:      1 (won: 0)
+started:   2026-09-07 16:26:44
+ended:     2026-09-07 16:36:44
+duration:  9m 59s
+mean score:    0.00
+median score:  0.00
+total actions: 19
+total tokens:  40412
+generated tokens/sec: 67.36 (job wallclock)
+total wallclock: 599.9s
+
+per-game (mean across passes):
+  ft09-0d8bbf25: score=0.00, levels=0.0/6, actions=19, tokens=40412

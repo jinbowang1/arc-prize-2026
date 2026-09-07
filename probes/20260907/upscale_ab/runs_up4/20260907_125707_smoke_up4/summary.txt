@@ -1,0 +1,17 @@
+benchmark: smoke_up4
+solver:    inference
+games:     1
+passes:    1
+runs:      1 (won: 0)
+started:   2026-09-07 12:57:07
+ended:     2026-09-07 13:01:08
+duration:  4m 0s
+mean score:    0.00
+median score:  0.00
+total actions: 28
+total tokens:  12072
+generated tokens/sec: 50.17 (job wallclock)
+total wallclock: 240.6s
+
+per-game (mean across passes):
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=28, tokens=12072

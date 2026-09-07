@@ -1,0 +1,272 @@
+{
+  "label": "wm_smoke",
+  "n_passes": 1,
+  "solver_label": "inference",
+  "start_time": "2026-09-07T16:48:10.998126",
+  "end_time": "2026-09-07T16:58:10.894595",
+  "game_weights": null,
+  "periodic_save_interval_s": 600.0,
+  "game_runs": [
+    {
+      "game_id": "ft09-0d8bbf25",
+      "number_of_levels": 6,
+      "base_actions_per_level": [
+        43,
+        12,
+        23,
+        28,
+        65,
+        37
+      ],
+      "hint": null,
+      "state": "cancelled",
+      "history": [
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 44,
+              "y": 44
+            }
+          },
+          "generated_tokens": 10580,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 114.65205429199705
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 44,
+              "y": 46
+            }
+          },
+          "generated_tokens": 1821,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 138.26864258299975
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 38,
+              "y": 38
+            }
+          },
+          "generated_tokens": 194,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 141.8467110829988
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 38,
+              "y": 44
+            }
+          },
+          "generated_tokens": 2253,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 167.23655404199963
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 50,
+              "y": 44
+            }
+          },
+          "generated_tokens": 293,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 173.105212208
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 54,
+              "y": 46
+            }
+          },
+          "generated_tokens": 1259,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 192.70542312499674
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 38,
+              "y": 54
+            }
+          },
+          "generated_tokens": 90,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 195.76315695799713
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 16
+            }
+          },
+          "generated_tokens": 4954,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 280.3116589579986
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 28,
+              "y": 22
+            }
+          },
+          "generated_tokens": 4105,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 318.21923912499915
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 24
+            }
+          },
+          "generated_tokens": 923,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 335.3563707079993
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 38,
+              "y": 24
+            }
+          },
+          "generated_tokens": 93,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 338.26138037499913
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 32
+            }
+          },
+          "generated_tokens": 93,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 342.45525287499913
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 38,
+              "y": 32
+            }
+          },
+          "generated_tokens": 93,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 345.9377011249999
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 48
+            }
+          },
+          "generated_tokens": 93,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 349.5954678329981
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 30,
+              "y": 48
+            }
+          },
+          "generated_tokens": 93,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 355.78199658299854
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 6
+            }
+          },
+          "generated_tokens": 5835,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 439.1007172919999
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 14,
+              "y": 22
+            }
+          },
+          "generated_tokens": 7336,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 537.9536883330002
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 30,
+              "y": 6
+            }
+          },
+          "generated_tokens": 2808,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 579.3946875000001
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 38,
+              "y": 6
+            }
+          },
+          "generated_tokens": 93,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 599.3809047079994
+        }
+      ],
+      "record_intermediate_states": true,
+      "actions_per_level": [
+        7,
+        8,
+        4,
+        0,
+        0,
+        0
+      ],
+      "levels_completed": 2,
+      "final_score": 14.285714285714285,
+      "solver_note": "tokens=43009",
+      "solver_analysis_html": "solver_analysis/ft09-0d8bbf25_p0.html",
+      "final_generated_tokens": 0,
+      "final_uncached_input_tokens": 0,
+      "final_wallclock_seconds": 599.8941794999992,
+      "started_at": "2026-09-07T16:48:11.012247"
+    }
+  ]
+}

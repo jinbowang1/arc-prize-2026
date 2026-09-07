@@ -1,0 +1,23 @@
+{
+  "variant": "taaf-plain-checkpoint8-reviewed-themes-compact-english-singlecopy",
+  "built_utc": "2026-08-19",
+  "base_bundle": "bundle-taaf-plain-checkpoint8-20260812.tgz",
+  "base_bundle_sha256": "f9e12ec74f869c200210c9b44cb030361af2a62718e6ca1feb1e434ffd146ee6",
+  "base_tool_agent_sha256": "0dc10f16e8aa4c88ce003c0a6d48cfdf8b07a3b6c117f64e3b6ef0a155618bb9",
+  "reviewed_themes_tool_agent_sha256": "03bc501f88c2b7bfc25f37f889b89bc302a16ce5443e7e335ff8062d0a1bb596",
+  "compact_english_tool_agent_sha256": "c67a77c904f131b2e387f8abab0e7b7bac1eae83a45a1e32fba92c30f534e876",
+  "combined_tool_agent_sha256": "9ed8b210c0b08b65c7447d6616389fb7775764ff34580e1a92534a1a55e8d301",
+  "singlecopy_tool_agent_sha256": "656c3969b9f057ffff41067a89c1cc5facb6a26e7188f128351a05a23953f70d",
+  "causal_changes": [
+    "Inject the bounded atomically reviewed cross-game theme ledger into every action prompt and timestamp each injection.",
+    "Remove repeated dynamic English tool, inspection, ledger, and batching instructions already present in the unchanged system prompt and tool schema.",
+    "Inject the reviewed ledger only in the current user message; remove its explicitly delimited block before that message enters persistent history."
+  ],
+  "merge_method": "three-way merge from the immutable checkpoint-8 base; one adjacent-hunk conflict resolved by retaining the theme block and the compact prompt text",
+  "validation": [
+    "python bytecode compilation",
+    "scripts/test_cross_game_theme_prompt_injection.py: 2/2 passed",
+    "scripts/test_cross_game_theme_singlecopy_history.py: 3/3 passed",
+    "diff audit against both immutable parent archives"
+  ]
+}

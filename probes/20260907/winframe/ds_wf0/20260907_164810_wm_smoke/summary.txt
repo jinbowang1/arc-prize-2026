@@ -1,0 +1,17 @@
+benchmark: wm_smoke
+solver:    inference
+games:     1
+passes:    1
+runs:      1 (won: 0)
+started:   2026-09-07 16:48:10
+ended:     2026-09-07 16:58:10
+duration:  9m 59s
+mean score:    14.29
+median score:  14.29
+total actions: 19
+total tokens:  43009
+generated tokens/sec: 71.69 (job wallclock)
+total wallclock: 599.9s
+
+per-game (mean across passes):
+  ft09-0d8bbf25: score=14.29, levels=2.0/6, actions=19, tokens=43009

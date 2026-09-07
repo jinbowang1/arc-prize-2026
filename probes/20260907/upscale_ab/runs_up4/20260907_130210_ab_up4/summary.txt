@@ -1,0 +1,19 @@
+benchmark: ab_up4
+solver:    inference
+games:     3
+passes:    3
+runs:      9 (won: 0)
+started:   2026-09-07 13:02:10
+ended:     2026-09-07 13:47:11
+duration:  45m 0s
+mean score:    0.00
+median score:  0.00
+total actions: 5
+total tokens:  30443
+generated tokens/sec: 11.27 (job wallclock)
+total wallclock: 16206.5s
+
+per-game (mean across passes):
+  ft09-0d8bbf25: score=0.00, levels=0.0/6, actions=1, tokens=9516
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=0, tokens=0
+  vc33-5430563c: score=0.00, levels=0.0/7, actions=0, tokens=631

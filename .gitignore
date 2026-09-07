@@ -72,3 +72,16 @@ probes/20260831/aiplat_ab/
 probes/20260903/harness_compare/
 # 第1刀代码目录自带 git 历史, 改动以 patch 形式入库(kaggle_agent/duck/patches/)
 build_v12_curator/
+
+# 实验运行产物: 体积大且可重跑, 不进仓(09-07 有个 git_info.txt 到 113MB 把 push 顶回来了)
+git_info.txt
+git_status.txt
+requests.jsonl
+*_requests.jsonl
+*_analyzer.txt
+prompt.log
+solver.pkl
+games.pkl
+intermediate_states.pkl
+benchmark_initial.pkl
+.per_game_cards.pkl

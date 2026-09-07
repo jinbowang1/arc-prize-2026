@@ -1,0 +1,17 @@
+benchmark: undo_smoke
+solver:    inference
+games:     1
+passes:    1
+runs:      1 (won: 0)
+started:   2026-09-07 16:37:45
+ended:     2026-09-07 16:47:45
+duration:  9m 59s
+mean score:    8.33
+median score:  8.33
+total actions: 71
+total tokens:  37590
+generated tokens/sec: 62.66 (job wallclock)
+total wallclock: 599.9s
+
+per-game (mean across passes):
+  ar25-0c556536: score=8.33, levels=2.0/8, actions=71, tokens=37590

@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "target_class": "taaf.deploy_inline.InlineTarget",
+  "target_config": {
+    "max_runtime_s": 1200.0
+  },
+  "handle_class": "taaf.deploy_inline.InlineHandle",
+  "job_id": null,
+  "benchmark_label": "replay_smoke",
+  "started_at": "2026-09-07T16:42:04.972670",
+  "host": "SF01450825MACZN",
+  "pid": 76082
+}

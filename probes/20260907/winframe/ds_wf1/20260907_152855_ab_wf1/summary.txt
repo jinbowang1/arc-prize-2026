@@ -1,0 +1,20 @@
+benchmark: ab_wf1
+solver:    inference
+games:     4
+passes:    3
+runs:      12 (won: 0)
+started:   2026-09-07 15:28:56
+ended:     2026-09-07 15:53:05
+duration:  24m 8s
+mean score:    1.86
+median score:  0.00
+total actions: 570
+total tokens:  482607
+generated tokens/sec: 333.06 (job wallclock)
+total wallclock: 13006.8s
+
+per-game (mean across passes):
+  cd82-fb555c5d: score=0.00, levels=0.0/6, actions=70, tokens=43239
+  ft09-0d8bbf25: score=5.24, levels=1.0/6, actions=43, tokens=44745
+  ls20-9607627b: score=0.00, levels=0.0/7, actions=37, tokens=33952
+  vc33-5430563c: score=2.21, levels=1.3/7, actions=39, tokens=38932

@@ -1,0 +1,17 @@
+benchmark: replay_smoke
+solver:    inference
+games:     1
+passes:    1
+runs:      1 (won: 0)
+started:   2026-09-07 16:42:05
+ended:     2026-09-07 16:52:08
+duration:  10m 3s
+mean score:    28.57
+median score:  28.57
+total actions: 47
+total tokens:  46015
+generated tokens/sec: 76.28 (job wallclock)
+total wallclock: 603.3s
+
+per-game (mean across passes):
+  ft09-0d8bbf25: score=28.57, levels=3.0/6, actions=47, tokens=46015
