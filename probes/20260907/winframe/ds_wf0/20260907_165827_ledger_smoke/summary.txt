@@ -1,0 +1,17 @@
+benchmark: ledger_smoke
+solver:    inference
+games:     1
+passes:    1
+runs:      1 (won: 0)
+started:   2026-09-07 16:58:27
+ended:     2026-09-07 17:08:28
+duration:  10m 0s
+mean score:    4.76
+median score:  4.76
+total actions: 53
+total tokens:  40664
+generated tokens/sec: 67.67 (job wallclock)
+total wallclock: 600.9s
+
+per-game (mean across passes):
+  ft09-0d8bbf25: score=4.76, levels=1.0/6, actions=53, tokens=40664

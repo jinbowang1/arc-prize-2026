@@ -1,0 +1,188 @@
+{
+  "label": "wm_gate4",
+  "n_passes": 1,
+  "solver_label": "inference",
+  "start_time": "2026-09-07T18:53:10.202359",
+  "end_time": null,
+  "game_weights": null,
+  "periodic_save_interval_s": 600.0,
+  "game_runs": [
+    {
+      "game_id": "ft09-0d8bbf25",
+      "number_of_levels": 6,
+      "base_actions_per_level": [
+        43,
+        12,
+        23,
+        28,
+        65,
+        37
+      ],
+      "hint": null,
+      "state": "playing",
+      "history": [
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 38,
+              "y": 38
+            }
+          },
+          "generated_tokens": 4514,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 47.62521170800028
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 38,
+              "y": 46
+            }
+          },
+          "generated_tokens": 16617,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 189.66505424999923
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 54,
+              "y": 46
+            }
+          },
+          "generated_tokens": 461,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 198.45498512500126
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 38,
+              "y": 54
+            }
+          },
+          "generated_tokens": 291,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 202.15989133300172
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 16
+            }
+          },
+          "generated_tokens": 6060,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 271.38630750000084
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 24
+            }
+          },
+          "generated_tokens": 1009,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 288.67735058299877
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 38,
+              "y": 24
+            }
+          },
+          "generated_tokens": 263,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 292.5752745409991
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 32
+            }
+          },
+          "generated_tokens": 129,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 295.4562321250014
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 38,
+              "y": 32
+            }
+          },
+          "generated_tokens": 105,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 298.7464243329996
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 48
+            }
+          },
+          "generated_tokens": 105,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 301.3597966660018
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 30,
+              "y": 48
+            }
+          },
+          "generated_tokens": 115,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 304.02160279099917
+        },
+        {
+          "action": {
+            "id": "ACTION6",
+            "data": {
+              "x": 22,
+              "y": 6
+            }
+          },
+          "generated_tokens": 5608,
+          "uncached_input_tokens": 0,
+          "wallclock_seconds": 364.48069920800117
+        }
+      ],
+      "record_intermediate_states": true,
+      "actions_per_level": [
+        4,
+        7,
+        1,
+        0,
+        0,
+        0
+      ],
+      "levels_completed": 2,
+      "final_score": null,
+      "solver_note": null,
+      "solver_analysis_html": "solver_analysis/ft09-0d8bbf25_p0.html",
+      "final_generated_tokens": 0,
+      "final_uncached_input_tokens": 0,
+      "final_wallclock_seconds": 0.0,
+      "started_at": "2026-09-07T18:53:10.217323"
+    }
+  ]
+}

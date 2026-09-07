@@ -1,0 +1,16 @@
+benchmark: wm_gate4
+solver:    inference
+games:     1
+passes:    1
+runs:      1 (won: 0)
+started:   2026-09-07 18:53:10
+ended:     in progress
+mean score:    14.29
+median score:  14.29
+total actions: 12
+total tokens:  35277
+generated tokens/sec: 58.77 (job wallclock)
+total wallclock: 364.5s
+
+per-game (mean across passes):
+  ft09-0d8bbf25: score=14.29, levels=2.0/6, actions=12, tokens=35277
