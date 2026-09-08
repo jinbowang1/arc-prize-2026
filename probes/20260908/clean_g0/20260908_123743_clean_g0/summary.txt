@@ -1,0 +1,40 @@
+benchmark: clean_g0
+solver:    inference
+games:     24
+passes:    1
+runs:      24 (won: 0)
+started:   2026-09-08 12:37:43
+ended:     2026-09-08 13:26:05
+duration:  48m 22s
+mean score:    0.65
+median score:  0.00
+total actions: 1705
+total tokens:  1369085
+generated tokens/sec: 471.73 (job wallclock)
+total wallclock: 43399.6s
+
+per-game (mean across passes):
+  ar25-0c556536: score=0.00, levels=0.0/8, actions=92, tokens=72124
+  bp35-0a0ad940: score=0.00, levels=0.0/9, actions=42, tokens=64754
+  cd82-fb555c5d: score=0.00, levels=0.0/6, actions=91, tokens=56987
+  cn04-2fe56bfb: score=0.00, levels=0.0/6, actions=62, tokens=70596
+  ft09-0d8bbf25: score=0.00, levels=0.0/6, actions=11, tokens=58317
+  g50t-5849a774: score=0.00, levels=0.0/7, actions=18, tokens=65285
+  ka59-38d34dbb: score=0.00, levels=0.0/7, actions=95, tokens=57496
+  lf52-271a04aa: score=0.00, levels=0.0/10, actions=117, tokens=64989
+  lp85-305b61c3: score=0.00, levels=0.0/8, actions=8, tokens=22538
+  ls20-9607627b: score=0.48, levels=1.0/7, actions=97, tokens=49614
+  m0r0-492f87ba: score=0.00, levels=0.0/6, actions=48, tokens=42138
+  r11l-495a7899: score=0.00, levels=0.0/6, actions=49, tokens=56367
+  re86-8af5384d: score=0.00, levels=0.0/8, actions=64, tokens=66856
+  s5i5-18d95033: score=0.00, levels=0.0/8, actions=30, tokens=45443
+  sb26-7fbdac44: score=0.00, levels=0.0/8, actions=199, tokens=59519
+  sc25-635fd71a: score=0.00, levels=0.0/6, actions=51, tokens=47104
+  sk48-d8078629: score=0.00, levels=0.0/8, actions=86, tokens=60674
+  sp80-589a99af: score=4.11, levels=1.0/6, actions=110, tokens=51638
+  su15-1944f8ab: score=2.03, levels=1.0/9, actions=136, tokens=60524
+  tn36-ef4dde99: score=0.00, levels=0.0/7, actions=63, tokens=64251
+  tr87-cd924810: score=4.76, levels=1.0/6, actions=39, tokens=62703
+  tu93-0768757b: score=0.89, levels=1.0/9, actions=36, tokens=61885
+  vc33-5430563c: score=3.23, levels=2.0/7, actions=62, tokens=49754
+  wa30-ee6fef47: score=0.00, levels=0.0/9, actions=99, tokens=57529

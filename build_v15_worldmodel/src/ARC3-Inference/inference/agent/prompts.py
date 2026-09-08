@@ -1,3 +1,4 @@
+import os
 """Prompt templates for the analyzer agent."""
 
 from inference.utils.grid_utils import ARC_COLOR_LEGEND
@@ -34,6 +35,18 @@ VISUAL_GAME_ADDENDUM = (
     "- For `MOUSE`, pass `row` and `col` integer arguments. `row` is vertical position, `col` is horizontal position.\n"
 )
 
+_HELPERS_ON = os.environ.get("ARC3_HELPERS", "1") == "1"
+# 预置解析库: 放进"运行时变量"清单里 —— 模型为了用 current_frame 必读那一段
+_HELPERS_LINE = (
+    "- Ready-made board helpers are already defined for you; call them instead of rewriting parsing code: "
+    "`grid()` (numpy char array of the board), `at(row,col)`, `find(ch)` (all cells of one color), "
+    "`counts()` (color histogram), `diff()` (cells changed by the last action, as (row,col,old,new)), "
+    "`moved()` (bounding box of that change), `crop(r0,r1,c0,c1)` (printable local view), "
+    "`objects(color=None,min_pixels=1)` (connected components, largest first). Each takes an optional "
+    "`frame=` argument to run against any frame.\n"
+    if _HELPERS_ON else ""
+)
+
 STRUCTURED_RUNTIME_STATE_ADDENDUM = (
     "\n\nRuntime variables inside every `python` tool call:\n"
     "- `current_frame` is the latest board and exposes `.ascii`, `.segmentation`, `.step`, `.level`, and `.shape`; the raw numeric grid is unavailable.\n"
@@ -45,6 +58,7 @@ STRUCTURED_RUNTIME_STATE_ADDENDUM = (
     "- An animation notice includes an automatic full-board storyboard when broad motion matters. Persistent local motion appears in `.regions`; print those summaries first, then inspect only a relevant area with `last_animation.region(i).inspect(rows=(r0,r1), cols=(c0,c1), max_frames=8)`. Inspection preserves aspect ratio and never aggregates source blocks larger than 8x8.\n"
     "- `valid_actions` lists current action names. Execute with `action(['LEFT'])` or `action([{'action':'MOUSE','row':4,'col':7}])`; MOUSE uses integer `row`/`col`, never x/y.\n"
     "- After `action(...)`, all runtime globals refresh before the next Python statement. One action may return multiple animation frames.\n"
+    f"{_HELPERS_LINE}"
 )
 
 MULTIMODAL_CONTEXT_ADDENDUM = (
@@ -54,9 +68,19 @@ MULTIMODAL_CONTEXT_ADDENDUM = (
     "- You can use images and other tools to understand the game state and guide your strategy, each may be useful depending on the current uncertainty.\n"
 )
 
+_WORKBENCH_ON = os.environ.get("ARC3_WORKBENCH", "1") == "1"
+
+# import 清单也必须跟着工作台开关走 —— 09-08 的 bug: 关闭组的提示词照样宣传 numpy,
+# 而那一组 numpy 被挡, 模型一 import 就 ModuleNotFoundError, 白烧步数。
+_IMPORTS_LINE = (
+    "- Allowed imports: numpy (use it for board analysis--masks, unique, argwhere, diffs), bisect, collections, copy, fractions, functools, heapq, itertools, json, math, operator, random, re, statistics, string.\n"
+    if (_WORKBENCH_ON or _HELPERS_ON)
+    else "- Each call is a fresh snippet. Allowed imports: bisect, collections, copy, fractions, functools, heapq, itertools, json, math, operator, random, re, statistics, string.\n"
+)
+
 PYTHON_ADDENDUM = (
     "\n\nPython tool guidance:\n"
-    "- Each call is a fresh snippet. Allowed imports: bisect, collections, copy, fractions, functools, heapq, itertools, json, math, operator, random, re, statistics, string.\n"
+    f"{_IMPORTS_LINE}"
     "- Inspect `current_frame.segmentation`, `history`, and `valid_actions`; use ASCII only for a tiny crop. Print compact object lists, diffs, counts, coordinates, or local crops--never a full board or full animation frames.\n"
     "- Every real action spends the level's step budget; checking a rule with `replay(step_fn)` against the transitions already recorded spends nothing. When a rule can be settled by the record, settle it there before spending actions on it.\n"
     "- Keep a compact world model: entities, action effects, likely goal, uncertainties, and shortest reliable plan. Probe only when evidence can distinguish hypotheses; once mechanics are understood, use a scorer, BFS/shortest-path search, or small action-sequence search.\n"
@@ -66,11 +90,24 @@ PYTHON_ADDENDUM = (
     "- Use `print(...)` or `result` for short decision-oriented output. Call `action(...)` inside Python; batch a reliable sequence or call it repeatedly in a loop, checking refreshed state after each call.\n"
 )
 
+# 持久工作台的话术 —— ARC3_WORKBENCH=0 时退回旧行为, 保证 A/B 是单一变量
+_WORKBENCH_LINE = (
+    "- Your workbench persists: every function you define stays defined for the rest of this game, so build a small library of your own helpers (parsers, coordinate maps, rule checkers) instead of rewriting them each turn. Imports and other variables do not carry over--only functions.\n"
+    if _WORKBENCH_ON
+    else "- Snippets are not saved, so re-import or redefine needed helpers. Use as many short, purposeful calls as needed to establish a clear probe or plan.\n"
+)
+_NOTES_LINE = (
+    "- `notes` is a string that persists across turns and is shown back to you each turn. Append a line to it whenever you confirm a rule (`notes = notes + \"\\n- confirmed: clicking a tile advances its base color\"`). Keep it to confirmed mechanics and the current plan.\n"
+    if _WORKBENCH_ON
+    else ""
+)
+
 COMPACT_TOOL_SESSION_ADDENDUM = (
     "\n\nTool session rules:\n"
     "- You have exactly one tool: `python`.\n"
     f"- {TOOL_CALL_FORMAT_GUIDANCE}\n"
-    "- Snippets are not saved, so re-import or redefine needed helpers. Use as many short, purposeful calls as needed to establish a clear probe or plan.\n"
+    f"{_WORKBENCH_LINE}"
+    f"{_NOTES_LINE}"
     "- `action(...)` refreshes runtime state immediately. Inspection-only calls preserve both `last_action_result` and `last_animation`.\n"
     "- Each call has a 30-second limit and about {tool_output_tokens} output tokens. Keep output compact; truncation is reported.\n"
 )

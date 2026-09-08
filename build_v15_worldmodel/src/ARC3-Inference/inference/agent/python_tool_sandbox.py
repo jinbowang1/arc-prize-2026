@@ -34,12 +34,16 @@ _SANDBOX_BOOTSTRAP = textwrap.dedent(
         resource = None
 
     COLOR_CHARS = ""
+    NUMPY_PATH = ""
+    WORKBENCH_CAP = 20000
+    NOTES_CAP = 8192
 
     __SEGMENTATION_SOURCE__
 
     HOST_STDOUT = sys.stdout
 
     SAFE_MODULES = {
+        "numpy",
         "bisect",
         "collections",
         "copy",
@@ -763,6 +767,30 @@ _SANDBOX_BOOTSTRAP = textwrap.dedent(
             except Exception:
                 pass
 
+        # 预置解析库: 由我们提供而非要求模型自己攒 —— 09-08 实测 24 局里 19 局
+        # 从没定义过一个可复用函数, 模型不做这件事; 全通方靠的也是作者写好的库。
+        _helpers = initial.get("helpers_source")
+        if isinstance(_helpers, str) and _helpers.strip():
+            try:
+                exec(compile(_helpers, "<board_helpers>", "exec"), runtime_globals, runtime_globals)
+            except Exception:
+                pass
+
+        # 持久工作台: 上几轮定义的函数在这里复活, 模型不必每轮重写解析代码。
+        carried_wb = initial.get("workbench_source")
+        if isinstance(carried_wb, str) and carried_wb.strip():
+            try:
+                exec(compile(carried_wb, "<workbench>", "exec"), runtime_globals, runtime_globals)
+            except Exception:
+                pass
+        # 笔记本: 已确认的规则写在这里, 跨轮保留并回到提示词里。
+        runtime_globals["notes"] = str(initial.get("notes") or "")
+        # numpy: 沙箱以 -I -S 启动(不加载 site-packages), 这里只把 numpy 那一个
+        # 目录挂回 sys.path, 隔离边界仍由 SAFE_MODULES 白名单把着。
+        _np_path = initial.get("numpy_path")
+        if isinstance(_np_path, str) and _np_path and _np_path not in sys.path:
+            sys.path.insert(0, _np_path)
+
         def _capture_world_model():
             wm_fn = runtime_globals.get("world_model")
             if not callable(wm_fn):
@@ -793,6 +821,44 @@ _SANDBOX_BOOTSTRAP = textwrap.dedent(
                 rep = {"error": "%s: %s" % (type(_exc).__name__, _exc)}
             return src, rep
 
+        def _capture_workbench():
+            # 把工作台里的旧函数与本轮新定义的函数合并, 同名以本轮为准
+            import ast as _ast
+
+            def _funcs(src):
+                out = {}
+                if not isinstance(src, str) or not src.strip():
+                    return out
+                try:
+                    tree = _ast.parse(src)
+                except Exception:
+                    return out
+                for node in tree.body:
+                    if isinstance(node, (_ast.FunctionDef, _ast.AsyncFunctionDef)):
+                        seg = _ast.get_source_segment(src, node)
+                        if seg:
+                            out[node.name] = seg
+                return out
+
+            merged = _funcs(initial.get("workbench_source"))
+            merged.update(_funcs(initial.get("code", "")))
+            kept, total = [], 0
+            for seg in merged.values():
+                if total + len(seg) > WORKBENCH_CAP:
+                    continue
+                kept.append(seg)
+                total += len(seg) + 2
+            return "\n\n".join(kept)
+
+        def _capture_notes():
+            val = runtime_globals.get("notes")
+            if not isinstance(val, str):
+                try:
+                    val = str(val)
+                except Exception:
+                    return ""
+            return val[:NOTES_CAP]
+
         runtime_globals["replay"] = replay
         runtime_globals["action"] = action
         _refresh_state(initial.get("state") or {})
@@ -810,6 +876,8 @@ _SANDBOX_BOOTSTRAP = textwrap.dedent(
                     "action_results": _json_safe(action_results),
                     "world_model_source": wm_src,
                     "world_model_replay": wm_report,
+                    "workbench_source": _capture_workbench(),
+                    "notes": _capture_notes(),
                 }
             )
         except Exception as exc:
@@ -823,6 +891,8 @@ _SANDBOX_BOOTSTRAP = textwrap.dedent(
                     "action_results": _json_safe(action_results),
                     "world_model_source": wm_src,
                     "world_model_replay": wm_report,
+                    "workbench_source": _capture_workbench(),
+                    "notes": _capture_notes(),
                 }
             )
 
@@ -837,6 +907,33 @@ def _sanitize_host_error_text(text: str) -> str:
     if not str(text or "").strip():
         return "Sandbox process exited unexpectedly."
     return "Sandbox process exited unexpectedly."
+
+
+def _workbench_on() -> bool:
+    """ARC3_WORKBENCH=0 退回旧行为(代码不跨轮), 用于单一变量 A/B。"""
+    return os.environ.get("ARC3_WORKBENCH", "1") == "1"
+
+
+def _helpers_on() -> bool:
+    """ARC3_HELPERS=0 关掉预置解析库, 用于单一变量 A/B。"""
+    return os.environ.get("ARC3_HELPERS", "1") == "1"
+
+
+def _helpers_source() -> str | None:
+    try:
+        from inference.agent.board_helpers import HELPERS_SOURCE
+    except Exception:
+        return None
+    return HELPERS_SOURCE
+
+
+def _numpy_site_path() -> str | None:
+    """numpy 所在的 site-packages 目录, 供沙箱挂回 sys.path。"""
+    try:
+        import numpy
+    except Exception:
+        return None
+    return os.path.dirname(os.path.dirname(os.path.abspath(numpy.__file__)))
 
 
 def _sandbox_env() -> dict[str, str]:
@@ -887,6 +984,8 @@ def run_sandboxed_python(
     initial_state: dict[str, Any],
     action_handler: Callable[[list[dict[str, Any]]], dict[str, Any]],
     world_model_source: str | None = None,
+    workbench_source: str | None = None,
+    notes: str | None = None,
 ) -> dict[str, Any]:
     with tempfile.TemporaryDirectory(prefix="rgb_python_tool_") as sandbox_dir:
         host_action_results: list[dict[str, Any]] = []
@@ -930,6 +1029,10 @@ def run_sandboxed_python(
                 "state": initial_state,
                 "color_chars": ARC_COLOR_CHARS,
                 "world_model_source": world_model_source,
+                "workbench_source": workbench_source if _workbench_on() else None,
+                "notes": notes if _workbench_on() else None,
+                "numpy_path": _numpy_site_path() if (_workbench_on() or _helpers_on()) else None,
+                "helpers_source": _helpers_source() if _helpers_on() else None,
             },
         )
 
@@ -1005,6 +1108,8 @@ def run_sandboxed_python(
                     "action_results": list(message.get("action_results") or host_action_results),
                     "world_model_source": message.get("world_model_source"),
                     "world_model_replay": message.get("world_model_replay"),
+                    "workbench_source": message.get("workbench_source"),
+                    "notes": message.get("notes"),
                 }
 
             _wait_for_process_exit(process)

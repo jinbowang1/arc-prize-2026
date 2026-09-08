@@ -1417,6 +1417,23 @@ class ToolAgent:
             ("Cross-level notes", self._summarized_knowledge.get("cross_level_notes", "")),
         ]
         lines = [f"- {label}: {value}" for label, value in entries if value]
+        # 持久工作台: 上几轮写下的函数与笔记, 模型不看见就等于没有
+        _wb = getattr(self, "_workbench_source", None)
+        if isinstance(_wb, str) and _wb.strip():
+            try:
+                import ast as _ast
+                _names = [n.name for n in _ast.parse(_wb).body
+                          if isinstance(n, (_ast.FunctionDef, _ast.AsyncFunctionDef))]
+            except Exception:
+                _names = []
+            if _names:
+                lines.append(
+                    "- Workbench (your own functions, already defined and callable this turn): "
+                    + ", ".join("%s()" % n for n in _names)
+                )
+        _nt = getattr(self, "_notes", None)
+        if isinstance(_nt, str) and _nt.strip():
+            lines.append("- Notes you wrote (the `notes` string, editable this turn):\n" + _nt.strip())
         if not lines:
             return []
         return [
@@ -2052,10 +2069,19 @@ class ToolAgent:
             initial_state=_serialized_runtime_state(),
             action_handler=_handle_action,
             world_model_source=getattr(self, "_world_model_source", None),
+            workbench_source=getattr(self, "_workbench_source", None),
+            notes=getattr(self, "_notes", None),
         )
         _wm_src = sandbox_result.get("world_model_source")
         if isinstance(_wm_src, str) and _wm_src.strip():
             self._world_model_source = _wm_src
+        # 持久工作台: 模型自己写的函数与笔记跨轮活下来
+        _wb = sandbox_result.get("workbench_source")
+        if isinstance(_wb, str):
+            self._workbench_source = _wb
+        _nt = sandbox_result.get("notes")
+        if isinstance(_nt, str):
+            self._notes = _nt
         _wm_rep = sandbox_result.get("world_model_replay")
         if isinstance(_wm_rep, dict):
             self._world_model_replay = _wm_rep
